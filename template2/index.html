@@ -1,0 +1,636 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>
+        Template 2
+    </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- <link rel="manifest" href="site.webmanifest"> -->
+
+    <!-- Place favicon.ico in the root directory -->
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/gijgo.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="css/slicknav.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- <link rel="stylesheet" href="css/responsive.css"> -->
+
+    <script src="https://unpkg.com/vue@3.0.2"></script>
+
+</head>
+
+<body id="app">
+    <!--[if lte IE 9]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+        <![endif]-->
+
+    <!-- header-start -->
+    <div style=" width: 100%; padding: 10px;  background-color: #b4b6c2;  color: white;">
+
+        <button
+            style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 20px;"
+            @click="saveChanges">
+            Save Changes
+        </button>
+
+        <button
+            style="background-color: #f93f26; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
+            @click="publishChanges">
+            Publish Changes
+        </button>
+    </div>
+    <div v-if="isSuccess" id="successMessage"
+        style="position: fixed; z-index: 20; border-radius: 10; color: white; top: 0; left: 50%; background: #05f318; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;"
+        class="success-message">
+        <i class="fa fa-check"></i>
+        {{ isSuccess }}
+    </div>
+
+    <div v-if="isLoading" id="loadingMessage" class="loading-message"
+        style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #e2e60f; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
+        <i class="fa fa-spinner fa-spin"></i>
+        {{ isLoading }}
+    </div>
+
+    <div v-if="isError" id="errorMessage" class="error-message"
+        style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #f00505; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
+
+        <i class="fa fa-times"></i>
+        {{ isError }}
+    </div>
+    <header>
+        <div style="margin-top: 70px;" class="header-area ">
+            <div id="sticky-header" class="main-header-area">
+                <div class="container-fluid p-0">
+                    <div class="row align-items-center no-gutters">
+                        <div class="col-xl-5 col-lg-6">
+                            <div class="main-menu  d-none d-lg-block">
+                                <nav>
+                                    <ul id="navigation">
+                                        <li><a class="active" href="index.html">home</a></li>
+                                        <li><a href="rooms.html">rooms</a></li>
+                                        <li><a href="about.html">About</a></li>
+
+
+                                        <li><a href="contact.html">Contact</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2">
+                            <div class="logo-img">
+                                <h1 style="color: aliceblue; font-weight: 600;" v-if="!isEditingTitle"
+                                    @click="editClickTitle">{{
+                                    title
+                                    }}
+                                </h1>
+
+                                <input
+                                    style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px;"
+                                    v-if="isEditingTitle" v-model="editTitle" @keyup.enter="updateTitle" />
+                            </div>
+                        </div>
+                        <div class="col-xl-5 col-lg-4 d-none d-lg-block">
+                            <div class="book_room">
+
+                                <div class="book_btn d-none d-lg-block">
+                                    <a class="popup-with-form" href="#test-form">Book A Room</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mobile_menu d-block d-lg-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- header-end -->
+
+    <!-- slider_area_start -->
+    <div class="slider_area">
+        <div class="slider_active owl-carousel">
+            <div v-for="(image, index) in carouselImages" :key="index"
+                :style="{ backgroundImage: 'url(' + image.src + ')' }"
+                class="single_slider d-flex align-items-center justify-content-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="slider_text text-center">
+                                <h3 v-if="!editCarouselText[index].isEditingCarouselTitle"
+                                    @click="editClickCarouselTitle(index)">
+                                    {{ image.carouselTitle }}
+                                </h3>
+                                <input
+                                    style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px;"
+                                    v-if="editCarouselText[index].isEditingCarouselTitle"
+                                    v-model="editCarouselImages[index].carouselTitle"
+                                    @keyup.enter="updateCarouselTitle(index)" placeholder="Edit Carousel Title" />
+                                <p v-if="!editCarouselText[index].isEditingCarouselDescription"
+                                    @click="editClickCarouselDescription(index)">{{ image.carouselDescription }}</p>
+
+                                <div>
+                                    <textarea
+                                        style="background-color: white;margin-top: 20px; border: none; padding: 10px 20px; border-radius: 5px;"
+                                        cols="30" rows="5" v-if="editCarouselText[index].isEditingCarouselDescription"
+                                        v-model="editCarouselImages[index].carouselDescription"
+                                        @keyup.enter="updateCarouselDescription(index)"
+                                        placeholder="Edit Carousel Description">
+                                                                </textarea>
+                                </div>
+                                <button
+                                    style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
+                                    @click="triggerFileInput(index)">
+                                    Upload Image
+                                    <i class="fa fa-upload"></i>
+                                </button>
+                                <input type="file" :ref="'fileInput' + index" @change="uploadImage($event, index)"
+                                    style="display: none;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- slider_area_end -->
+
+    <!-- about_area_start -->
+    <div class="about_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-5 col-lg-5">
+                    <div class="about_info">
+                        <div class="section_title mb-20px">
+                            <span>About Us</span>
+                            <h3 @click="editClickAboutTitle" v-if="!isEditAboutUsTitle">
+                                {{ aboutUsTitle }}
+                            </h3>
+
+                            <input
+                                style="background-color: white; border: 2px solid black; padding: 10px 20px; border-radius: 5px;"
+                                v-if="isEditAboutUsTitle" v-model="editAboutUsTitle" type="text"
+                                @keyup.enter="updateAboutTitle" />
+                        </div>
+                        <p v-html="aboutUsDescription" @click="editClickAboutDescription"
+                            v-if="!isEditAboutUsDescription">
+                        </p>
+                        <div>
+                            <textarea cols="40" rows="8"
+                                style="background-color: white; border: 2px solid black; padding: 10px 20px; border-radius: 5px;"
+                                v-if="isEditAboutUsDescription" v-model="editAboutUsDescription"
+                                @keyup.enter="updateAboutDescription"
+                                placeholder="Edit About Us Description"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-7 col-lg-7">
+                    <div class="about_thumb d-flex">
+                        <div style="position: relative;" class="img_1">
+                            <img :src="aboutUsImages[0].src" :alt="aboutUsImages[0].alt" />
+                            <div style="position: absolute; top: 50%; left: 60%;">
+                                <i @click="triggerAboutUsImageUpload(0)" class="fa fa-upload"
+                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
+                                <input type="file" :ref="'aboutImage' + 0" @change="uploadAboutUsImage($event, 0)"
+                                    style="display: none;" />
+                            </div>
+                        </div>
+                        <div style="position: relative;" class="img_2">
+                            <img :src="aboutUsImages[1].src" :alt="aboutUsImages[1].alt" />
+                            <div style="position: absolute; top: 50%; left: 60%;">
+                                <i @click="triggerAboutUsImageUpload(1)" class="fa fa-upload"
+                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
+                                <input type="file" :ref="'aboutImage' + 1" @change="uploadAboutUsImage($event, 1)"
+                                    style="display: none;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- about_area_end -->
+
+    <!-- offers_area_start -->
+    <div class="offers_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="section_title text-center mb-100">
+                        <span>Our Offers</span>
+                        <h3>Ongoing Offers</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-4 col-md-4">
+                    <div class="single_offers">
+                        <div class="about_thumb">
+                            <img src="img/offers/1.png" alt="">
+                        </div>
+                        <h3>Up to 35% savings on Club <br>
+                            rooms and Suites</h3>
+                        <ul>
+                            <li>Luxaries condition</li>
+                            <li>3 Adults & 2 Children size</li>
+                            <li>Sea view side</li>
+                        </ul>
+                        <a href="#" class="book_now">book now</a>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-4">
+                    <div class="single_offers">
+                        <div class="about_thumb">
+                            <img src="img/offers/2.png" alt="">
+                        </div>
+                        <h3>Up to 35% savings on Club <br>
+                            rooms and Suites</h3>
+                        <ul>
+                            <li>Luxaries condition</li>
+                            <li>3 Adults & 2 Children size</li>
+                            <li>Sea view side</li>
+                        </ul>
+                        <a href="#" class="book_now">book now</a>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-md-4">
+                    <div class="single_offers">
+                        <div class="about_thumb">
+                            <img src="img/offers/3.png" alt="">
+                        </div>
+                        <h3>Up to 35% savings on Club <br>
+                            rooms and Suites</h3>
+                        <ul>
+                            <li>Luxaries condition</li>
+                            <li>3 Adults & 2 Children size</li>
+                            <li>Sea view side</li>
+                        </ul>
+                        <a href="#" class="book_now">book now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- offers_area_end -->
+
+    <!-- video_area_start -->
+
+    <!-- video_area_end -->
+
+    <!-- about_area_start -->
+    <div class="about_area">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-7 col-lg-7">
+                    <div class="about_thumb2 d-flex">
+                        <div style="position: relative;" class="img_1">
+                            <img :src="hotelFoodImages[0].src" :alt="hotelFoodImages[0].alt" />
+                            <div style="position: absolute; top: 50%; left: 60%;">
+                                <i @click="triggerHotelFoodImageUpload(0)" class="fa fa-upload"
+                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
+                                <input type="file" :ref="'hotelFoodImage' + 0" @change="uploadHotelFoodImage($event, 0)"
+                                    style="display: none;" />
+                            </div>
+
+                        </div>
+                        <div style="position: relative;" class="img_2">
+                            <img :src="hotelFoodImages[1].src" :alt="hotelFoodImages[1].alt" />
+                            <div style="position: absolute; top: 50%; left: 60%;">
+                                <i @click="triggerHotelFoodImageUpload(1)" class="fa fa-upload"
+                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
+                                <input type="file" :ref="'hotelFoodImage' + 1" @change="uploadHotelFoodImage($event, 1)"
+                                    style="display: none;" />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-5 col-lg-5">
+                    <div class="about_info">
+                        <div class="section_title mb-20px">
+                            <span>Delicious Food</span>
+                            <h3 v-if="!isEditHotelFoodTitle" @click="editClickHotelFoodTitle">
+                                {{ hotelFoodTitle }}
+                            </h3>
+                            <input
+                                style="background-color: white; border: 2px solid black; padding: 10px 20px; border-radius: 5px;"
+                                v-if="isEditHotelFoodTitle" v-model="editHotelFoodTitle" type="text"
+                                @keyup.enter="updateHotelFoodTitle" />
+                        </div>
+                        <p v-html="hotelFoodDescription" @click="editClickHotelFoodDescription"
+                            v-if="!isEditHotelFoodDescription">
+                        </p>
+                        <div>
+                            <textarea cols="40" rows="8"
+                                style="background-color: white; border: 2px solid black; padding: 10px 20px; border-radius: 5px;"
+                                v-if="isEditHotelFoodDescription" v-model="editHotelFoodDescription"
+                                @keyup.enter="updateHotelFoodDescription"
+                                placeholder="Edit Hotel Food Description"></textarea>
+                        </div>
+                        <a href="#" class="line-button">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- about_area_end -->
+
+    <!-- features_room_startt -->
+    <div class="features_room">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="section_title text-center mb-100">
+                        <span>Featured Rooms</span>
+                        <h3>Choose a Better Room</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rooms_here">
+            <div class="single_rooms" v-for="(room, index) in roomsDetails" :key="index">
+                <div class="room_thumb">
+                    <img src="img/rooms/1.png" alt="">
+                    <div class="room_heading d-flex justify-content-between align-items-center">
+                        <div class="room_heading_inner">
+                            <span>From Rs {{ room.fbprice }}</span>
+                            <h3>{{ room.roomtype }}</h3>
+                            <p style="color: white; font-weight: 600;">{{ room.roomview }} View, {{ room.noofbed }} Beds
+                            </p>
+                            <p style="color: white;font-weight: 600;"
+                                v-if="room.roomamenities && room.roomamenities[0]">
+                                Amenities: {{ room.roomamenities.join(', ') }}
+                            </p>
+                        </div>
+                        <a href="#" class="line-button">book now</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- features_room_end -->
+
+    <div class="forQuery">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-10 offset-xl-1 col-md-12">
+                    <div class="Query_border">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-xl-6 col-md-6">
+                                <div class="Query_text">
+                                    <p>For Reservation 0r Query?</p>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-md-6">
+                                <div class="phone_num">
+                                    <div style="margin-left: 10%; background-color: rgb(158, 26, 26); padding: 10px ; border-radius: 20px; width: 200px; color: white; text-align: center;"
+                                        @click="editClickPhoneNumber" v-if="!isEditPhoneNumber">{{phoneNumber}}</div>
+                                    <input v-if="isEditPhoneNumber" v-model="editPhoneNumber"
+                                        style="background-color: white; border: 2px solid black; padding: 10px 20px; border-radius: 5px;"
+                                        @keyup.enter="updatePhoneNumber" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- forQuery_end-->
+    <div style="background-color: #f9a826; padding: 10px; color: white; text-align: center; font-weight: 600;">
+        <label style="background-color: #f9a826; padding: 10px; color: white; text-align: center; font-weight: 600;">
+            Upload multiple images:
+            <input style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px;" type="file"
+                id="files" name="files[]" multiple @change="handleFileChange" />
+        </label>
+    </div>
+    <!-- instragram_area_start -->
+    <div class="instragram_area">
+        <div>
+
+        </div>
+        <div v-if="!userUseRealImages" class="single_instagram" v-for="(item, index) in images" :key="index">
+            <img :src="item" alt="">
+            <div class="ovrelay">
+                <a href="#">
+                    <i class="fa fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+        <div v-if="userUseRealImages" class="single_instagram" v-for="(item, index) in realImages.filePaths"
+            :key="index">
+            <img :src="item" alt="">
+            <div class="ovrelay">
+                <a href="#">
+                    <i class="fa fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- instragram_area_end -->
+
+    <!-- footer -->
+    <footer class="footer">
+        <div class="footer_top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-3 col-md-6 col-lg-3">
+                        <div class="footer_widget">
+                            <h3 class="footer_title">
+                                address
+                            </h3>
+                            <p class="footer_text">
+                                {{address}}
+                            </p>
+                            <a href="#" class="line-button">Get Direction</a>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 col-lg-3">
+                        <div class="footer_widget">
+                            <h3 class="footer_title">
+                                Reservation
+                            </h3>
+                            <p class="footer_text">{{phoneNumber}} <br>
+                                {{email}}</p>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-md-6 col-lg-2">
+                        <div class="footer_widget">
+                            <h3 class="footer_title">
+                                Navigation
+                            </h3>
+                            <ul>
+                                <li><a href="#">Home</a></li>
+                                <li><a href="#">Rooms</a></li>
+                                <li><a href="#">About</a></li>
+                                <li><a href="#">News</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-md-6 col-lg-4">
+                        <div class="footer_widget">
+                            <h3 class="footer_title">
+                                Newsletter
+                            </h3>
+                            <form action="#" class="newsletter_form">
+                                <input type="text" placeholder="Enter your mail">
+                                <button type="submit">Sign Up</button>
+                            </form>
+                            <p class="newsletter_text">Subscribe newsletter to get updates</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="copy-right_text">
+            <div class="container">
+                <div class="footer_border"></div>
+                <div class="row">
+                    <div class="col-xl-8 col-md-7 col-lg-9">
+                        <p class="copy_right">
+                            Copyright &copy;
+                            <script>document.write(new Date().getFullYear());</script> All rights reserved Ceyinfo
+                            Solutions
+                    </div>
+                    <div class="col-xl-4 col-md-5 col-lg-3">
+                        <div class="socail_links">
+                            <ul>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-facebook-square"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-twitter"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-instagram"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- link that opens popup -->
+
+    <!-- form itself end-->
+    <form id="test-form" class="white-popup-block mfp-hide">
+        <div class="popup_box ">
+            <div class="popup_inner">
+                <h3>Check Availability</h3>
+                <form action="#">
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <input id="datepicker" placeholder="Check in date">
+                        </div>
+                        <div class="col-xl-6">
+                            <input id="datepicker2" placeholder="Check out date">
+                        </div>
+                        <div class="col-xl-6">
+                            <select class="form-select wide" id="default-select" class="">
+                                <option data-display="Adult">1</option>
+                                <option value="1">2</option>
+                                <option value="2">3</option>
+                                <option value="3">4</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-6">
+                            <select class="form-select wide" id="default-select" class="">
+                                <option data-display="Children">1</option>
+                                <option value="1">2</option>
+                                <option value="2">3</option>
+                                <option value="3">4</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-12">
+                            <select class="form-select wide" id="default-select" class="">
+                                <option data-display="Room type">Room type</option>
+                                <option value="1">Laxaries Rooms</option>
+                                <option value="2">Deluxe Room</option>
+                                <option value="3">Signature Room</option>
+                                <option value="4">Couple Room</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-12">
+                            <button type="submit" class="boxed-btn3">Check Availability</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </form>
+    <!-- form itself end -->
+
+    <!-- JS here -->
+    <script src="js/vendor/modernizr-3.5.0.min.js"></script>
+    <script src="js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/isotope.pkgd.min.js"></script>
+    <script src="js/ajax-form.js"></script>
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <script src="js/imagesloaded.pkgd.min.js"></script>
+    <script src="js/scrollIt.js"></script>
+    <script src="js/jquery.scrollUp.min.js"></script>
+    <script src="js/wow.min.js"></script>
+    <script src="js/nice-select.min.js"></script>
+    <script src="js/jquery.slicknav.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/gijgo.min.js"></script>
+
+    <!--contact js-->
+    <script src="js/contact.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
+
+    <script src="js/main.js"></script>
+    <script src="js/vue/index.js"></script>
+    <script>
+        $('#datepicker').datepicker({
+            iconsLibrary: 'fontawesome',
+            icons: {
+                rightIcon: '<span class="fa fa-caret-down"></span>'
+            }
+        });
+        $('#datepicker2').datepicker({
+            iconsLibrary: 'fontawesome',
+            icons: {
+                rightIcon: '<span class="fa fa-caret-down"></span>'
+            }
+
+        });
+    </script>
+
+
+
+</body>
+
+</html>

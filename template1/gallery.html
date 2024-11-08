@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Hill Roost</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3.0.2"></script>
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* Container for the gallery */
+        .gallery-container {
+            width: 80%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* Each row containing 2 images */
+        .gallery-row {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Individual image items */
+        .image-item {
+            width: 48%;
+            /* 48% to leave some space between two images in a row */
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.5s ease;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease, z-index 0.3s ease;
+        }
+
+        /* Hover effect to enlarge the hovered image significantly */
+        .image-item:hover {
+            z-index: 10;
+        }
+
+        .image-item:hover img {
+            transform: scale(1.5);
+            /* Increase the size significantly */
+            z-index: 10;
+        }
+
+        /* Blur all non-hovered images and other content */
+        .gallery-container:hover .image-item:not(:hover) img {
+            filter: blur(1px);
+            transform: scale(1);
+            /* Keep non-hovered images at the same size */
+        }
+
+        /* Make the other images and content slightly darker during hover */
+        .gallery-container:hover .image-item:not(:hover) {
+            opacity: 0.8;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <div id="gallery" class="container-xxl bg-white p-0">
+        <!-- Spinner Start -->
+        <div id="spinner"
+            class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+        <div v-if="isSuccess" id="successMessage"
+            style="position: fixed; z-index: 20; border-radius: 10; color: white; top: 0; left: 50%; background: #05f318; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;"
+            class="success-message">
+            <i class="fa fa-check"></i>
+            {{ isSuccess }}
+        </div>
+
+        <div v-if="isLoading" id="loadingMessage" class="loading-message"
+            style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #e2e60f; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
+            <i class="fa fa-spinner fa-spin"></i>
+            {{ isLoading }}
+        </div>
+
+        <div v-if="isError" id="errorMessage" class="error-message"
+            style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #f00505; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
+
+            <i class="fa fa-times"></i>
+            {{ isError }}
+        </div>
+        <!-- Header Start -->
+        <div class="container-fluid bg-dark px-0">
+            <div class="row gx-0">
+                <div class="col-lg-3 bg-dark d-none d-lg-flex">
+                    <img src="img/icon.png" alt="" width="60px" height="100px"
+                        style="margin-top: 5px; margin-left: 5px;">
+                    <a href="index.html"
+                        class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
+                        <h1 class="m-0 text-primary text-uppercase">{{title}}</h1>
+                    </a>
+                </div>
+                <div class="col-lg-9">
+                    <div class="row gx-0 bg-white d-none d-lg-flex">
+                        <div class="col-lg-7 px-5 text-start">
+                            <div class="h-100 d-inline-flex align-items-center py-2 me-4">
+                                <i class="fa fa-envelope text-primary me-2"></i>
+                                <p class="mb-0">{{email}}</p>
+                            </div>
+                            <div class="h-100 d-inline-flex align-items-center py-2">
+                                <i class="fa fa-phone-alt text-primary me-2"></i>
+                                <p class="mb-0">
+                                    {{phoneNumber}}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 px-5 text-end">
+                            <div class="d-inline-flex align-items-center py-2">
+                                <a class="me-3" href="https://www.facebook.com/hillroostkandy/"><i
+                                        class="fab fa-facebook-f"></i></a>
+                                <a class="me-3" href="https://www.booking.com/hotel/lk/hill-roost.en-gb.html"><i
+                                        class="fas fa-bed"></i></a>
+                                <a class="me-3"
+                                    href="https://www.tripadvisor.ca/Hotel_Review-g11914132-d15015697-Reviews-Hill_Roost-Ampitiya_Kandy_District_Central_Province.html"
+                                    target="_blank" rel="noopener noreferrer"> <i class="fab fa-tripadvisor"></i></a>
+                                <a class="" href=""><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0" style="margin-left: 0;">
+                        <a href="index.html" class="navbar-brand d-block d-lg-none">
+                            <h1 class="m-0 text-primary text-uppercase">Hill Roost</h1>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
+                            data-bs-target="#navbarCollapse">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                            <div class="navbar-nav mr-auto py-0">
+                                <a href="index.html" class="nav-item nav-link  ms-3">Home</a>
+                                <a href="about.html" class="nav-item nav-link ms-3">About</a>
+                                <a href="room.html" class="nav-item nav-link ms-3">Rooms</a>
+                                <a href="specialOffers.html" class="nav-item nav-link ms-3">Special Offers</a>
+                                <a href="gallery.html" class="nav-item nav-link ms-3 active">Gallery</a>
+                                <a href="attraction.html" class="nav-item nav-link ms-3">Attractions</a>
+                                <a href="booking.html" class="nav-item nav-link ms-3">Bookings</a>
+                                <a href="contact.html" class="nav-item nav-link ms-3">Contact</a>
+
+                                <!-- <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link dropdown-toggle ms-3" data-bs-toggle="dropdown">Pages</a>
+                                    <div class="dropdown-menu rounded-0 m-0">
+                                        <a href="booking.html" class="dropdown-item">Booking</a>
+                                        <a href="team.html" class="dropdown-item">Gallery</a>
+                                    </div>
+                                </div> -->
+
+                            </div>
+                        </div>
+                    </nav>
+
+                </div>
+            </div>
+        </div>
+        <!-- Header End -->
+
+
+        <!-- Page Header Start -->
+        <div class="container-fluid page-header mb-5 p-0" style="background-image: url(img/carousel-1.jpg);">
+            <div class="container-fluid page-header-inner py-5">
+                <div class="container text-center pb-5">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Gallery</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center text-uppercase">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Gallery</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- Page Header End -->
+
+
+
+
+        <!-- Booking Start -->
+        <div class="container-fluid booking pb-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="container">
+                <div class="bg-white shadow" style="padding: 35px;">
+                    <div class="row g-2">
+                        <div class="col-md-10">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <div class="date" id="date1" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input"
+                                            placeholder="Check in" data-target="#date1" data-toggle="datetimepicker" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="date" id="date2" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input"
+                                            placeholder="Check out" data-target="#date2" data-toggle="datetimepicker" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select">
+                                        <option selected>Adult</option>
+                                        <option value="1">Adult 1</option>
+                                        <option value="2">Adult 2</option>
+                                        <option value="3">Adult 3</option>
+                                        <option value="3">Adult 4</option>
+                                        <option value="3">Adult 5</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select">
+                                        <option selected>Child</option>
+                                        <option value="1">Child 1</option>
+                                        <option value="2">Child 2</option>
+                                        <option value="3">Child 3</option>
+                                        <option value="3">Child 4</option>
+                                        <option value="3">Child 5</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="booking.html"><button class="btn btn-primary w-100">Submit</button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Booking End -->
+        <div>
+            <label>
+                Upload multiple images:
+                <input type="file" id="files" name="files[]" multiple @change="handleFileChange" />
+            </label>
+        </div>
+
+        <div v-if="!userUseRealImages" class="gallery-container">
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[0]" alt="Image 1">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[1]" alt="Image 2">
+                </div>
+            </div>
+
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[2]" alt="Image 3">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[3]" alt="Image 4">
+                </div>
+            </div>
+
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[4]" alt="Image 3">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[5]" alt="Image 4">
+                </div>
+            </div>
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[6]" alt="Image 5">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[7]" alt="Image 6">
+                </div>
+            </div>
+
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[8]" alt="Image 7">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[9]" alt="Image 8">
+                </div>
+            </div>
+
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[10]" alt="Image 19">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[11]" alt="Image 10">
+                </div>
+            </div>
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[12]" alt="Image 11">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[13]" alt="Image 12">
+                </div>
+            </div>
+
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[14]" alt="Image 13">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[15]" alt="Image 14">
+                </div>
+            </div>
+
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[16]" alt="Image 15">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[17]" alt="Image 16">
+                </div>
+            </div>
+
+
+
+            <div class="gallery-row">
+                <div class="image-item">
+                    <img :src="images[18]" alt="Image 17">
+                </div>
+
+
+                <div class="image-item">
+                    <img :src="images[19]" alt="Image 18">
+                </div>
+            </div>
+
+
+            <div class="gallery-row"></div>
+
+        </div>
+        <div v-if="userUseRealImages" class="gallery-container">
+            <div v-for="(row, index) in imageRows" :key="index" class="gallery-row">
+                <div class="image-item" v-for="(image, idx) in row" :key="idx">
+                    <img :src="image" :alt="'Image ' + (index * 2 + idx + 1)" />
+                </div>
+            </div>
+            <!-- <div v-for="image in realImages" :key="image">
+                <img :src="image" alt="Image" />
+            </div> -->
+
+        </div>
+
+        <style>
+            @media (max-width: 768px) {
+                .newsletterup {
+                    width: 800px;
+
+                }
+            }
+        </style>
+
+
+        <!-- Newsletter Start -->
+        <div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 border rounded p-1">
+                    <div class="border rounded text-center p-1">
+                        <div class="bg-white rounded text-center p-5">
+                            <h4 class="mb-4">Subscribe Our <span class="text-primary text-uppercase">Newsletter</span>
+                            </h4>
+                            <div class="position-relative mx-auto" style="max-width: 400px;">
+                                <input class="form-control w-100 py-3 ps-4 pe-5" type="text"
+                                    placeholder="Enter your email">
+                                <button type="button"
+                                    class="btn btn-primary py-2 px-3 position-absolute top-0 end-0 mt-2 me-2">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Newsletter end -->
+
+
+        <!-- Footer Start -->
+        <div class="container-fluid bg-dark text-light footer wow fadeIn" data-wow-delay="0.1s">
+            <div class="container mt-5">
+                <div class="row g-5">
+                    <div class="col-md-6 col-lg-4 col-sm-4">
+                        <div class="bg-primary rounded p-4">
+                            <a href="index.html">
+                                <h1 class="text-white text-uppercase mb-3">
+                                    {{
+                                    title
+                                    }}
+                                </h1>
+                            </a>
+                            <p class="text-white mb-0" style="text-align: justify;">
+                                A luxury tourist residence provides accommodation with a unique boutique hotel
+                                concept
+                                Calm, relaxing and elegant environment with excellent mountain views
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <h6 class="section-title text-start text-primary text-uppercase mb-4">Contact</h6>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>
+                            {{address}}
+                        </p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>
+                            {{phoneNumber}}
+                        </p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>
+                            {{email}}
+                        </p>
+                        <div class="d-flex pt-2">
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-light btn-social"
+                                href="https://www.facebook.com/hillroostkandy/"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social"
+                                href="https://www.booking.com/hotel/lk/hill-roost.en-gb.html" target="_blank"
+                                rel="noopener noreferrer">
+                                <i class="fas fa-bed"></i> <!-- Example icon for Booking.com -->
+                            </a>
+                            <a class="btn btn-outline-light btn-social"
+                                href="https://www.tripadvisor.ca/Hotel_Review-g11914132-d15015697-Reviews-Hill_Roost-Ampitiya_Kandy_District_Central_Province.html"
+                                target="_blank" rel="noopener noreferrer">
+                                <i class="fab fa-tripadvisor"></i> <!-- TripAdvisor icon -->
+                            </a>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-12 ">
+                        <div class="row  g-4">
+                            <div class="col-md-6" style="margin-left:10%;">
+                                <h6 class="section-title text-start text-primary text-uppercase mb-4">Company</h6>
+                                <a class="btn btn-link" href="">About Us</a>
+                                <a class="btn btn-link" href="">Contact Us</a>
+                                <a class="btn btn-link" href="">Privacy Policy</a>
+                                <a class="btn btn-link" href="">Terms & Condition</a>
+                                <a class="btn btn-link" href="">Support</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="copyright">
+                        <div class="row">
+                            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                                &copy; <a class="border-bottom" href="#">
+                                    {{
+                                    title
+                                    }}
+                                </a>, All Right Reserved.
+
+                                <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                                Designed By <a class="border-bottom" href="https://ceyinfo.com/">Ceyinfo Solutions
+                                    (pvt)
+                                    Ltd. </a>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="footer-menu">
+                                    <a href="">Home</a>
+                                    <a href="">Cookies</a>
+                                    <a href="">Help</a>
+                                    <a href="">FQAs</a>
+                                </div>
+                                <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
+                                        class="bi bi-arrow-up"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer End -->
+                <style>
+                    /* General container and spacing adjustments */
+                    .footer {
+                        padding: 40px 0;
+                    }
+
+                    .footer .container-fluid {
+                        padding: 0 15px;
+                    }
+
+                    .footer .row {
+                        margin: 0 auto;
+                    }
+
+                    /* Styling for smaller screens */
+                    @media (max-width: 768px) {
+                        .footer {
+                            padding: 0 40px;
+                            width: 100%;
+                            margin-top: -15px;
+                        }
+
+                        .newsletterup {
+                            width: 100%;
+                        }
+
+                        /* Adjust columns stacking for mobile */
+                        .footer .col-md-6,
+                        .footer .col-lg-4,
+                        .footer .col-lg-5 {
+                            flex: 0 0 100%;
+                            max-width: 100%;
+                            margin-bottom: 20px;
+                        }
+
+                        /* Centralize text for mobile */
+                        .footer .text-md-start {
+                            text-align: center !important;
+                        }
+
+                        .footer .btn-social {
+                            margin: 0 5px;
+                        }
+
+                        /* Adjust the padding and size of social buttons */
+                        .footer .btn-social {
+                            width: 40px;
+                            height: 40px;
+                            font-size: 14px;
+                        }
+
+                        /* Footer links alignment */
+                        .footer .btn-link {
+                            display: block;
+                            margin-bottom: 5px;
+                            text-align: center;
+                        }
+
+                        .footer .copyright .row {
+                            flex-direction: column;
+                            align-items: center;
+                        }
+
+                        .footer .footer-menu {
+                            text-align: center;
+                            margin-top: 10px;
+                        }
+
+                        .footer .footer-menu a {
+                            margin: 0 10px;
+                        }
+
+                        /* Adjust scroll to top button */
+                        .footer .btn-lg-square {
+                            display: block;
+                            margin: 20px auto;
+                            width: 50px;
+                            height: 50px;
+                        }
+                    }
+
+                    /* Styling for extra small screens (below 576px) */
+                    @media (max-width: 576px) {
+                        .footer .col-md-6 {
+                            margin-bottom: 10px;
+                        }
+
+                        .footer .btn-social {
+                            width: 36px;
+                            height: 36px;
+                        }
+
+                        .footer h6 {
+                            font-size: 16px;
+                        }
+
+                        .footer p,
+                        .footer .btn-link {
+                            font-size: 14px;
+                        }
+                    }
+                </style>
+                <!-- Back to Top -->
+            </div>
+
+            <!-- JavaScript Libraries -->
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="lib/wow/wow.min.js"></script>
+            <script src="lib/easing/easing.min.js"></script>
+            <script src="lib/waypoints/waypoints.min.js"></script>
+            <script src="lib/counterup/counterup.min.js"></script>
+            <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+            <script src="lib/tempusdominus/js/moment.min.js"></script>
+            <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+            <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+            <!-- Template Javascript -->
+            <script src="js/main.js"></script>
+            <script src="js/gallery.js"></script>
+</body>
+
+</html>

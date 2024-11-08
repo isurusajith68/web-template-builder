@@ -1,0 +1,146 @@
+body {
+    /* background-color: #6a5acd; */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.attraction-container {
+    width: 86%;
+    margin: 20px auto;
+}
+
+.attraction-card {
+    background-color: #0f172b; /* Dark background */
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    display: flex;
+    padding: 15px;
+    opacity: 0;
+    transform: translateY(50px); /* Start from below */
+    animation: fadeInUp 1s forwards ease-out; /* Animation */
+    flex-direction: row; /* For desktop layout */
+}
+
+/* Adjust animation delay for each card */
+.attraction-card:nth-child(1) { animation-delay: 0.2s; }
+.attraction-card:nth-child(2) { animation-delay: 0.4s; }
+.attraction-card:nth-child(3) { animation-delay: 0.6s; }
+.attraction-card:nth-child(4) { animation-delay: 0.8s; }
+.attraction-card:nth-child(5) { animation-delay: 1s; }
+.attraction-card:nth-child(6) { animation-delay: 1.2s; }
+.attraction-card:nth-child(7) { animation-delay: 1.4s; }
+.attraction-card:nth-child(8) { animation-delay: 1.6s; }
+.attraction-card:nth-child(9) { animation-delay: 1.8s; }
+.attraction-card:nth-child(10) { animation-delay: 2s; }
+.attraction-card:nth-child(11) { animation-delay: 2.2s; }
+.attraction-card:nth-child(12) { animation-delay: 2.4s; }
+.attraction-card:nth-child(13) { animation-delay: 2.6s; }
+.attraction-card:nth-child(14) { animation-delay: 2.8s; }
+.attraction-card:nth-child(15) { animation-delay: 3s; }
+
+.attraction-card img {
+    width: 400px;
+    height: 275px;
+    border-radius: 8px;
+    margin-right: 20px;
+}
+
+.attraction-info {
+    width: 60%;
+}
+
+.attraction-info h4 {
+    color:#fea116; /* Primary color */
+    margin: 0 0 10px;
+}
+
+.attraction-info p {
+    margin: 0 0 10px;
+    color: #dcdcdc; /* Slightly lighter text */
+}
+
+.attraction-info button {
+    background-color: #fea116; /* Primary color for button */
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.attraction-info button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+p {
+    text-align: justify;
+}
+
+/* Keyframes for the fade-in and slide-up animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px); /* Start below */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Move to the normal position */
+    }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .attraction-card {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center;
+        padding: 10px;
+    }
+
+    .attraction-card img {
+        width: 100%; /* Make the image full width on mobile */
+        height: auto; /* Adjust height to maintain aspect ratio */
+        margin: 0 0 15px 0; /* Add some space below the image */
+    }
+
+    .attraction-info {
+        width: 100%; /* Full width for text */
+        text-align: center; /* Center-align text */
+    }
+
+    .attraction-info h4 {
+        font-size: 18px; /* Adjust heading size for smaller screens */
+    }
+
+    .attraction-info p {
+        font-size: 14px; /* Adjust paragraph font size */
+    }
+
+    .attraction-info button {
+        font-size: 14px; /* Adjust button font size */
+        padding: 8px 12px; /* Adjust padding */
+    }
+}
+
+@media (max-width: 480px) {
+    .attraction-container {
+        width: 100%; /* Full width with small margins on very small screens */
+    }
+
+    .attraction-info h4 {
+        font-size: 16px; /* Further reduce heading size */
+    }
+
+    .attraction-info p {
+        font-size: 13px; /* Further reduce paragraph font size */
+    }
+
+    .attraction-info button {
+        font-size: 12px; /* Smaller button text */
+        padding: 5px 10px; /* Less padding on buttons */
+    }
+}
+
