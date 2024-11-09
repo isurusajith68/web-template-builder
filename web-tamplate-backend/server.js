@@ -7,9 +7,15 @@ const path = require("path");
 const fssync = require("fs");
 const multer = require("multer");
 const temp2 = require("./temp2-api");
+const temp3 = require("./temp3-api");
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    
+  })
+);
 
 app.use(
   bodyParser.json({
@@ -18,6 +24,7 @@ app.use(
 );
 
 app.use("/temp2", temp2);
+app.use("/temp3", temp3);
 
 app.post("/save-site-details", async (req, res) => {
   const {
