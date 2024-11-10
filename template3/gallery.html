@@ -100,7 +100,8 @@
 										<i class="fa fa-upload"></i>
 									</button>
 									<input type="file" ref="galleryHeaderImage"
-										@change="uploadSingleImage($event, 'galleryHeaderImage')" style="display: none;" />
+										@change="uploadSingleImage($event, 'galleryHeaderImage')"
+										style="display: none;" />
 								</div>
 							</div>
 						</div>
@@ -124,74 +125,108 @@
 							</div>
 						</div>
 					</div>
+					<label
+						style=" padding: 10px; color: white; text-align: center; font-weight: 600; display: flex;  align-items: center;">
+						Upload First Five images:
+						<input
+							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
+							type="file" id="files" name="files[]" multiple @change="handleFileChange" />
+					</label>
 
-
-					<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_1.jpeg);"
-							data-trigger="zoomerang"></div>
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_2.jpeg);"
-							data-trigger="zoomerang"></div>
-					</div>
-					<div class="col-md-6 col-sm-6 fh5co-gallery_item">
-						<div class="fh5co-bg-img fh5co-gallery_big" style="background-image: url(img/gallery_8.jpeg);"
-							data-trigger="zoomerang"></div>
-					</div>
-					<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_4.jpeg);"
-							data-trigger="zoomerang"></div>
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
-							data-trigger="zoomerang"></div>
-					</div>
-
-					<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
-							data-trigger="zoomerang"></div>
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_6.jpeg);"
-							data-trigger="zoomerang"></div>
-					</div>
-					<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_7.jpeg);"
-							data-trigger="zoomerang"></div>
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_8.jpeg);"
-							data-trigger="zoomerang"></div>
-					</div>
-					<div class="col-md-6 col-sm-6 fh5co-gallery_item">
-						<div class="fh5co-bg-img fh5co-gallery_big" style="background-image: url(img/gallery_9.jpeg);"
-							data-trigger="zoomerang"></div>
+					<div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_1.jpeg);"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_2.jpeg);"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
+							<div class="fh5co-bg-img fh5co-gallery_big"
+								style="background-image: url(img/gallery_8.jpeg);" data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_4.jpeg);"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
+								data-trigger="zoomerang"></div>
+						</div>
 					</div>
 
-					<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_1.jpeg);"
-							data-trigger="zoomerang"></div>
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_2.jpeg);"
-							data-trigger="zoomerang"></div>
-					</div>
-					<div class="col-md-6 col-sm-6 fh5co-gallery_item">
-						<div class="fh5co-bg-img fh5co-gallery_big" style="background-image: url(img/gallery_8.jpeg);"
-							data-trigger="zoomerang"></div>
-					</div>
-					<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_4.jpeg);"
-							data-trigger="zoomerang"></div>
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
-							data-trigger="zoomerang"></div>
-					</div>
+					<label
+						style=" padding: 10px; color: white; text-align: center; font-weight: 600; display: flex;  align-items: center;">
+						Upload Next Five images:
+						<input
+							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
+							type="file" id="files" name="files[]" multiple @change="handleFileChange" />
+					</label>
+					<div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
 
-					<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
-							data-trigger="zoomerang"></div>
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_6.jpeg);"
-							data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_6.jpeg);"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_7.jpeg);"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_8.jpeg);"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
+							<div class="fh5co-bg-img fh5co-gallery_big"
+								style="background-image: url(img/gallery_9.jpeg);" data-trigger="zoomerang"></div>
+						</div>
 					</div>
-					<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_7.jpeg);"
-							data-trigger="zoomerang"></div>
-						<div class="fh5co-bg-img" style="background-image: url(img/gallery_8.jpeg);"
-							data-trigger="zoomerang"></div>
+					<label
+						style=" padding: 10px; color: white; text-align: center; font-weight: 600; display: flex;  align-items: center;">
+						Upload Next Five images:
+						<input
+							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
+							type="file" id="files" name="files[]" multiple @change="handleFileChange" />
+					</label>
+					<div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_1.jpeg);"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_2.jpeg);"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
+							<div class="fh5co-bg-img fh5co-gallery_big"
+								style="background-image: url(img/gallery_8.jpeg);" data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_4.jpeg);"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
+								data-trigger="zoomerang"></div>
+						</div>
 					</div>
-					<div class="col-md-6 col-sm-6 fh5co-gallery_item">
-						<div class="fh5co-bg-img fh5co-gallery_big" style="background-image: url(img/gallery_9.jpeg);"
-							data-trigger="zoomerang"></div>
+					<label
+						style=" padding: 10px; color: white; text-align: center; font-weight: 600; display: flex;  align-items: center;">
+						Upload Next Five images:
+						<input
+							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
+							type="file" id="files" name="files[]" multiple @change="handleFileChange" />
+					</label>
+					<div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_6.jpeg);"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_7.jpeg);"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(img/gallery_8.jpeg);"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
+							<div class="fh5co-bg-img fh5co-gallery_big"
+								style="background-image: url(img/gallery_9.jpeg);" data-trigger="zoomerang"></div>
+						</div>
 					</div>
 				</div>
 			</div>

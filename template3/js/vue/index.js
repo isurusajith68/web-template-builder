@@ -39,6 +39,35 @@ const app = Vue.createApp({
       footerDescription:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec",
 
+      galleryFirstFiveImages: [
+        "img/gallery_1.jpeg",
+        "img/gallery_2.jpeg",
+        "img/gallery_3.jpeg",
+        "img/gallery_4.jpeg",
+        "img/gallery_5.jpeg",
+      ],
+      gallerySecondFiveImages: [
+        "img/gallery_5.jpeg",
+        "img/gallery_6.jpeg",
+        "img/gallery_7.jpeg",
+        "img/gallery_8.jpeg",
+        "img/gallery_9.jpeg",
+      ],
+      galleryThirdFiveImages: [
+        "img/gallery_1.jpeg",
+        "img/gallery_2.jpeg",
+        "img/gallery_3.jpeg",
+        "img/gallery_4.jpeg",
+        "img/gallery_5.jpeg",
+      ],
+      galleryFourthFiveImages: [
+        "img/gallery_5.jpeg",
+        "img/gallery_6.jpeg",
+        "img/gallery_7.jpeg",
+        "img/gallery_8.jpeg",
+        "img/gallery_9.jpeg",
+      ],
+
       editTitle: "",
       editHeaderTitle: "",
       editGalleryHeaderTitle: "",
