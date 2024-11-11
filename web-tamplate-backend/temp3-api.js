@@ -3,6 +3,8 @@ const multer = require("multer");
 const path = require("path");
 const pool = require("./database/db");
 const router = express.Router();
+const fssync = require("fs");
+const fs = require("fs/promises");
 
 router.get("/temp3", (req, res) => {
   res.json({ message: "temp3" });
@@ -191,25 +193,29 @@ const ensureDirectoryExistence2 = async (dir, templateId, hotelId) => {
   }
 };
 
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const { hotelId, templateId } = req.body;
+    const { hotelId, templateId } = req.query;
 
     const uploadDir = path.join(
       `/var/www/template${templateId}/user${hotelId}/img`
     );
-    ensureDirectoryExistence2(uploadDir, templateId, hotelId);
-
     const imageForTemplateDir = path.join(`/var/www/vue-temp${templateId}/img`);
+
+    ensureDirectoryExistence2(uploadDir, templateId, hotelId);
     ensureDirectoryExistence(imageForTemplateDir);
 
     cb(null, uploadDir);
-
-    file.uploadDir = uploadDir;
     file.imageForTemplateDir = imageForTemplateDir;
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const filename = `${file.fieldname}-${uniqueSuffix}${path.extname(
+      file.originalname
+    )}`;
+    file.filename = filename;
+    cb(null, filename);
   },
 });
 
@@ -217,56 +223,65 @@ const upload = multer({ storage });
 
 router.post("/upload-single", upload.single("image"), async (req, res) => {
   try {
-    const filePath = `img/${req.file.filename}`;
-    const imageType = req.body.imageType;
+    const { file } = req;
+    const filePath = `img/${file.filename}`;
     const hotelId = req.body.hotelId;
     const templateId = req.body.templateId;
+    const imageType = req.body.imageType;
+
+    console.log("Primary upload path:", filePath);
+
+    const secondaryFilePath = path.join(
+      file.imageForTemplateDir,
+      file.filename
+    );
+    await fs.copyFile(
+      path.join(file.destination, file.filename),
+      secondaryFilePath
+    );
+    console.log("File copied to:", secondaryFilePath);
 
     const dbGetResult = await pool.query(
       "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
       [hotelId, templateId]
     );
-    if (dbGetResult.rows.length > 0) {
-      const previousFiles = dbGetResult.rows[0].details?.realImages?.filePaths;
 
-      if (previousFiles) {
-        previousFiles.forEach((file) => {
-          const filePath = path.join(
-            `/var/www/template${templateId}/user${hotelId}`,
-            file
-          );
-          // console.log(filePath);
-          if (fssync.existsSync(filePath)) {
-            fssync.unlinkSync(filePath);
-            console.log("File deleted successfully:", filePath);
-          }
-        });
+    if (dbGetResult.rows.length > 0) {
+      let details = dbGetResult.rows[0].details;
+      if (typeof details === "string") {
+        details = JSON.parse(details);
       }
 
-      //remove pre img files for template
-      const previousFilesForTemplate =
-        dbGetResult.rows[0].details?.realImages?.getImgPathForTemplate;
+      const previousFiles = details?.[imageType];
+      if (previousFiles) {
+        const oldPaths = [
+          path.join(
+            `/var/www/template${templateId}/user${hotelId}`,
+            previousFiles
+          ),
+          path.join(`/var/www/vue-temp${templateId}`, previousFiles),
+        ];
 
-      if (previousFilesForTemplate) {
-        previousFilesForTemplate.forEach((file) => {
-          const filePath = path.join(`/var/www/vue-temp${templateId}`, file);
-          // console.log(filePath);
-          if (fssync.existsSync(filePath)) {
-            fssync.unlinkSync(filePath);
-            console.log("File deleted successfully:", filePath);
+        oldPaths.forEach((oldPath) => {
+          if (fssync.existsSync(oldPath)) {
+            fssync.unlinkSync(oldPath);
+            console.log("File deleted successfully:", oldPath);
           }
         });
       }
     }
-    const response = { [imageType]: filePath };
 
+    const response = { [imageType]: filePath };
     const result = await updateDatabase(hotelId, templateId, response);
 
     res.json(result);
   } catch (error) {
+    console.error("Error:", error);
     res.status(500).json({ error: "Failed to upload image" });
   }
 });
+
+
 
 const updateDatabase = async (hotelId, templateId, response) => {
   // console.log("updateDatabase", hotelId, templateId, response);
@@ -304,7 +319,48 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
     const templateId = req.query.templateId;
     const imageType = req.query.imageType;
 
-    const galleryFirstFiveImages = files.map((file) => `img/${file.filename}`);
+    const uploadDir = path.join(
+      `/var/www/template${templateId}/user${hotelId}/img`
+    );
+    const imageForTemplateDir = path.join(`/var/www/vue-temp${templateId}/img`);
+
+    const dbGetResult = await pool.query(
+      "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
+      [hotelId, templateId]
+    );
+
+    if (dbGetResult.rows.length > 0) {
+      let details = dbGetResult.rows[0].details;
+      if (typeof details === "string") {
+        details = JSON.parse(details);
+      }
+
+      const previousFiles = details?.[imageType];
+      if (Array.isArray(previousFiles)) {
+        previousFiles.forEach((file) => {
+          const oldPaths = [
+            path.join(`/var/www/template${templateId}/user${hotelId}`, file),
+            path.join(`/var/www/vue-temp${templateId}`, file),
+          ];
+          oldPaths.forEach((oldPath) => {
+            if (fssync.existsSync(oldPath)) {
+              fssync.unlinkSync(oldPath);
+              console.log("Deleted previous file:", oldPath);
+            }
+          });
+        });
+      }
+    }
+
+    const galleryFirstFiveImages = [];
+    for (const file of files) {
+      const filePath = `img/${file.filename}`;
+      galleryFirstFiveImages.push(filePath);
+
+      const secondaryFilePath = path.join(imageForTemplateDir, file.filename);
+      await fs.copyFile(path.join(uploadDir, file.filename), secondaryFilePath);
+      console.log("File copied to:", secondaryFilePath);
+    }
 
     const result = await updateDatabase(hotelId, templateId, {
       [imageType]: galleryFirstFiveImages,

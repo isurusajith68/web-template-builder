@@ -550,6 +550,8 @@ const app = Vue.createApp({
     },
 
     async uploadSingleImage(event, imageType) {
+      this.isLoading = "Uploading...";
+
       const file = event.target.files[0];
       if (file) {
         const formData = new FormData();
@@ -560,7 +562,7 @@ const app = Vue.createApp({
 
         try {
           const response = await fetch(
-            "http://be-publish.ceyinfo.cloud/temp3/upload-single",
+            `http://be-publish.ceyinfo.cloud/temp3/upload-single?hotelId=${this.hotelId}&templateId=${this.templateId}`,
             {
               method: "POST",
               body: formData,
@@ -575,8 +577,21 @@ const app = Vue.createApp({
             this[imageType] = data[imageType];
           }
           console.log("Image uploaded successfully:", data);
+
+          this.isLoading = null;
+          this.isSuccess = "Images uploaded successfully";
+
+          setTimeout(() => {
+            this.isSuccess = null;
+          }, 5000);
         } catch (error) {
           console.error("Error uploading image:", error);
+          this.isLoading = null;
+          this.isError = "Error uploading images";
+
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
         }
       }
     },
