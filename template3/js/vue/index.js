@@ -39,6 +39,20 @@ const app = Vue.createApp({
       footerDescription:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec",
 
+      galleryDescription:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec",
+
+      reservationHeaderTitle: "Click to edit header title",
+      reservationHeaderImage: "img/gallery_1.jpeg",
+
+      bookATableDescription:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec",
+      bookTableImage: "img/hero_1.jpeg",
+
+      contactUsTitle: "Don't be shy, let's chat.",
+      contactUsDescription:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec",
+
       galleryFirstFiveImages: [
         "img/gallery_1.jpeg",
         "img/gallery_2.jpeg",
@@ -67,6 +81,10 @@ const app = Vue.createApp({
         "img/gallery_8.jpeg",
         "img/gallery_9.jpeg",
       ],
+      contactUsHeaderTitle: "Contact Us",
+      contactUsHeaderImage: "img/hero_1.jpeg",
+      aboutHeaderImage: "img/hero_1.jpeg",
+      aboutHeaderTitle: "About Us",
 
       editTitle: "",
       editHeaderTitle: "",
@@ -81,6 +99,13 @@ const app = Vue.createApp({
       editMenuHearderDescription: "",
       editReservationDescription: "",
       editFooterDescription: "",
+      editGalleryDescription: "",
+      editReservationHeaderTitle: "",
+      editBookATableDescription: "",
+      editContactUsHeaderTitle: "",
+      editContactUsTitle: "",
+      editContactUsDescription: "",
+      editAboutHeaderTitle: "",
 
       isEditingTitle: false,
       isEditingHeaderTitle: false,
@@ -95,6 +120,13 @@ const app = Vue.createApp({
       isEditingMenuHearderDescription: false,
       isEditingReservationDescription: false,
       isEditingFooterDescription: false,
+      isEditingGalleryDescription: false,
+      isEditingReservationHeaderTitle: false,
+      isEditingBookATableDescription: false,
+      isEditingContactUsHeaderTitle: false,
+      isEditingContactUsTitle: false,
+      isEditingContactUsDescription: false,
+      isEditingAboutHeaderTitle: false,
 
       isLoading: null,
       isError: null,
@@ -308,7 +340,6 @@ const app = Vue.createApp({
       this.menuHearderDescription = this.editMenuHearderDescription;
       this.isEditingMenuHearderDescription = false;
     },
-
     editClickReservationDescription() {
       this.isEditingReservationDescription = true;
       this.editReservationDescription = this.reservationDescription;
@@ -326,7 +357,24 @@ const app = Vue.createApp({
       this.reservationDescription = this.editReservationDescription;
       this.isEditingReservationDescription = false;
     },
+    editClickReservationHeaderTitle() {
+      this.isEditingReservationHeaderTitle = true;
+      this.editReservationHeaderTitle = this.reservationHeaderTitle;
+    },
+    updateReservationHeaderTitle() {
+      if (this.editReservationHeaderTitle == "") {
+        this.isError = "Please enter a valid header title";
 
+        setTimeout(() => {
+          this.isError = null;
+        }, 3000);
+
+        return;
+      }
+      this.reservationHeaderTitle = this.editReservationHeaderTitle;
+
+      this.isEditingReservationHeaderTitle = false;
+    },
     editClickFooterDescription() {
       this.isEditingFooterDescription = true;
       this.editFooterDescription = this.footerDescription;
@@ -342,6 +390,128 @@ const app = Vue.createApp({
       }
       this.footerDescription = this.editFooterDescription;
       this.isEditingFooterDescription = false;
+    },
+    editClickGalleryDescription() {
+      this.isEditingGalleryDescription = true;
+
+      this.editGalleryDescription = this.galleryDescription;
+    },
+    updateGalleryDescription() {
+      if (this.editGalleryDescription < 5) {
+        this.isError = "Please enter a valid  description";
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 3000);
+        return;
+      }
+      this.galleryDescription = this.editGalleryDescription;
+      this.isEditingGalleryDescription = false;
+    },
+    ediClickBookATableDescription() {
+      this.isEditingBookATableDescription = true;
+
+      this.editBookATableDescription = this.bookATableDescription;
+    },
+    updateBookATableDescription() {
+      if (this.editBookATableDescription < 5) {
+        this.isError = "Please enter a valid  description";
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 3000);
+        return;
+      }
+      this.bookATableDescription = this.editBookATableDescription;
+
+      this.isEditingBookATableDescription = false;
+    },
+    editClickContactUsHeaderTitle() {
+      this.isEditingContactUsHeaderTitle = true;
+
+      this.editContactUsHeaderTitle = this.contactUsHeaderTitle;
+    },
+    updateContactUsHeaderTitle() {
+      if (this.editContactUsHeaderTitle < 5) {
+        this.isError = "Please enter a valid  title";
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 3000);
+        return;
+      }
+      this.contactUsHeaderTitle = this.editContactUsHeaderTitle;
+
+      this.isEditingContactUsHeaderTitle = false;
+    },
+    editClickContactUsTitle() {
+      this.isEditingContactUsTitle = true;
+
+      this.editContactUsTitle = this.contactUsTitle;
+    },
+
+    updateContactUsTitle() {
+      if (this.editContactUsTitle < 5) {
+        this.isError = "Please enter a valid  title";
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 3000);
+
+        return;
+      }
+
+      this.contactUsTitle = this.editContactUsTitle;
+
+      this.isEditingContactUsTitle = false;
+    },
+
+    editClickAboutHeaderTitle() {
+      this.isEditingAboutHeaderTitle = true;
+
+      this.editAboutHeaderTitle = this.aboutHeaderTitle;
+    },
+
+    updateAboutAboutHeaderTitle() {
+      if (this.editAboutHeaderTitle < 5) {
+        this.isError = "Please enter a valid  title";
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 3000);
+
+        return;
+      }
+
+      this.aboutHeaderTitle = this.editAboutHeaderTitle;
+
+      this.isEditingAboutHeaderTitle = false;
+    },
+
+    editClickContactUsDescription() {
+      this.isEditingContactUsDescription = true;
+
+      this.editContactUsDescription = this.contactUsDescription;
+    },
+
+    updateContactUsDescription() {
+      if (this.editContactUsDescription < 5) {
+        this.isError = "Please enter a valid  description";
+
+        setTimeout(
+          () => {
+            this.isError = null;
+          },
+
+          3000
+        );
+
+        return;
+      }
+
+      this.contactUsDescription = this.editContactUsDescription;
+
+      this.isEditingContactUsDescription = false;
     },
 
     triggerFileInput() {
@@ -366,6 +536,19 @@ const app = Vue.createApp({
     triggerGalleryHeaderImageUpload() {
       this.$refs.galleryHeaderImage.click();
     },
+    triggerReservationHeaderImageUpload() {
+      this.$refs.reservationHeaderImage.click();
+    },
+    triggerReservationBookTableImageImageUpload() {
+      this.$refs.reservationBookTableImageImage.click();
+    },
+    triggerContactHeaderImageUpload() {
+      this.$refs.ContactHeaderImage.click();
+    },
+    triggerFileInputAboutHeaderImage() {
+      this.$refs.fileInputAboutHeaderImage.click();
+    },
+
     async uploadSingleImage(event, imageType) {
       const file = event.target.files[0];
       if (file) {
@@ -588,6 +771,30 @@ const app = Vue.createApp({
           this.galleryFourthFiveImages =
             siteDetails.details.galleryFourthFiveImages ||
             this.galleryFourthFiveImages;
+          this.galleryDescription = siteDetails.details.galleryDescription;
+          this.reservationHeaderTitle =
+            siteDetails.details.reservationHeaderTitle ||
+            this.reservationHeaderTitle;
+          this.reservationHeaderImage =
+            siteDetails.details.reservationHeaderImage;
+
+          this.bookTableImage = siteDetails.details.bookTableImage;
+          this.bookATableDescription =
+            siteDetails.details.bookATableDescription ||
+            this.bookATableDescription;
+          this.contactUsHeaderTitle =
+            siteDetails.details.contactUsHeaderTitle ||
+            this.contactUsHeaderTitle;
+          this.contactUsHeaderImage = siteDetails.details.contactUsHeaderImage;
+          this.contactUsTitle =
+            siteDetails.details.contactUsTitle || this.contactUsTitle;
+          this.contactUsDescription =
+            siteDetails.details.contactUsDescription ||
+            this.contactUsDescription;
+          this.aboutHeaderImage = siteDetails.details.aboutHeaderImage;
+          this.aboutHeaderTitle =
+            siteDetails.details.aboutHeaderTitle || this.aboutHeaderTitle;
+
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
           setTimeout(() => {
@@ -633,6 +840,17 @@ const app = Vue.createApp({
         galleryFourthFiveImages: this.galleryFourthFiveImages,
         galleryHeaderImage: this.galleryHeaderImage,
         galleryHeaderTitle: this.galleryHeaderTitle,
+        galleryDescription: this.galleryDescription,
+        reservationHeaderTitle: this.reservationHeaderTitle,
+        reservationHeaderImage: this.reservationHeaderImage,
+        bookTableImage: this.bookTableImage,
+        bookATableDescription: this.bookATableDescription,
+        contactUsHeaderTitle: this.contactUsHeaderTitle,
+        contactUsHeaderImage: this.contactUsHeaderImage,
+        contactUsTitle: this.contactUsTitle,
+        contactUsDescription: this.contactUsDescription,
+        aboutHeaderTitle: this.aboutHeaderTitle,
+        aboutHeaderImage: this.aboutHeaderImage,
       };
       this.isLoading = "Saving changes...";
       console.log("Data to save:", data);

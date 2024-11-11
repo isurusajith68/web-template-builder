@@ -4,28 +4,13 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Tasty &mdash; Free Website Template, Free HTML5 Template by freehtml5.co</title>
+	<title>
+		Template 3
+	</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="Free HTML5 Website Template by freehtml5.co" />
-	<meta name="keywords"
-		content="free website templates, free html5, free template, free bootstrap, free website template, html5, css3, mobile first, responsive" />
-	<meta name="author" content="freehtml5.co" />
+	<meta name="description" />
 
-	<!-- 
-	//////////////////////////////////////////////////////
 
-	FREE HTML5 TEMPLATE 
-	DESIGNED & DEVELOPED by FreeHTML5.co
-		
-	Website: 		http://freehtml5.co/
-	Email: 			info@freehtml5.co
-	Twitter: 		http://twitter.com/fh5co
-	Facebook: 		https://www.facebook.com/fh5co
-
-	//////////////////////////////////////////////////////
-	 -->
-
-	<!-- Facebook and Twitter integration -->
 	<meta property="og:title" content="" />
 	<meta property="og:image" content="" />
 	<meta property="og:url" content="" />
@@ -35,10 +20,11 @@
 	<meta name="twitter:image" content="" />
 	<meta name="twitter:url" content="" />
 	<meta name="twitter:card" content="" />
-
+	<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 	<link href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:300,300i,400,400i,500,600i,700"
 		rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
 	<!-- Animate.css -->
 	<link rel="stylesheet" href="css/animate.css">
@@ -58,10 +44,11 @@
 	<!--[if lt IE 9]>
 	<script src="js/respond.min.js"></script>
 	<![endif]-->
+	<script src="https://unpkg.com/vue@3.0.2"></script>
 
 </head>
 
-<body>
+<body id="app">
 
 	<div class="fh5co-loader"></div>
 
@@ -70,8 +57,33 @@
 			<!-- <div class="top-menu"> -->
 			<div class="container">
 				<div class="row">
-					<div class="col-xs-12 text-center logo-wrap">
-						<div id="fh5co-logo"><a href="index.html">Tasty<span>.</span></a></div>
+					<div class="col-xs-12 text-center logo-wrap"><button
+							style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 20px;"
+							@click="saveChanges">
+							Save Changes
+						</button>
+						<div v-if="isSuccess" id="successMessage"
+							style="position: fixed; z-index: 20; border-radius: 10; color: white; top: 0; left: 50%; background: #05f318; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;"
+							class="success-message">
+							<i class="fa fa-check"></i>
+							{{ isSuccess }}
+						</div>
+
+						<div v-if="isLoading" id="loadingMessage" class="loading-message"
+							style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #e2e60f; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
+							<i class="fa fa-spinner fa-spin"></i>
+							{{ isLoading }}
+						</div>
+
+						<div v-if="isError" id="errorMessage" class="error-message"
+							style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #f00505; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
+
+							<i class="fa fa-times"></i>
+							{{ isError }}
+						</div>
+						<div id="fh5co-logo"><a href="index.html">
+
+								{{title}}<span>.</span></a></div>
 					</div>
 					<div class="col-xs-12 text-center menu-1 menu-wrap">
 						<ul>
@@ -92,16 +104,32 @@
 		</nav>
 
 		<header id="fh5co-header" class="fh5co-cover js-fullheight" role="banner"
-			style="background-image: url(images/hero_1.jpeg);" data-stellar-background-ratio="0.5">
+			:style="{ backgroundImage: `url(${aboutHeaderImage})` }" data-stellar-background-ratio="0.5">
 			<div class="overlay"></div>
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12 text-center">
 						<div class="display-t js-fullheight">
 							<div class="display-tc js-fullheight animate-box" data-animate-effect="fadeIn">
-								<h1>About <em>our</em> Restaurant</h1>
-								<h2>Brought to you by <a href="http://freehtml5.co/" target="_blank">freehtml5.co</a>
-								</h2>
+								<h1 v-if="!isEditingAboutHeaderTitle" @click="editClickAboutHeaderTitle">
+									{{aboutHeaderTitle}}
+								</h1>
+								<input
+									style="background-color: white; color: black;  border: none; padding: 10px 20px;width: 40%; border-radius: 5px;"
+									v-if="isEditingAboutHeaderTitle" v-model="editAboutHeaderTitle"
+									@keyup.enter="updateAboutAboutHeaderTitle" />
+								<div>
+									<button
+										style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
+										@click="triggerFileInputAboutHeaderImage">
+										Upload Image
+										<i class="fa fa-upload"></i>
+									</button>
+									<input type="file" ref="fileInputAboutHeaderImage"
+										@change="uploadSingleImage($event, 'aboutHeaderImage')"
+										style="display: none;" />
+								</div>
+
 							</div>
 						</div>
 					</div>
@@ -112,20 +140,40 @@
 		<div id="fh5co-about" class="fh5co-section">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-6 col-md-pull-4 img-wrap animate-box" data-animate-effect="fadeInLeft">
-						<img src="images/hero_1.jpeg" alt="Free Restaurant Bootstrap Website Template by FreeHTML5.co">
+					<div style="position: relative;" class="col-md-6 col-md-pull-2 img-wrap animate-box"
+						data-animate-effect="fadeInLeft">
+						<img :src="heroImage" alt="Hero Image" />
+						<div style="position: absolute; top:50%; left: 70%; transform: translate(-50%, -50%);">
+							<i @click="triggerHeroImageUpload()" class="fa fa-upload"
+								style="background-color: #f9a826; color: white; padding: 10px; border-radius: 50%;">
+							</i>
+							<input type="file" ref="heroImage" @change="uploadSingleImage($event, 'heroImage')"
+								style="display: none;" />
+						</div>
 					</div>
-					<div class="col-md-5 col-md-push-1 animate-box">
+
+					<div class="col-md-6 col-md-push-1 animate-box">
 						<div class="section-heading">
 							<h2>The Restaurant</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repudiandae neque quisquam at
-								deserunt ab praesentium architecto tempore saepe animi voluptatem molestias, eveniet aut
-								laudantium alias, laboriosam excepturi, et numquam? Atque tempore iure tenetur
-								perspiciatis, aliquam, asperiores aut odio accusamus, unde libero dignissimos quod
-								aliquid neque et illo vero nesciunt. Sunt!</p>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam iure reprehenderit nihil
-								nobis laboriosam beatae assumenda tempore, magni ducimus abentey.</p>
-							<p><a href="#" class="btn btn-primary btn-outline">Our History</a></p>
+							<p v-if="!isEditingHeroDescription" @click="editClickHeroDescription">
+								{{heroDescription}}
+
+							</p>
+							<div
+								style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; margin-top: 20px;">
+
+
+								<div>
+									<textarea cols="100" rows="7"
+										style="background-color: white; color: black;  border: none; padding: 10px 20px;width: 100%; border-radius: 5px;"
+										v-if="isEditingHeroDescription" v-model="editHeroDescription"
+										@keyup.enter="updateHeroDescription">
+
+																		</textarea>
+								</div>
+
+								<p><a href="#" class="btn btn-primary btn-outline">Our History</a></p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -134,18 +182,17 @@
 
 
 
-		<div id="fh5co-started" class="fh5co-section animate-box" style="background-image: url(images/hero_1.jpeg);"
+		<div id="fh5co-started" class="fh5co-section animate-box" :style="{ backgroundImage: `url(${bookTableImage})` }"
 			data-stellar-background-ratio="0.5">
 			<div class="overlay"></div>
 			<div class="container">
 				<div class="row animate-box">
 					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
 						<h2>Book a Table</h2>
-						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae enim quae vitae
-							cupiditate, sequi quam ea id dolor reiciendis consectetur repudiandae. Rem quam, repellendus
-							veniam ipsa fuga maxime odio? Eaque!</p>
-						<p><a href="mailto:info@yourdomainname.com" class="btn btn-primary btn-outline">Contact Us</a>
-						</p>
+						<p>{{
+							bookATableDescription
+							}}</p>
+						<p><a href="reservation.html" class="btn btn-primary btn-outline">Book Now</a></p>
 					</div>
 				</div>
 			</div>
@@ -156,8 +203,7 @@
 				<div class="row row-pb-md">
 					<div class="col-md-4 fh5co-widget">
 						<h4>Tasty</h4>
-						<p>Facilis ipsum reprehenderit nemo molestias. Aut cum mollitia reprehenderit. Eos cumque dicta
-							adipisci architecto culpa amet.</p>
+						<p>{{footerDescription}}</p>
 					</div>
 					<div class="col-md-2 col-md-push-1 fh5co-widget">
 						<h4>Links</h4>
@@ -179,14 +225,18 @@
 							<li><a href="#">e-Commerce</a></li>
 						</ul>
 					</div>
-
 					<div class="col-md-4 col-md-push-1 fh5co-widget">
 						<h4>Contact Information</h4>
 						<ul class="fh5co-footer-links">
-							<li>198 West 21th Street, <br> Suite 721 New York NY 10016</li>
-							<li><a href="tel://1234567920">+ 1235 2355 98</a></li>
-							<li><a href="mailto:info@yoursite.com">info@yoursite.com</a></li>
-							<li><a href="http://https://freehtml5.co">freehtml5.co</a></li>
+							<li>
+								{{address}}
+							</li>
+							<li><a href="tel://1234567920">
+									{{phoneNumber}}
+							</li>
+							<li><a>
+									{{email}}
+								</a></li>
 						</ul>
 					</div>
 
@@ -195,10 +245,10 @@
 				<div class="row copyright">
 					<div class="col-md-12 text-center">
 						<p>
-							<small class="block">&copy; 2016 Free HTML5. All Rights Reserved.</small>
-							<small class="block">Designed by <a href="http://freehtml5.co/"
-									target="_blank">FreeHTML5.co</a> Demo Images: <a href="http://unsplash.co/"
-									target="_blank">Unsplash</a></small>
+								<small class="block">Designed by <a href="http://freehtml5.co/" target="_blank">
+										Ceyinfo Solutions
+									</a>
+								</small>
 						</p>
 						<p>
 						<ul class="fh5co-social-icons">
@@ -233,6 +283,7 @@
 	<script src="js/jquery.flexslider-min.js"></script>
 	<!-- Main -->
 	<script src="js/main.js"></script>
+	<script src="js/vue/index.js"></script>
 
 </body>
 

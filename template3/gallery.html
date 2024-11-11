@@ -59,10 +59,6 @@
 							style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 20px;"
 							@click="saveChanges">
 							Save Changes
-						</button><button
-							style="background-color: #f93f26; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
-							@click="publishChanges">
-							Publish Changes
 						</button>
 						<div v-if="isSuccess" id="successMessage"
 							style="position: fixed; z-index: 20; border-radius: 10; color: white; top: 0; left: 50%; background: #05f318; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;"
@@ -146,10 +142,23 @@
 						<h2>Our Gallery</h2>
 						<div class="row">
 							<div class="col-md-6">
-								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis ab debitis sit
-									itaque totam, a maiores nihil, nulla magnam porro minima officiis! Doloribus aliquam
-									voluptates corporis et tempora consequuntur ipsam, itaque, nesciunt similique
-									commodi omnis. Ad magni perspiciatis, voluptatum repellat.</p>
+								<p v-if="!isEditingGalleryDescription" @click="editClickGalleryDescription">
+									{{galleryDescription}}
+								
+								</p><div
+									style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; margin-top: 20px;">
+								
+								
+									<div>
+										<textarea cols="100" rows="7"
+											style="background-color: white; color: black;  border: none; padding: 10px 20px;width: 100%; border-radius: 5px;"
+											v-if="isEditingGalleryDescription" v-model="editGalleryDescription" @keyup.enter="updateGalleryDescription">
+								
+																							</textarea>
+									</div>
+								
+									<p><a href="#" class="btn btn-primary btn-outline">Our History</a></p>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -271,8 +280,7 @@
 				<div class="row row-pb-md">
 					<div class="col-md-4 fh5co-widget">
 						<h4>Tasty</h4>
-						<p>Facilis ipsum reprehenderit nemo molestias. Aut cum mollitia reprehenderit. Eos cumque dicta
-							adipisci architecto culpa amet.</p>
+						<p>{{footerDescription}}</p>
 					</div>
 					<div class="col-md-2 col-md-push-1 fh5co-widget">
 						<h4>Links</h4>
@@ -298,10 +306,15 @@
 					<div class="col-md-4 col-md-push-1 fh5co-widget">
 						<h4>Contact Information</h4>
 						<ul class="fh5co-footer-links">
-							<li>198 West 21th Street, <br> Suite 721 New York NY 10016</li>
-							<li><a href="tel://1234567920">+ 1235 2355 98</a></li>
-							<li><a href="mailto:info@yoursite.com">info@yoursite.com</a></li>
-							<li><a href="http://https://freehtml5.co">freehtml5.co</a></li>
+							<li>
+								{{address}}
+							</li>
+							<li><a href="tel://1234567920">
+									{{phoneNumber}}
+							</li>
+							<li><a>
+									{{email}}
+								</a></li>
 						</ul>
 					</div>
 
@@ -310,10 +323,10 @@
 				<div class="row copyright">
 					<div class="col-md-12 text-center">
 						<p>
-							<small class="block">&copy; 2016 Free HTML5. All Rights Reserved.</small>
-							<small class="block">Designed by <a href="http://freehtml5.co/"
-									target="_blank">FreeHTML5.co</a> Demo Images: <a href="http://unsplash.co/"
-									target="_blank">Unsplash</a></small>
+							<small class="block">Designed by <a href="http://freehtml5.co/" target="_blank">
+									Ceyinfo Solutions
+								</a>
+							</small>
 						</p>
 						<p>
 						<ul class="fh5co-social-icons">

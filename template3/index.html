@@ -387,25 +387,36 @@
 
 
 
-		<div id="fh5co-started" class="fh5co-section animate-box" style="background-image: url(images/hero_1.jpeg);"
+		<div id="fh5co-started" class="fh5co-section animate-box" :style="{ backgroundImage: `url(${bookTableImage})` }"
 			data-stellar-background-ratio="0.5">
 			<div class="overlay"></div>
 			<div class="container">
 				<div class="row animate-box">
 					<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
 						<h2>Book a Table</h2>
-						<p v-if="!isEditingReservationDescription" @click="editClickReservationDescription">
-							{{reservationDescription}}
+						<p v-if="!isEditingBookATableDescription" @click="ediClickBookATableDescription">
+							{{
+							bookATableDescription
+							}}
 						</p>
 
 						<textarea cols="100" rows="2"
 							style="background-color: white; color: black;  border: none; padding: 10px 20px;width: 100%; border-radius: 5px;"
-							v-if="isEditingReservationDescription" v-model="editReservationDescription"
-							@keyup.enter="updateReservationDescription">
+							v-if="isEditingBookATableDescription" v-model="editBookATableDescription"
+							@keyup.enter="updateBookATableDescription">
 
 						</textarea>
-
 						<p><a href="reservation.html" class="btn btn-primary btn-outline">Book Now</a></p>
+						<div>
+							<button
+								style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
+								@click="triggerReservationBookTableImageImageUpload">
+								Upload Image
+								<i class="fa fa-upload"></i>
+							</button>
+							<input type="file" ref="reservationBookTableImageImage"
+								@change="uploadSingleImage($event, 'bookTableImage')" style="display: none;" />
+						</div>
 					</div>
 				</div>
 			</div>
@@ -470,6 +481,7 @@
 							<small class="block">Designed by <a href="http://freehtml5.co/" target="_blank">
 									Ceyinfo Solutions
 								</a>
+							</small>
 						</p>
 						<p>
 						<ul class="fh5co-social-icons">

@@ -38,6 +38,17 @@ router.post("/save-site-details", async (req, res) => {
     galleryFourthFiveImages,
     galleryHeaderImage,
     galleryHeaderTitle,
+    galleryDescription,
+    reservationHeaderTitle,
+    reservationHeaderImage,
+    bookATableDescription,
+    bookTableImage,
+    contactUsHeaderImage,
+    contactUsHeaderTitle,
+    contactUsTitle,
+    contactUsDescription,
+    aboutHeaderTitle,
+    aboutHeaderImage,
   } = req.body;
 
   try {
@@ -79,6 +90,17 @@ router.post("/save-site-details", async (req, res) => {
             galleryFourthFiveImages,
             galleryHeaderImage,
             galleryHeaderTitle,
+            galleryDescription,
+            reservationHeaderTitle,
+            reservationHeaderImage,
+            bookATableDescription,
+            bookTableImage,
+            contactUsHeaderImage,
+            contactUsHeaderTitle,
+            contactUsTitle,
+            contactUsDescription,
+            aboutHeaderTitle,
+            aboutHeaderImage,
           }),
           hotelId,
           templateId,
@@ -120,6 +142,17 @@ router.post("/save-site-details", async (req, res) => {
             galleryFourthFiveImages,
             galleryHeaderImage,
             galleryHeaderTitle,
+            galleryDescription,
+            reservationHeaderTitle,
+            reservationHeaderImage,
+            bookATableDescription,
+            bookTableImage,
+            contactUsHeaderImage,
+            contactUsHeaderTitle,
+            contactUsTitle,
+            contactUsDescription,
+            aboutHeaderTitle,
+            aboutHeaderImage,
           }),
         ]
       );
@@ -194,7 +227,7 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
     const hotelId = req.query.hotelId;
     const templateId = req.query.templateId;
     const imageType = req.query.imageType;
-  
+
     const galleryFirstFiveImages = files.map((file) => `img/${file.filename}`);
 
     const result = await updateDatabase(hotelId, templateId, {
