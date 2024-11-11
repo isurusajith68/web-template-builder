@@ -164,9 +164,49 @@ router.post("/save-site-details", async (req, res) => {
   }
 });
 
+const ensureDirectoryExistence = (dir) => {
+  if (!fssync.existsSync(dir)) {
+    fssync.mkdirSync(dir, { recursive: true });
+  }
+};
+const ensureDirectoryExistence2 = async (dir, templateId, hotelId) => {
+  if (!fssync.existsSync(dir)) {
+    try {
+      const targetDir = `/var/www/template${templateId}/user${hotelId}`;
+      const sourceDir = path.resolve(
+        __dirname,
+        `build/template/temp${templateId}`
+      );
+
+      await fs.mkdir(targetDir, { recursive: true });
+      await fs.cp(sourceDir, targetDir, { recursive: true });
+
+      console.log(`Template copied from ${sourceDir} to ${targetDir}`);
+    } catch (error) {
+      console.error(
+        "Error during directory creation or copy operation:",
+        error
+      );
+    }
+  }
+};
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "../template3/img");
+    const { hotelId, templateId } = req.body;
+
+    const uploadDir = path.join(
+      `/var/www/template${templateId}/user${hotelId}/img`
+    );
+    ensureDirectoryExistence2(uploadDir, templateId, hotelId);
+
+    const imageForTemplateDir = path.join(`/var/www/vue-temp${templateId}/img`);
+    ensureDirectoryExistence(imageForTemplateDir);
+
+    cb(null, uploadDir);
+
+    file.uploadDir = uploadDir;
+    file.imageForTemplateDir = imageForTemplateDir;
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -182,6 +222,42 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
     const hotelId = req.body.hotelId;
     const templateId = req.body.templateId;
 
+    const dbGetResult = await pool.query(
+      "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
+      [hotelId, templateId]
+    );
+    if (dbGetResult.rows.length > 0) {
+      const previousFiles = dbGetResult.rows[0].details?.realImages?.filePaths;
+
+      if (previousFiles) {
+        previousFiles.forEach((file) => {
+          const filePath = path.join(
+            `/var/www/template${templateId}/user${hotelId}`,
+            file
+          );
+          // console.log(filePath);
+          if (fssync.existsSync(filePath)) {
+            fssync.unlinkSync(filePath);
+            console.log("File deleted successfully:", filePath);
+          }
+        });
+      }
+
+      //remove pre img files for template
+      const previousFilesForTemplate =
+        dbGetResult.rows[0].details?.realImages?.getImgPathForTemplate;
+
+      if (previousFilesForTemplate) {
+        previousFilesForTemplate.forEach((file) => {
+          const filePath = path.join(`/var/www/vue-temp${templateId}`, file);
+          // console.log(filePath);
+          if (fssync.existsSync(filePath)) {
+            fssync.unlinkSync(filePath);
+            console.log("File deleted successfully:", filePath);
+          }
+        });
+      }
+    }
     const response = { [imageType]: filePath };
 
     const result = await updateDatabase(hotelId, templateId, response);

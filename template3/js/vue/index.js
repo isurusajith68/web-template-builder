@@ -560,7 +560,7 @@ const app = Vue.createApp({
 
         try {
           const response = await fetch(
-            "http://localhost:4000/temp3/upload-single",
+            "http://be-publish.ceyinfo.cloud/temp3/upload-single",
             {
               method: "POST",
               body: formData,
@@ -673,7 +673,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
+          `http://be-publish.ceyinfo.cloud/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
           {
             method: "POST",
             body: formData,
@@ -721,7 +721,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `http://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
         );
 
         if (!response.ok) {
@@ -856,7 +856,7 @@ const app = Vue.createApp({
       console.log("Data to save:", data);
       try {
         const response = await fetch(
-          "http://localhost:4000/temp3/save-site-details",
+          "http://be-publish.ceyinfo.cloud/temp3/save-site-details",
           {
             method: "POST",
             headers: {
@@ -918,7 +918,7 @@ const app = Vue.createApp({
 
     //   try {
     //     const response = await fetch(
-    //       `http://be-publish.ceyinfo.cloud/temp2/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
+    //       `http://be-publish.ceyinfo.cloud/temp3/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
     //     );
 
     //     if (!response.ok) {
