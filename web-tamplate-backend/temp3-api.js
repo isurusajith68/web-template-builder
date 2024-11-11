@@ -32,6 +32,12 @@ router.post("/save-site-details", async (req, res) => {
     menuImage3,
     reservationDescription,
     footerDescription,
+    galleryFirstFiveImages,
+    gallerySecondFiveImages,
+    galleryThirdFiveImages,
+    galleryFourthFiveImages,
+    galleryHeaderImage,
+    galleryHeaderTitle,
   } = req.body;
 
   try {
@@ -67,6 +73,12 @@ router.post("/save-site-details", async (req, res) => {
             menuImage3,
             reservationDescription,
             footerDescription,
+            galleryFirstFiveImages,
+            gallerySecondFiveImages,
+            galleryThirdFiveImages,
+            galleryFourthFiveImages,
+            galleryHeaderImage,
+            galleryHeaderTitle,
           }),
           hotelId,
           templateId,
@@ -102,6 +114,12 @@ router.post("/save-site-details", async (req, res) => {
             menuImage3,
             reservationDescription,
             footerDescription,
+            galleryFirstFiveImages,
+            gallerySecondFiveImages,
+            galleryThirdFiveImages,
+            galleryFourthFiveImages,
+            galleryHeaderImage,
+            galleryHeaderTitle,
           }),
         ]
       );
@@ -169,5 +187,28 @@ const updateDatabase = async (hotelId, templateId, response) => {
     console.error("Error updating database:", err);
   }
 };
+
+router.post("/upload-images", upload.array("images", 5), async (req, res) => {
+  try {
+    const files = req.files;
+    const hotelId = req.query.hotelId;
+    const templateId = req.query.templateId;
+    const imageType = req.query.imageType;
+  
+    const galleryFirstFiveImages = files.map((file) => `img/${file.filename}`);
+
+    const result = await updateDatabase(hotelId, templateId, {
+      [imageType]: galleryFirstFiveImages,
+    });
+
+    res.status(200).json({
+      message: "Images uploaded and database updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error uploading images:", error);
+    res.status(500).json({ error: "Failed to upload images" });
+  }
+});
 
 module.exports = router;

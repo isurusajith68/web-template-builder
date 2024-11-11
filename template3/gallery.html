@@ -55,6 +55,34 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-xs-12 text-center logo-wrap">
+						<button
+							style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 20px;"
+							@click="saveChanges">
+							Save Changes
+						</button><button
+							style="background-color: #f93f26; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
+							@click="publishChanges">
+							Publish Changes
+						</button>
+						<div v-if="isSuccess" id="successMessage"
+							style="position: fixed; z-index: 20; border-radius: 10; color: white; top: 0; left: 50%; background: #05f318; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;"
+							class="success-message">
+							<i class="fa fa-check"></i>
+							{{ isSuccess }}
+						</div>
+
+						<div v-if="isLoading" id="loadingMessage" class="loading-message"
+							style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #e2e60f; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
+							<i class="fa fa-spinner fa-spin"></i>
+							{{ isLoading }}
+						</div>
+
+						<div v-if="isError" id="errorMessage" class="error-message"
+							style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #f00505; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
+
+							<i class="fa fa-times"></i>
+							{{ isError }}
+						</div>
 						<div id="fh5co-logo"><a href="index.html">
 								{{title}}
 								<span>.</span></a></div>
@@ -130,24 +158,25 @@
 						Upload First Five images:
 						<input
 							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
-							type="file" id="files" name="files[]" multiple @change="handleFileChange" />
+							type="file" id="files" name="files[]" multiple @change="handleFileChangeFirstFive" />
 					</label>
 
 					<div>
 						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_1.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryFirstFiveImages[0]})` }"
 								data-trigger="zoomerang"></div>
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_2.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryFirstFiveImages[1]})` }"
 								data-trigger="zoomerang"></div>
 						</div>
 						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
 							<div class="fh5co-bg-img fh5co-gallery_big"
-								style="background-image: url(img/gallery_8.jpeg);" data-trigger="zoomerang"></div>
+								:style="{ backgroundImage: `url(${galleryFirstFiveImages[2]})` }"
+								data-trigger="zoomerang"></div>
 						</div>
 						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_4.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryFirstFiveImages[3]})` }"
 								data-trigger="zoomerang"></div>
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryFirstFiveImages[4]})` }"
 								data-trigger="zoomerang"></div>
 						</div>
 					</div>
@@ -157,49 +186,25 @@
 						Upload Next Five images:
 						<input
 							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
-							type="file" id="files" name="files[]" multiple @change="handleFileChange" />
+							type="file" id="files" name="files[]" multiple @change="handleFileChangeSecondFive" />
 					</label>
 					<div>
 						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
 
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${gallerySecondFiveImages[0]})` }"
 								data-trigger="zoomerang"></div>
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_6.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${gallerySecondFiveImages[1]})` }"
 								data-trigger="zoomerang"></div>
 						</div>
 						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_7.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${gallerySecondFiveImages[2]})` }"
 								data-trigger="zoomerang"></div>
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_8.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${gallerySecondFiveImages[3]})` }"
 								data-trigger="zoomerang"></div>
 						</div>
 						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
 							<div class="fh5co-bg-img fh5co-gallery_big"
-								style="background-image: url(img/gallery_9.jpeg);" data-trigger="zoomerang"></div>
-						</div>
-					</div>
-					<label
-						style=" padding: 10px; color: white; text-align: center; font-weight: 600; display: flex;  align-items: center;">
-						Upload Next Five images:
-						<input
-							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
-							type="file" id="files" name="files[]" multiple @change="handleFileChange" />
-					</label>
-					<div>
-						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_1.jpeg);"
-								data-trigger="zoomerang"></div>
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_2.jpeg);"
-								data-trigger="zoomerang"></div>
-						</div>
-						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
-							<div class="fh5co-bg-img fh5co-gallery_big"
-								style="background-image: url(img/gallery_8.jpeg);" data-trigger="zoomerang"></div>
-						</div>
-						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_4.jpeg);"
-								data-trigger="zoomerang"></div>
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
+								:style="{ backgroundImage: `url(${gallerySecondFiveImages[4]})` }"
 								data-trigger="zoomerang"></div>
 						</div>
 					</div>
@@ -208,24 +213,51 @@
 						Upload Next Five images:
 						<input
 							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
-							type="file" id="files" name="files[]" multiple @change="handleFileChange" />
+							type="file" id="files" name="files[]" multiple @change="handleFileChangeThirdFive" />
 					</label>
 					<div>
 						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_5.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryThirdFiveImages[0]})` }"
 								data-trigger="zoomerang"></div>
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_6.jpeg);"
-								data-trigger="zoomerang"></div>
-						</div>
-						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_7.jpeg);"
-								data-trigger="zoomerang"></div>
-							<div class="fh5co-bg-img" style="background-image: url(img/gallery_8.jpeg);"
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryThirdFiveImages[1]})` }"
 								data-trigger="zoomerang"></div>
 						</div>
 						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
 							<div class="fh5co-bg-img fh5co-gallery_big"
-								style="background-image: url(img/gallery_9.jpeg);" data-trigger="zoomerang"></div>
+								:style="{ backgroundImage: `url(${galleryThirdFiveImages[2]})` }"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryThirdFiveImages[3]})` }"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryThirdFiveImages[4]})` }"
+								data-trigger="zoomerang"></div>
+						</div>
+					</div>
+					<label
+						style=" padding: 10px; color: white; text-align: center; font-weight: 600; display: flex;  align-items: center;">
+						Upload Next Five images:
+						<input
+							style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px; width: 100%;"
+							type="file" id="files" name="files[]" multiple @change="handleFileChangeFourthFive" />
+					</label>
+					<div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryFourthFiveImages[0]})` }"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryFourthFiveImages[1]})` }"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryFourthFiveImages[2]})` }"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" :style="{ backgroundImage: `url(${galleryFourthFiveImages[3]})` }"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
+							<div class="fh5co-bg-img fh5co-gallery_big"
+								:style="{ backgroundImage: `url(${galleryFourthFiveImages[4]})` }"
+								data-trigger="zoomerang"></div>
 						</div>
 					</div>
 				</div>

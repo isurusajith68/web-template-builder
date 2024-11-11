@@ -387,7 +387,7 @@ const app = Vue.createApp({
           const result = await response.json();
 
           const data = result.details;
-
+          console.log("Data:", data);
           if (data[imageType]) {
             this[imageType] = data[imageType];
           }
@@ -397,74 +397,142 @@ const app = Vue.createApp({
         }
       }
     },
-    // handleFileChange(event) {
-    //   const files = event.target.files;
-    //   const maxFiles = 5;
+    handleFileChangeFirstFive(event) {
+      const files = event.target.files;
+      const maxFiles = 5;
 
-    //   if (files.length > maxFiles) {
-    //     this.isError = `You can upload a maximum of ${maxFiles} images.`;
+      if (files.length > maxFiles) {
+        this.isError = `You can upload a maximum of ${maxFiles} images.`;
 
-    //     setTimeout(() => {
-    //       this.isError = null;
-    //     }, 5000);
-    //     return;
-    //   }
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+        return;
+      }
 
-    //   const formData = new FormData();
+      const formData = new FormData();
 
-    //   for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
-    //     formData.append("images", files[i]);
-    //   }
+      for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
+        formData.append("images", files[i]);
+      }
 
-    //   this.uploadImages(formData);
-    // },
-    // async uploadImages(formData) {
-    //   this.isLoading = "Uploading...";
+      this.uploadImages(formData, "galleryFirstFiveImages");
+    },
 
-    //   try {
-    //     const response = await fetch(
-    //       `http://be-publish.ceyinfo.cloud/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
-    //       {
-    //         method: "POST",
-    //         body: formData,
-    //       }
-    //     );
+    handleFileChangeSecondFive(event) {
+      const files = event.target.files;
+      const maxFiles = 5;
 
-    //     if (response.ok) {
-    //       const data = await response.json();
-    //       console.log("Images uploaded successfully:", data);
+      if (files.length > maxFiles) {
+        this.isError = `You can upload a maximum of ${maxFiles} images.`;
 
-    //       this.userUseRealImages = true;
-    //       this.realImages = data.images;
-    //       console.log("Real images:", this.realImages);
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
 
-    //       this.isLoading = null;
-    //       this.isSuccess = "Images uploaded successfully";
+        return;
+      }
 
-    //       setTimeout(() => {
-    //         this.isSuccess = null;
-    //       }, 5000);
-    //     } else {
-    //       const errorText = await response.text();
-    //       console.error("Error uploading images:", errorText);
+      const formData = new FormData();
 
-    //       this.isLoading = null;
-    //       this.isError = "Error uploading images";
+      for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
+        formData.append("images", files[i]);
+      }
 
-    //       setTimeout(() => {
-    //         this.isError = null;
-    //       }, 5000);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error uploading images:", error);
-    //     this.isLoading = null;
-    //     this.isError = "Error uploading images";
+      this.uploadImages(formData, "gallerySecondFiveImages");
+    },
+    handleFileChangeThirdFive(event) {
+      const files = event.target.files;
+      const maxFiles = 5;
 
-    //     setTimeout(() => {
-    //       this.isError = null;
-    //     }, 5000);
-    //   }
-    // },
+      if (files.length > maxFiles) {
+        this.isError = `You can upload a maximum of ${maxFiles} images.`;
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+
+        return;
+      }
+
+      const formData = new FormData();
+
+      for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
+        formData.append("images", files[i]);
+      }
+
+      this.uploadImages(formData, "galleryThirdFiveImages");
+    },
+    handleFileChangeFourthFive(event) {
+      const files = event.target.files;
+      const maxFiles = 5;
+
+      if (files.length > maxFiles) {
+        this.isError = `You can upload a maximum of ${maxFiles} images.`;
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+
+        return;
+      }
+
+      const formData = new FormData();
+
+      for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
+        formData.append("images", files[i]);
+      }
+
+      this.uploadImages(formData, "galleryFourthFiveImages");
+    },
+    async uploadImages(formData, imageType) {
+      this.isLoading = "Uploading...";
+
+      try {
+        const response = await fetch(
+          `http://localhost:4000/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+
+          const result = data.data.details;
+          // console.log("Result:", data);
+          if (result[imageType]) {
+            this[imageType] = result[imageType];
+          }
+
+          this.isLoading = null;
+          this.isSuccess = "Images uploaded successfully";
+
+          setTimeout(() => {
+            this.isSuccess = null;
+          }, 5000);
+        } else {
+          const errorText = await response.text();
+          console.error("Error uploading images:", errorText);
+
+          this.isLoading = null;
+          this.isError = "Error uploading images";
+
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+        }
+      } catch (error) {
+        console.error("Error uploading images:", error);
+        this.isLoading = null;
+        this.isError = "Error uploading images";
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+      }
+    },
     async loadSiteDetails() {
       this.isLoading = "Loading site data...";
 
@@ -506,9 +574,20 @@ const app = Vue.createApp({
           this.reservationDescription =
             siteDetails.details.reservationDescription;
           this.footerDescription = siteDetails.details.footerDescription;
-          // this.galleryHeaderTitle = siteDetails.details.galleryHeaderTitle;
+          this.galleryHeaderTitle = siteDetails.details.galleryHeaderTitle;
           this.galleryHeaderImage = siteDetails.details.galleryHeaderImage;
-
+          this.galleryFirstFiveImages =
+            siteDetails.details.galleryFirstFiveImages ||
+            this.galleryFirstFiveImages;
+          this.gallerySecondFiveImages =
+            siteDetails.details.gallerySecondFiveImages ||
+            this.gallerySecondFiveImages;
+          this.galleryThirdFiveImages =
+            siteDetails.details.galleryThirdFiveImages ||
+            this.galleryThirdFiveImages;
+          this.galleryFourthFiveImages =
+            siteDetails.details.galleryFourthFiveImages ||
+            this.galleryFourthFiveImages;
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
           setTimeout(() => {
@@ -548,6 +627,12 @@ const app = Vue.createApp({
         menuImage3: this.menuImage3,
         reservationDescription: this.reservationDescription,
         footerDescription: this.footerDescription,
+        galleryFirstFiveImages: this.galleryFirstFiveImages,
+        gallerySecondFiveImages: this.gallerySecondFiveImages,
+        galleryThirdFiveImages: this.galleryThirdFiveImages,
+        galleryFourthFiveImages: this.galleryFourthFiveImages,
+        galleryHeaderImage: this.galleryHeaderImage,
+        galleryHeaderTitle: this.galleryHeaderTitle,
       };
       this.isLoading = "Saving changes...";
       console.log("Data to save:", data);
