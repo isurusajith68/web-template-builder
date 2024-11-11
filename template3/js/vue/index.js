@@ -928,41 +928,41 @@ const app = Vue.createApp({
         console.error("Error fetching hotel info:", error);
       }
     },
-    // async publishChanges() {
-    //   this.isLoading = "Publishing...";
+    async publishChanges() {
+      this.isLoading = "Publishing...";
 
-    //   try {
-    //     const response = await fetch(
-    //       `http://be-publish.ceyinfo.cloud/temp3/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
-    //     );
+      try {
+        const response = await fetch(
+          `http://be-publish.ceyinfo.cloud/temp3/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
+        );
 
-    //     if (!response.ok) {
-    //       const errorText = await response.text();
-    //       console.error("Error publishing changes:", errorText);
-    //       this.isLoading = null;
-    //       this.isError = "Error publishing changes";
-    //       setTimeout(() => {
-    //         this.isError = null;
-    //       }, 5000);
-    //     } else {
-    //       const result = await response.json();
-    //       console.log("Changes published successfully:", result);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error publishing changes:", errorText);
+          this.isLoading = null;
+          this.isError = "Error publishing changes";
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+        } else {
+          const result = await response.json();
+          console.log("Changes published successfully:", result);
 
-    //       this.isLoading = null;
-    //       this.isSuccess = "Changes published successfully";
-    //       setTimeout(() => {
-    //         this.isSuccess = null;
-    //       }, 5000);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error publishing changes:", error);
-    //     this.isLoading = null;
-    //     this.isError = "Error publishing changes";
-    //     setTimeout(() => {
-    //       this.isError = null;
-    //     }, 5000);
-    //   }
-    // },
+          this.isLoading = null;
+          this.isSuccess = "Changes published successfully";
+          setTimeout(() => {
+            this.isSuccess = null;
+          }, 5000);
+        }
+      } catch (error) {
+        console.error("Error publishing changes:", error);
+        this.isLoading = null;
+        this.isError = "Error publishing changes";
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+      }
+    },
   },
   mounted() {
     this.loadSiteDetails();
