@@ -384,7 +384,7 @@ router.get("/build-template", async (req, res) => {
 
     await fs.mkdir(targetDir, { recursive: true });
 
-    const sourceDir = path.resolve(__dirname, "build/template/temp2");
+    const sourceDir = path.resolve(__dirname, "build/template/temp3");
 
     await fs.cp(sourceDir, targetDir, { recursive: true });
   } catch (error) {
@@ -500,11 +500,12 @@ router.get("/build-template", async (req, res) => {
       "#aboutHeaderImage": result.rows[0].details.aboutHeaderImage,
     };
 
-    buildTemplate(result, hotelId, templateId);
-    // buildTemplateAboutUs(result, hotelId, templateId);
-    // buildTemplateContactUs(result, hotelId, templateId);
-    // buildTemplateHotelRooms(result, hotelId, templateId);
-
+    buildTemplate(data, hotelId, templateId);
+    buildTemplateGallery(data, hotelId, templateId, result);
+    buildTemplateReservation(data, hotelId, templateId);
+    buildTemplateAbout(data, hotelId, templateId);
+    buildTemplateContactUs(data, hotelId, templateId);
+    
     res.send({
       message: "Template built successfully",
     });
@@ -513,12 +514,225 @@ router.get("/build-template", async (req, res) => {
   }
 });
 
-const buildTemplate = async () => {
-  const targetDir = `/var/www/template${templateId}/user${hotelId}`;
-  const sourceDir = path.resolve(__dirname, `build/template/temp${templateId}`);
+const buildTemplate = async (data, hotelId, templateId) => {
+  const templatePath = `./template/temp${templateId}/index.html`;
+  const template = await fs.readFile(templatePath, "utf8");
 
-  await fs.mkdir(targetDir, { recursive: true });
-  await fs.cp(sourceDir, targetDir, { recursive: true });
+  const result = template.replace(
+    /#\w+/g,
+    (placeholder) => data[placeholder] || ""
+  );
+
+  const outputPath = `/var/www/template${templateId}/user${hotelId}/index.html`;
+  await fs.writeFile(outputPath, result, "utf8");
+
+  console.log("Template built successfully");
 };
+
+const buildTemplateGallery = async (data, hotelId, templateId, result) => {
+  const templatePath = `./template/temp${templateId}/gallery.html`;
+  const template = await fs.readFile(templatePath, "utf8");
+
+  const galleryFirstFiveImages = result.rows[0].details.galleryFirstFiveImages;
+  const gallerySecondFiveImages =
+    result.rows[0].details.gallerySecondFiveImages;
+  const galleryThirdFiveImages = result.rows[0].details.galleryThirdFiveImages;
+  const galleryFourthFiveImages =
+    result.rows[0].details.galleryFourthFiveImages;
+
+  let firstFiveImagesHtml = "";
+  let secondFiveImagesHtml = "";
+  let thirdFiveImagesHtml = "";
+  let fourthFiveImagesHtml = "";
+
+  if (galleryFirstFiveImages) {
+    firstFiveImagesHtml = `<div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(${
+                galleryFirstFiveImages[0] || ""
+              })" 
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(${
+                galleryFirstFiveImages[1] || ""
+              })"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-6 col-sm-6 fh5co-gallery_item">
+							<div class="fh5co-bg-img fh5co-gallery_big"
+							style="background-image: url(${galleryFirstFiveImages[2] || ""})"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(${
+                galleryFirstFiveImages[3] || ""
+              })"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(${
+                galleryFirstFiveImages[4] || ""
+              })" 
+								data-trigger="zoomerang"></div>
+						</div>
+					</div>`;
+  }
+
+  if (gallerySecondFiveImages) {
+    secondFiveImagesHtml = `<div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(${
+                gallerySecondFiveImages[0] || ""
+              })" 
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(${
+                gallerySecondFiveImages[1] || ""
+              })"
+								data-trigger="zoomerang"></div>
+						</div>
+						<div class="col-md-3 col-sm-3 fh5co-gallery_item">
+							<div class="fh5co-bg-img" style="background-image: url(${
+                gallerySecondFiveImages[2] || ""
+              })"
+								data-trigger="zoomerang"></div>
+							<div class="fh5co-bg-img" style="background-image: url(${
+                gallerySecondFiveImages[3] || ""
+              })" 
+								data-trigger="zoomerang"></div>
+						</div>
+            <div class="col-md-6 col-sm-6 fh5co-gallery_item">
+							<div class="fh5co-bg-img fh5co-gallery_big"
+							style="background-image: url(${gallerySecondFiveImages[4] || ""})"
+								data-trigger="zoomerang"></div>
+						</div>
+					</div>`;
+  }
+
+  if (galleryThirdFiveImages) {
+    thirdFiveImagesHtml = `<div>
+            <div class="col-md-3 col-sm-3 fh5co-gallery_item">
+              <div class="fh5co-bg-img" style="background-image: url(${
+                galleryThirdFiveImages[0] || ""
+              })" 
+                data-trigger="zoomerang"></div>
+              <div class="fh5co-bg-img" style="background-image: url(${
+                galleryThirdFiveImages[1] || ""
+              })"
+                data-trigger="zoomerang"></div>
+            </div>
+            <div class="col-md-6 col-sm-6 fh5co-gallery_item">
+              <div class="fh5co-bg-img fh5co-gallery_big"
+              style="background-image: url(${galleryThirdFiveImages[2] || ""})"
+                data-trigger="zoomerang"></div>
+            </div>
+            <div class="col-md-3 col-sm-3 fh5co-gallery_item">
+              <div class="fh5co-bg-img" style="background-image: url(${
+                galleryThirdFiveImages[3] || ""
+              })"
+                data-trigger="zoomerang"></div>
+              <div class="fh5co-bg-img" style="background-image: url(${
+                galleryThirdFiveImages[4] || ""
+              })" 
+                data-trigger="zoomerang"></div>
+            </div>
+          </div>`;
+  }
+
+  if (galleryFourthFiveImages) {
+    fourthFiveImagesHtml = `<div>
+            <div class="col-md-3 col-sm-3 fh5co-gallery_item">
+              <div class="fh5co-bg-img" style="background-image: url(${
+                galleryFourthFiveImages[0] || ""
+              })" 
+                data-trigger="zoomerang"></div>
+              <div class="fh5co-bg-img" style="background-image: url(${
+                galleryFourthFiveImages[1] || ""
+              })"
+                data-trigger="zoomerang"></div>
+            </div>
+            <div class="col-md-3 col-sm-3 fh5co-gallery_item">
+              <div class="fh5co-bg-img" style="background-image: url(${
+                galleryFourthFiveImages[2] || ""
+              })"
+                data-trigger="zoomerang"></div>
+              <div class="fh5co-bg-img" style="background-image: url(${
+                galleryFourthFiveImages[3] || ""
+              })" 
+                data-trigger="zoomerang"></div>
+            </div>
+            <div class="col-md-6 col-sm-6 fh5co-gallery_item">
+              <div class="fh5co-bg-img fh5co-gallery_big"
+              style="background-image: url(${galleryFourthFiveImages[4] || ""})"
+                data-trigger="zoomerang"></div>
+            </div>
+          </div>`;
+  }
+
+  console.log(
+    firstFiveImagesHtml,
+    secondFiveImagesHtml,
+    thirdFiveImagesHtml,
+    fourthFiveImagesHtml
+  );
+  const data2 = {
+    ...data,
+    "#galleryFirstFiveImages": firstFiveImagesHtml,
+    "#gallerySecondFiveImages": secondFiveImagesHtml,
+    "#galleryThirdFiveImages": thirdFiveImagesHtml,
+    "#galleryFourthFiveImages": fourthFiveImagesHtml,
+  };
+
+  const result2 = template.replace(
+    /#\w+/g,
+    (placeholder) => data2[placeholder] || ""
+  );
+
+  const outputPath = `/var/www/template${templateId}/user${hotelId}/gallery.html`;
+  await fs.writeFile(outputPath, result2, "utf8");
+
+  // console.log(data2);
+};
+const buildTemplateReservation = async (data, hotelId, templateId) => {
+  const templatePath = `./template/temp${templateId}/reservation.html`;
+  const template = await fs.readFile(templatePath, "utf8");
+
+  const result = template.replace(
+    /#\w+/g,
+    (placeholder) => data[placeholder] || ""
+  );
+
+  const outputPath = `/var/www/template${templateId}/user${hotelId}/reservation.html`;
+  await fs.writeFile(outputPath, result, "utf8");
+
+  console.log("Template built successfully");
+};
+
+const buildTemplateAbout = async (data, hotelId, templateId) => {
+  const templatePath = `./template/temp${templateId}/about.html`;
+  const template = await fs.readFile(templatePath, "utf8");
+
+  const result = template.replace(
+    /#\w+/g,
+    (placeholder) => data[placeholder] || ""
+  );
+
+  const outputPath = `/var/www/template${templateId}/user${hotelId}/about.html`;
+  await fs.writeFile(outputPath, result, "utf8");
+
+  console.log("Template built successfully");
+};
+
+const buildTemplateContactUs = async (data, hotelId, templateId) => {
+  const templatePath = `./template/temp${templateId}/contact.html`;
+  const template = await fs.readFile(templatePath, "utf8");
+
+  const result = template.replace(
+    /#\w+/g,
+    (placeholder) => data[placeholder] || ""
+  );
+
+  const outputPath = `/var/www/template${templateId}/user${hotelId}/contact.html`;
+  await fs.writeFile(outputPath, result, "utf8");
+
+  console.log("Template built successfully");
+};
+
 
 module.exports = router;

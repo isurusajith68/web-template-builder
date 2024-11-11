@@ -49,8 +49,8 @@
 
 <body id="app">
 
-
 	<div class="fh5co-loader"></div>
+
 	<div id="page">
 		<nav class="fh5co-nav" role="navigation">
 			<!-- <div class="top-menu"> -->
@@ -62,16 +62,14 @@
 								#siteTitle<span>.</span></a></div>
 					</div>
 					<div class="col-xs-12 text-center menu-1 menu-wrap">
-
 						<ul>
-							<li class="active"><a href="index.html">Home</a></li>
-
+							<li><a href="index.html">Home</a></li>
 							<li class="has-dropdown">
 								<a href="gallery.html">Gallery</a>
 
 							</li>
 							<li><a href="reservation.html">Reservation</a></li>
-							<li><a href="about.html">About</a></li>
+							<li class="active"><a href="about.html">About</a></li>
 							<li><a href="contact.html">Contact</a></li>
 						</ul>
 					</div>
@@ -81,9 +79,8 @@
 			<!-- </div> -->
 		</nav>
 
-
 		<header id="fh5co-header" class="fh5co-cover js-fullheight" role="banner"
-			style="background-image: url(#homeHeaderImage);" data-stellar-background-ratio="0.5">
+			style="background-image: url(#aboutHeaderImage);" data-stellar-background-ratio="0.5">
 			<div class="overlay"></div>
 			<div class="container">
 				<div class="row">
@@ -91,7 +88,7 @@
 						<div class="display-t js-fullheight">
 							<div class="display-tc js-fullheight animate-box" data-animate-effect="fadeIn">
 								<h1>
-									#headerTitle
+									#aboutHeaderTitle
 								</h1>
 
 							</div>
@@ -100,153 +97,29 @@
 				</div>
 
 		</header>
-	</div>
-	<!-- <div style=" width: 100%; padding: 10px;  background-color: #b4b6c2;  color: white;">
 
-	<button
-		style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 20px;"
-		@click="saveChanges">
-		Save Changes
-	</button>
-
-	<button
-		style="background-color: #f93f26; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
-		@click="publishChanges">
-		Publish Changes
-	</button>
-</div> -->
-	<div id="fh5co-about" class="fh5co-section">
-		<div class="container">
-			<div class="row">
-				<div style="position: relative;" class="col-md-6 col-md-pull-2 img-wrap animate-box"
-					data-animate-effect="fadeInLeft">
-					<img src="#heroImage" alt="Hero Image" />
-
-				</div>
-
-				<div class="col-md-6 col-md-push-1 animate-box">
-					<div class="section-heading">
-						<h2>The Restaurant</h2>
-						<p>
-							#heroDescription
-
-						</p>
-						<div
-							style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; margin-top: 20px;">
-
-							<p><a href="#" class="btn btn-primary btn-outline">Our History</a></p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-
-
-
-
-		<div id="fh5co-slider" class="fh5co-section animate-box">
+		<div id="fh5co-about" class="fh5co-section">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-6 animate-box">
-						<div class="fh5co-heading">
-							<h2>Our Best Unique Menu</h2>
-							<p>
-								#menuHearderDescription
-							</p>
+					<div style="position: relative;" class="col-md-6 col-md-pull-2 img-wrap animate-box"
+						data-animate-effect="fadeInLeft">
+						<img src="#heroImage" alt="Hero Image" />
 
-						</div>
 					</div>
+
 					<div class="col-md-6 col-md-push-1 animate-box">
-						<aside id="fh5co-slider-wrwap">
-							<div class="flexslider">
-								<ul class="slides">
-									<li style="background-image: url(#menuImage1);">
-										<div class="overlay-gradient">
+						<div class="section-heading">
+							<h2>The Restaurant</h2>
+							<p>
+								#heroDescription
 
-										</div>
-										<div class="container-fluid">
-											<div class="row">
-												<div
-													class="col-md-12 col-md-offset-0 col-md-pull-10 slider-text slider-text-bg">
-													<div class="slider-text-inner">
-														<div class="desc">
-															<h2>
+							</p>
+							<div
+								style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; margin-top: 20px;">
 
-																#menuTitle1</h2>
-
-
-															<p>
-																#menuDescription1
-															</p>
-
-															<p><a href="#" class="btn btn-primary btn-outline">Learn
-																	More</a></p>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</li>
-									<li style="background-image: url(#menuImage2);">
-										<div class="overlay-gradient">
-
-										</div>
-										<div class="container-fluid">
-											<div class="row">
-												<div
-													class="col-md-12 col-md-offset-0 col-md-pull-10 slider-text slider-text-bg">
-													<div class="slider-text-inner">
-														<div class="desc">
-															<h2>
-
-																#menuTitle2
-															</h2>
-
-															<p>
-																#menuDescription2
-															</p>
-
-															<p><a href="#" class="btn btn-primary btn-outline">Learn
-																	More</a></p>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</li>
-									<li style="background-image: url(#menuImage3);">
-										<div class="overlay-gradient">
-
-										</div>
-										<div class="container-fluid">
-											<div class="row">
-												<div
-													class="col-md-12 col-md-offset-0 col-md-pull-10 slider-text slider-text-bg">
-													<div class="slider-text-inner">
-														<div class="desc">
-
-															<h2>
-
-																#menuTitle3
-															</h2>
-
-
-															<p>
-																#menuDescription3
-															</p>
-
-															<p><a href="#" class="btn btn-primary btn-outline">Learn
-																	More</a></p>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</li>
-								</ul>
+								<p><a href="#" class="btn btn-primary btn-outline">Our History</a></p>
 							</div>
-						</aside>
+						</div>
 					</div>
 				</div>
 			</div>
