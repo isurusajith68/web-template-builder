@@ -57,7 +57,7 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `https://be-publish.ceyinfo.cloud/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             body: formData,
@@ -106,7 +106,7 @@ const gallery = Vue.createApp({
       this.isLoading = "Saving...";
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `https://be-publish.ceyinfo.cloud/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             headers: {
@@ -152,7 +152,7 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `https://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
         );
 
         if (!response.ok) {
@@ -193,7 +193,7 @@ const gallery = Vue.createApp({
     // async hotelInfo() {
     //   try {
     //     const response = await fetch(
-    //       `http://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
+    //       `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
     //     );
 
     //     if (!response.ok) {

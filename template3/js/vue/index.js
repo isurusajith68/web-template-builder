@@ -562,7 +562,7 @@ const app = Vue.createApp({
 
         try {
           const response = await fetch(
-            `http://be-publish.ceyinfo.cloud/temp3/upload-single?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+            `https://be-publish.ceyinfo.cloud/temp3/upload-single?hotelId=${this.hotelId}&templateId=${this.templateId}`,
             {
               method: "POST",
               body: formData,
@@ -688,7 +688,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
+          `https://be-publish.ceyinfo.cloud/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
           {
             method: "POST",
             body: formData,
@@ -736,7 +736,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `https://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
         );
 
         if (!response.ok) {
@@ -871,7 +871,7 @@ const app = Vue.createApp({
       console.log("Data to save:", data);
       try {
         const response = await fetch(
-          "http://be-publish.ceyinfo.cloud/temp3/save-site-details",
+          "https://be-publish.ceyinfo.cloud/temp3/save-site-details",
           {
             method: "POST",
             headers: {
@@ -907,7 +907,7 @@ const app = Vue.createApp({
     async hotelInfo() {
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
+          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
         );
 
         if (!response.ok) {
@@ -933,7 +933,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/temp3/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `https://be-publish.ceyinfo.cloud/temp3/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
         );
 
         if (!response.ok) {

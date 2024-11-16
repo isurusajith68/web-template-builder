@@ -67,7 +67,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `https://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
         );
 
         if (!response.ok) {
@@ -113,7 +113,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://be-publish.ceyinfo.cloud/rooms-info?hotelId=${this.hotelId}`
+          `https://be-publish.ceyinfo.cloud/rooms-info?hotelId=${this.hotelId}`
         );
 
         if (!response.ok) {
