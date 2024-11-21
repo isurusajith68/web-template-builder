@@ -34,22 +34,23 @@
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
         <![endif]-->
 
-    <!-- header-start --><div v-if="isSuccess" id="successMessage"
+    <!-- header-start -->
+    <div v-if="isSuccess" id="successMessage"
         style="position: fixed; z-index: 20; border-radius: 10; color: white; top: 0; left: 50%; background: #05f318; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;"
         class="success-message">
         <i class="fa fa-check"></i>
         {{ isSuccess }}
     </div>
-    
+
     <div v-if="isLoading" id="loadingMessage" class="loading-message"
         style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #e2e60f; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
         <i class="fa fa-spinner fa-spin"></i>
         {{ isLoading }}
     </div>
-    
+
     <div v-if="isError" id="errorMessage" class="error-message"
         style="position: fixed; z-index: 20; border-radius: 10; top: 0;  color: white; left: 50%; background: #f00505; transform: translateX(-50%); width: 20%;  text-align: center; padding: 10px;">
-    
+
         <i class="fa fa-times"></i>
         {{ isError }}
     </div>
@@ -62,11 +63,12 @@
                             <div class="main-menu  d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a href="index.html">home</a></li>
-                                        <li><a href="rooms.html">rooms</a></li>
-                                        <li><a class="active" href="about.html">About</a></li>
+                                        <li><a :href="`index.html?hotelId=${hotelId}`">home</a></li>
+                                        <li><a :href="`rooms.html?hotelId=${hotelId}`">rooms</a></li>
+                                        <li><a class="active" :href="`about.html?hotelId=${hotelId}`">About</a></li>
 
-                                        <li><a href="contact.html">Contact</a></li>
+
+                                        <li><a :href="`contact.html?hotelId=${hotelId}`">Contact</a></li>
                                     </ul>
                                 </nav>
                             </div>

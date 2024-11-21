@@ -1,7 +1,7 @@
 const app = Vue.createApp({
   data() {
     return {
-      hotelId: 24,
+      hotelId: null,
       templateId: 1,
       title: "Hill Roost",
       email: "hillroostkandy@gmail.com",
@@ -201,14 +201,21 @@ const app = Vue.createApp({
     },
   },
   mounted() {
-    this.loadSiteDetails();
+    const urlParams = new URLSearchParams(window.location.search);
+    this.hotelId = urlParams.get("hotelId");
 
-    // const urlParams = new URLSearchParams(window.location.search);
-    // this.hotelId = urlParams.get("hotelId");
-    // this.templateId = urlParams.get("templateId");
-    // console.log(this.hotelId, this.templateId);
-
-    this.hotelInfo();
+    if (
+      !this.hotelId ||
+      this.hotelId == "" ||
+      this.hotelId == "null" ||
+      this.hotelId == "undefined"
+    ) {
+      alert("Hotel ID not found in URL parameters.");
+      window.location.href = "https://admin.ceyinfo.cloud";
+    } else {
+      this.loadSiteDetails();
+      this.hotelInfo();
+    }
   },
 });
 

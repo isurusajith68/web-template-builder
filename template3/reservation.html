@@ -87,14 +87,15 @@
 					</div>
 					<div class="col-xs-12 text-center menu-1 menu-wrap">
 						<ul>
-							<li><a href="index.html">Home</a></li>
-							<li class="has-dropdown">
-								<a href="gallery.html">Gallery</a>
+							<li><a :href="`index.html?hotelId=${hotelId}`">Home</a></li>
+
+							<li class="has-dropdown ">
+								<a :href="`gallery.html?hotelId=${hotelId}`">Gallery</a>
 
 							</li>
-							<li class="active"><a href="reservation.html">Reservation</a></li>
-							<li><a href="about.html">About</a></li>
-							<li><a href="contact.html">Contact</a></li>
+							<li class="active"><a :href="`reservation.html?hotelId=${hotelId}`">Reservation</a></li>
+							<li class=""><a :href="`about.html?hotelId=${hotelId}`">About</a></li>
+							<li><a :href="`contact.html?hotelId=${hotelId}`">Contact</a></li>
 						</ul>
 					</div>
 				</div>
@@ -208,7 +209,8 @@
 						<p>{{
 							bookATableDescription
 							}}</p>
-						<p><a href="reservation.html" class="btn btn-primary btn-outline">Book Now</a></p>
+						<p><a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`"
+								class="btn btn-primary btn-outline">Book Now</a></p>
 					</div>
 				</div>
 			</div>
@@ -242,20 +244,20 @@
 						</ul>
 					</div>
 
-				<div class="col-md-4 col-md-push-1 fh5co-widget">
-					<h4>Contact Information</h4>
-					<ul class="fh5co-footer-links">
-						<li>
-							{{address}}
-						</li>
-						<li><a href="tel://1234567920">
-								{{phoneNumber}}
-						</li>
-						<li><a>
-								{{email}}
-							</a></li>
-					</ul>
-				</div>
+					<div class="col-md-4 col-md-push-1 fh5co-widget">
+						<h4>Contact Information</h4>
+						<ul class="fh5co-footer-links">
+							<li>
+								{{address}}
+							</li>
+							<li><a href="tel://1234567920">
+									{{phoneNumber}}
+							</li>
+							<li><a>
+									{{email}}
+								</a></li>
+						</ul>
+					</div>
 
 
 				</div>

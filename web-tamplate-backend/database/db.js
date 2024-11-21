@@ -24,20 +24,4 @@ const pool = new Pool({
   port: 5432,
 });
 
-const createTable = `CREATE TABLE webtemplatedata (
-    id SERIAL PRIMARY KEY,
-    userId VARCHAR(255) NOT NULL,
-    templateId VARCHAR(255) NOT NULL,
-    details JSONB NOT NULL
-);`;
-
-pool
-  .query(createTable)
-  .then((Response) => {
-    console.log("table created");
-  })
-  .catch((err) => {
-    console.log("error table exist ");
-  });
-
 module.exports = pool;

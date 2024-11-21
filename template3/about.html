@@ -87,14 +87,15 @@
 					</div>
 					<div class="col-xs-12 text-center menu-1 menu-wrap">
 						<ul>
-							<li><a href="index.html">Home</a></li>
+							<li><a :href="`index.html?hotelId=${hotelId}`">Home</a></li>
+
 							<li class="has-dropdown">
-								<a href="gallery.html">Gallery</a>
+								<a :href="`gallery.html?hotelId=${hotelId}`">Gallery</a>
 
 							</li>
-							<li><a href="reservation.html">Reservation</a></li>
-							<li class="active"><a href="about.html">About</a></li>
-							<li><a href="contact.html">Contact</a></li>
+							<li><a :href="`reservation.html?hotelId=${hotelId}`">Reservation</a></li>
+							<li class="active"><a :href="`about.html?hotelId=${hotelId}`">About</a></li>
+							<li><a :href="`contact.html?hotelId=${hotelId}`">Contact</a></li>
 						</ul>
 					</div>
 				</div>
@@ -192,7 +193,8 @@
 						<p>{{
 							bookATableDescription
 							}}</p>
-						<p><a href="reservation.html" class="btn btn-primary btn-outline">Book Now</a></p>
+						<p><a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`"
+								class="btn btn-primary btn-outline">Book Now</a></p>
 					</div>
 				</div>
 			</div>
@@ -245,10 +247,10 @@
 				<div class="row copyright">
 					<div class="col-md-12 text-center">
 						<p>
-								<small class="block">Designed by <a href="http://freehtml5.co/" target="_blank">
-										Ceyinfo Solutions
-									</a>
-								</small>
+							<small class="block">Designed by <a href="http://freehtml5.co/" target="_blank">
+									Ceyinfo Solutions
+								</a>
+							</small>
 						</p>
 						<p>
 						<ul class="fh5co-social-icons">

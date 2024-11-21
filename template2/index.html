@@ -80,12 +80,12 @@
                             <div class="main-menu  d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a class="active" href="index.html">home</a></li>
-                                        <li><a href="rooms.html">rooms</a></li>
-                                        <li><a href="about.html">About</a></li>
+                                        <li><a class="active" :href="`index.html?hotelId=${hotelId}`">home</a></li>
+                                        <li><a :href="`rooms.html?hotelId=${hotelId}`">rooms</a></li>
+                                        <li><a :href="`about.html?hotelId=${hotelId}`">About</a></li>
 
 
-                                        <li><a href="contact.html">Contact</a></li>
+                                        <li><a :href="`contact.html?hotelId=${hotelId}`">Contact</a></li>
                                     </ul>
                                 </nav>
                             </div>
@@ -250,7 +250,7 @@
                             <li>3 Adults & 2 Children size</li>
                             <li>Sea view side</li>
                         </ul>
-                        <a href="#" class="book_now">book now</a>
+                        <a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`" class="book_now">book now</a>
                     </div>
                 </div>
                 <div class="col-xl-4 col-md-4">
@@ -265,7 +265,7 @@
                             <li>3 Adults & 2 Children size</li>
                             <li>Sea view side</li>
                         </ul>
-                        <a href="#" class="book_now">book now</a>
+                        <a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`" class="book_now">book now</a>
                     </div>
                 </div>
                 <div class="col-xl-4 col-md-4">
@@ -280,7 +280,7 @@
                             <li>3 Adults & 2 Children size</li>
                             <li>Sea view side</li>
                         </ul>
-                        <a href="#" class="book_now">book now</a>
+                        <a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`" class="book_now">book now</a>
                     </div>
                 </div>
             </div>
@@ -377,7 +377,8 @@
                                 Amenities: {{ room.roomamenities.join(', ') }}
                             </p>
                         </div>
-                        <a href="#" class="line-button">book now</a>
+                        <a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`" class="line-button">book
+                            now</a>
                     </div>
                 </div>
             </div>
