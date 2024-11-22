@@ -13,7 +13,6 @@ const app = express();
 app.use(
   cors({
     origin: "*",
-    
   })
 );
 
@@ -787,15 +786,145 @@ const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
   console.log("Template built successfully");
 };
 
-// const template = await fs.readFile("./template/temp1/index.html", "utf8");
-// // console.log(template);
-// //replace the placeholders with the data
-// const result = template.replace(
-//   /#\w+/g,
-//   (placeholder) => data[placeholder] || ""
-// );
+//  // generate nginx config file for the built template
 
-// await fs.writeFile("./build/template/temp1/user1/index.html", result, "utf8");
+// const generateNginxConfig = (hotelId, templateId) => {
+//
+//
+//
+// const getSiteName = await pool.query(
+//   "SELECT sitename FROM hotelinfo WHERE id = $1",
+//   [hotelId]
+// );
+//
+//
+//
+//
+//   const nginxConfig = `
+//   server {
+//     listen 80;
+//     server_name ${getSiteName.rows[0].sitename};
+//     root /var/www/template${templateId}/user${hotelId};
+//     index index.html;
+//     location / {
+//       try_files $uri $uri/ /index.html;
+//     }
+//   }
+//   `;
+
+//   const configPath = `/etc/nginx/sites-available/template${templateId}-user${hotelId}`;
+
+//   fssync.writeFileSync(configPath, nginxConfig);
+
+//   exec(
+//     `sudo ln -s ${configPath} /etc/nginx/sites-enabled/`,
+//     (error, stdout, stderr) => {
+//       if (error) {
+//         console.error(`exec error: ${error}`);
+//         return;
+//       }
+
+//       console.log(`stdout: ${stdout}`);
+
+//       console.error(`stderr: ${stderr}`);
+
+//       exec("sudo systemctl restart nginx", (error, stdout, stderr) => {
+//         if (error) {
+//           console.error(`exec error: ${error}`);
+//           return;
+//         }
+
+//         console.log(`stdout: ${stdout}`);
+
+//         console.error(`stderr: ${stderr}`);
+//       });
+//     }
+//   );
+// };
+
+// // add ssl certificate
+
+// const addSslCertificate = (hotelId, templateId) => {
+//   exec(
+//     `sudo certbot --nginx -d ${getSiteName.rows[0].sitename}`,
+//     (error, stdout, stderr) => {
+//       if (error) {
+//         console.error(`exec error: ${error}`);
+//         return;
+//       }
+//       console.log(`stdout: ${stdout}`);
+//       console.error(`stderr: ${stderr}`);
+
+//       exec("sudo systemctl restart nginx", (error, stdout, stderr) => {
+//         if (error) {
+//           console.error(`exec error: ${error}`);
+//           return;
+//         }
+//         console.log(`stdout: ${stdout}`);
+//         console.error(`stderr: ${stderr}`);
+//       });
+//     }
+//   );
+// };
+
+//       //verify the symbolic link
+
+// const verifySymbolicLink = () => {
+//       exec(
+//         `ls -l /etc/nginx/sites-enabled/`,
+//         (error, stdout, stderr) => {
+//           if (error) {
+//             console.error(`exec error: ${error}`);
+//             return;
+//           }
+//           console.log(`stdout: ${stdout}`);
+//           console.error(`stderr: ${stderr}`);
+//         }
+//       );
+//     }
+//   );
+// };
+
+// // restart nginx
+
+// const restartNginx = () => {
+//   exec(
+//     `sudo nginx -t`,
+//     (error, stdout, stderr) => {
+//       if (error) {
+//         console.error(`exec error: ${error}`);
+//         return;
+//       }
+//       console.log(`stdout: ${stdout}`);
+//       console.error(`stderr: ${stderr}`);
+//     }
+//   );
+
+//   exec(
+//     `sudo systemctl restart nginx`,
+//     (error, stdout, stderr) => {
+//       if (error) {
+//         console.error(`exec error: ${error}`);
+//         return;
+//       }
+//       console.log(`stdout: ${stdout}`);
+//       console.error(`stderr: ${stderr}`);
+//     }
+//   );
+// };
+
+// sudo ln -s /etc/nginx/sites-available/miniatlasbe1.ceyinfo.cloud.conf /etc/nginx/sites-enabled/
+
+// Verify the Symbolic Link:
+// Ensure the symbolic link was created correctly:
+// ls -l /etc/nginx/sites-enabled/
+
+// You should see something like:
+// lrwxrwxrwx 1 root root 53 Jul 30 10:00 miniatlasbe1.ceyinfo.cloud.conf -> /etc/nginx/sites-available/miniatlasbe1.ceyinfo.cloud.conf
+
+// sudo nginx -t
+
+// sudo systemctl restart nginx
 
 const startServer = async () => {
   try {
