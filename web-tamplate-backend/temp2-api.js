@@ -159,6 +159,7 @@ router.get("/build-template", async (req, res) => {
     buildTemplateHotelRooms(result, hotelId, templateId);
     // buildTemplateBooking(data, hotelId, templateId);
     // buildTemplateSpecialOffers(data, hotelId, templateId);
+    generateNginxConfig(hotelId, templateId);
     res.send({
       message: "Template built successfully",
     });
@@ -247,7 +248,7 @@ const buildTemplate = async (result, hotelId, templateId) => {
                             Amenities: ${room.roomamenities.join(", ")}
                         </p>
                        </div>
-                       <a href="#" class="line-button">book now</a>
+                       <a href="https://webbookings.ceyinfo.cloud?hotelId=${hotelId}" class="line-button">book now</a>
                        </div>
                 </div>
             </div>`;
@@ -286,8 +287,9 @@ const buildTemplate = async (result, hotelId, templateId) => {
   //     </div>
 
   const imagesSection = result.rows[0].details?.realImages?.filePaths
-    .map((image) => {
-      return `<div class="single_instagram">
+    ? result.rows[0].details.realImages.filePaths
+        .map((image) => {
+          return `<div class="single_instagram">
                 <img src="${image}" alt="">
                 <div class="ovrelay">
                     <a href="#">
@@ -295,10 +297,13 @@ const buildTemplate = async (result, hotelId, templateId) => {
                     </a>
                 </div>
             </div>`;
-    })
-    .join("");
+        })
+        .join("")
+    : "";
+  const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
 
   const data = {
+    "#hotelURL": hotelURL,
     "#siteTitle": result.rows[0].details.title,
     "#siteEmail": result.rows[0].details.email,
     "#sitePhoneNumber": result.rows[0].details.phoneNumber,
@@ -411,14 +416,16 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
                             Amenities: ${room.roomamenities.join(", ")}
                         </p>
                        </div>
-                       <a href="#" class="line-button">book now</a>
+                       <a href="https://webbookings.ceyinfo.cloud?hotelId=${hotelId}" class="line-button">book now</a>
                        </div>
                 </div>
             </div>`;
     })
     .join("");
+  const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
 
   const data = {
+    "#hotelURL": hotelURL,
     "#siteTitle": result.rows[0].details.title,
     "#siteEmail": result.rows[0].details.email,
     "#sitePhoneNumber": result.rows[0].details.phoneNumber,
@@ -492,6 +499,113 @@ const buildTemplateContactUs = async (result, hotelId, templateId) => {
   await fs.writeFile(outputPath, result2, "utf8");
 
   console.log("Template built successfully");
+};
+
+//  // generate nginx config file for the built template
+
+const { exec } = require("child_process");
+
+const generateNginxConfig = async (hotelId, templateId) => {
+  // console.log(hotelId);
+  const getSiteName = await pool.query(
+    "SELECT website FROM webtemplates WHERE hotelid = $1",
+    [hotelId]
+  );
+  // console.log(getSiteName);
+
+  const nginxFileExist = fssync.existsSync(
+    `/etc/nginx/sites-available/template${templateId}-user${hotelId}`
+  );
+
+  if (nginxFileExist) {
+    return console.log("nginx file exist");
+  }
+
+  const nginxConfig = `
+  server {
+    listen 80;
+    server_name ${getSiteName.rows[0].website};
+    root /var/www/template${templateId}/user${hotelId};
+    index index.html;
+    location / {
+      try_files $uri $uri/ /index.html;
+    }
+  }
+  `;
+
+  const configPath = `/etc/nginx/sites-available/template${templateId}-user${hotelId}`;
+
+  fssync.writeFileSync(configPath, nginxConfig);
+
+  exec(
+    `sudo ln -s ${configPath} /etc/nginx/sites-enabled/`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+
+      exec("sudo systemctl restart nginx", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        console.log("nginx file successfully created");
+        addSslCertificate(hotelId, templateId, getSiteName);
+      });
+    }
+  );
+};
+
+// // add ssl certificate
+
+const addSslCertificate = (hotelId, templateId, getSiteName) => {
+  const domain = getSiteName.rows[0].website;
+
+  exec(
+    `sudo certbot certificates --domain ${domain}`,
+    (checkError, checkStdout, checkStderr) => {
+      if (checkError) {
+        console.error(`Error checking certificate: ${checkError}`);
+        return;
+      }
+
+      const certificateExists = checkStdout.includes(
+        `Certificate Name: ${domain}`
+      );
+
+      const certbotCommand = certificateExists
+        ? `sudo certbot --nginx -d ${domain} --reinstall`
+        : `sudo certbot --nginx -d ${domain}`;
+
+      console.log(`Running Certbot command: ${certbotCommand}`);
+
+      exec(certbotCommand, (certError, certStdout, certStderr) => {
+        if (certError) {
+          console.error(`Error handling SSL certificate: ${certError}`);
+          return;
+        }
+
+        console.log(certStdout);
+
+        exec(
+          "sudo systemctl restart nginx",
+          (nginxError, nginxStdout, nginxStderr) => {
+            if (nginxError) {
+              console.error(`Error restarting Nginx: ${nginxError}`);
+              return;
+            }
+
+            console.log(
+              `SSL certificate ${
+                certificateExists ? "reinstalled" : "installed"
+              } successfully for ${domain}`
+            );
+          }
+        );
+      });
+    }
+  );
 };
 
 module.exports = router;

@@ -464,7 +464,10 @@ router.get("/build-template", async (req, res) => {
     //     "img/images-1731339192583-185997996.jpg"
     //   ]
     // }
+    const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
+
     const data = {
+      "#hotelURL": hotelURL,
       "#siteTitle": result.rows[0].details.title,
       "#siteEmail": result.rows[0].details.email,
       "#sitePhoneNumber": result.rows[0].details.phoneNumber,
@@ -505,7 +508,8 @@ router.get("/build-template", async (req, res) => {
     buildTemplateReservation(data, hotelId, templateId);
     buildTemplateAbout(data, hotelId, templateId);
     buildTemplateContactUs(data, hotelId, templateId);
-    
+    generateNginxConfig(hotelId, templateId);
+
     res.send({
       message: "Template built successfully",
     });
@@ -734,5 +738,111 @@ const buildTemplateContactUs = async (data, hotelId, templateId) => {
   console.log("Template built successfully");
 };
 
+//  // generate nginx config file for the built template
+
+const { exec } = require("child_process");
+
+const generateNginxConfig = async (hotelId, templateId) => {
+  // console.log(hotelId);
+  const getSiteName = await pool.query(
+    "SELECT website FROM webtemplates WHERE hotelid = $1",
+    [hotelId]
+  );
+  // console.log(getSiteName);
+
+  const nginxFileExist = fssync.existsSync(
+    `/etc/nginx/sites-available/template${templateId}-user${hotelId}`
+  );
+
+  if (nginxFileExist) {
+    return console.log("nginx file exist");
+  }
+
+  const nginxConfig = `
+  server {
+    listen 80;
+    server_name ${getSiteName.rows[0].website};
+    root /var/www/template${templateId}/user${hotelId};
+    index index.html;
+    location / {
+      try_files $uri $uri/ /index.html;
+    }
+  }
+  `;
+
+  const configPath = `/etc/nginx/sites-available/template${templateId}-user${hotelId}`;
+
+  fssync.writeFileSync(configPath, nginxConfig);
+
+  exec(
+    `sudo ln -s ${configPath} /etc/nginx/sites-enabled/`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+
+      exec("sudo systemctl restart nginx", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        console.log("nginx file successfully created");
+        addSslCertificate(hotelId, templateId, getSiteName);
+      });
+    }
+  );
+};
+
+// // add ssl certificate
+
+const addSslCertificate = (hotelId, templateId, getSiteName) => {
+  const domain = getSiteName.rows[0].website;
+
+  exec(
+    `sudo certbot certificates --domain ${domain}`,
+    (checkError, checkStdout, checkStderr) => {
+      if (checkError) {
+        console.error(`Error checking certificate: ${checkError}`);
+        return;
+      }
+
+      const certificateExists = checkStdout.includes(
+        `Certificate Name: ${domain}`
+      );
+
+      const certbotCommand = certificateExists
+        ? `sudo certbot --nginx -d ${domain} --reinstall`
+        : `sudo certbot --nginx -d ${domain}`;
+
+      console.log(`Running Certbot command: ${certbotCommand}`);
+
+      exec(certbotCommand, (certError, certStdout, certStderr) => {
+        if (certError) {
+          console.error(`Error handling SSL certificate: ${certError}`);
+          return;
+        }
+
+        console.log(certStdout);
+
+        exec(
+          "sudo systemctl restart nginx",
+          (nginxError, nginxStdout, nginxStderr) => {
+            if (nginxError) {
+              console.error(`Error restarting Nginx: ${nginxError}`);
+              return;
+            }
+
+            console.log(
+              `SSL certificate ${
+                certificateExists ? "reinstalled" : "installed"
+              } successfully for ${domain}`
+            );
+          }
+        );
+      });
+    }
+  );
+};
 
 module.exports = router;

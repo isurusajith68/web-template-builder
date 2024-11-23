@@ -168,7 +168,10 @@ app.get("/build-template", async (req, res) => {
     //     },
     //   ],
 
+    const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
+
     const data = {
+      "#hotelURL": hotelURL,
       "#siteTitle": result.rows[0].details.title,
       "#siteEmail": result.rows[0].details.email,
       "#sitePhoneNumber": result.rows[0].details.phoneNumber,
@@ -220,9 +223,10 @@ app.get("/hotel-info", async (req, res) => {
   try {
     const hotelId = req.query.hotelId;
 
-    const result = await pool.query("SELECT * FROM hotelinfo WHERE id = $1", [
-      hotelId,
-    ]);
+    const result = await pool.query(
+      "SELECT * FROM hotelinfo WHERE hotelid = $1",
+      [hotelId]
+    );
 
     res.send(result.rows[0]);
   } catch (error) {
@@ -610,7 +614,7 @@ buildTemplateAttraction = async (result, hotelId, templateId) => {
       "#siteAddress": result.rows[0].details.address,
       "#attractionList": attractionListHtml,
     };
-
+    // console.log(data);
     const result1 = template.replace(
       /#\w+/g,
       (placeholder) => data[placeholder] || ""
@@ -841,6 +845,10 @@ const generateNginxConfig = async (hotelId, templateId) => {
 
   if (nginxFileExist) {
     return console.log("nginx file exist");
+  }
+
+  if (!getSiteName.rows[0]) {
+    return console.log("website name not found");
   }
 
   const nginxConfig = `

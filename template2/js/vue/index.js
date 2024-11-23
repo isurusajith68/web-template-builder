@@ -507,11 +507,20 @@ const app = Vue.createApp({
           const roomDetails = await response.json();
           console.log("Room details loaded successfully:", roomDetails);
           this.roomsDetails = roomDetails;
-          this.isLoading = null;
-          this.isSuccess = "Room details loaded successfully";
-          setTimeout(() => {
-            this.isSuccess = null;
-          }, 5000);
+
+          if (roomDetails.length < 0) {
+            this.isLoading = null;
+            this.isError = "Please add room your site";
+            setTimeout(() => {
+              this.isError = null;
+            }, 5000);
+          } else {
+            this.isLoading = null;
+            this.isSuccess = "Room details loaded successfully";
+            setTimeout(() => {
+              this.isSuccess = null;
+            }, 5000);
+          }
         }
       } catch (error) {
         console.error("Error fetching room details:", error);
