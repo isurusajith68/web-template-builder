@@ -149,7 +149,48 @@ app.get("/build-template", async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).send("No site details found");
     }
-
+    // {
+    //   "email": "katupitiya@gmail.com",
+    //   "title": "Isuru",
+    //   "address": "Gammana 05, kuda kathnoruwa",
+    //   "attraction": "WITHIN KANDY CITY",
+    //   "realImages": [],
+    //   "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+    //   "phoneNumber": "0761455221",
+    //   "aboutUsImages": [
+    //     {
+    //       "alt": "About Us Image 1",
+    //       "src": "img/about-1.jpg"
+    //     },
+    //     {
+    //       "alt": "About Us Image 2",
+    //       "src": "img/about-2.jpg"
+    //     },
+    //     {
+    //       "alt": "About Us Image 3",
+    //       "src": "img/about-3.jpg"
+    //     },
+    //     {
+    //       "alt": "About Us Image 4",
+    //       "src": "img/about-4.jpg"
+    //     }
+    //   ],
+    //   "mapIframeHtml": "<div style=\"max-width:100%;overflow:hidden;color:red;height:400px;\"><div id=\"display-google-map\" style=\"height:100%; width:100%;max-width:100%;\"><iframe style=\"height:100%;width:100%;border:0;\" frameborder=\"0\" src=\"https://www.google.com/maps/embed/v1/place?q=hillroost&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8\"></iframe></div><a class=\"from-embedmap-code\" href=\"https://www.bootstrapskins.com/themes\" id=\"auth-map-data\">premium bootstrap themes</a><style>#display-google-map img.text-marker{max-width:none!important;background:none!important;}img{max-width:none}</style></div>",
+    //   "attractionList": [],
+    //   "carouselImages": [
+    //     {
+    //       "alt": "Carousel Image 1",
+    //       "src": "img/carousel-1.jpg",
+    //       "carouselTitle": "Luxury Living",
+    //       "carouselDescription": "A luxury tourist residence..."
+    //     },
+    //     {
+    //       "alt": "Carousel Image 2",
+    //       "carouselTitle": "Luxury Living",
+    //       "carouselDescription": "A luxury tourist residence..."
+    //     }
+    //   ]
+    // }
     const data = {
       "#siteTitle": result.rows[0].details.title,
       "#siteEmail": result.rows[0].details.email,
@@ -181,7 +222,7 @@ app.get("/build-template", async (req, res) => {
     buildTemplateHotelRooms(result, hotelId, templateId);
     buildTemplateBooking(data, hotelId, templateId);
     buildTemplateSpecialOffers(data, hotelId, templateId);
-
+    generateNginxConfig(hotelId, templateId);
     res.send({
       message: "Template built successfully",
     });
@@ -361,6 +402,20 @@ app.get("/rooms-info", async (req, res) => {
   try {
     const hotelId = req.query.hotelId;
 
+    // const result = await pool.query(
+    // `
+    // SELECT
+    //   htrm.hotelid,
+    //   htrm.roomviewid,
+    //   htrm.roomtypeid,
+    //   htrm.roomno,
+    //   htrm.noofbed,
+    //   hrv.roomview,
+    //   hrt.roomtype,
+    //   hrp.fbprice,
+    //   ARRAY_AGG(amn.name) AS roomamenities
+    // FROM
+
     const result = await pool.query(
       `
       SELECT 
@@ -447,6 +502,11 @@ const buildTemplateGallery = async (result, hotelId, templateId) => {
   //           </div>
   //       </div>
 
+  //  <div v-for="(row, index) in imageRows" :key="index" class="gallery-row">
+  //           <div class="image-item" v-for="(image, idx) in row" :key="idx">
+  //               <img :src="image" :alt="'Image ' + (index * 2 + idx + 1)" />
+  //           </div>
+  //       </div>
   if (
     !result.rows[0].details.realImages.filePaths ||
     !Array.isArray(result.rows[0].details.realImages.filePaths)
@@ -532,7 +592,7 @@ const buildTemplateBooking = async (data, hotelId, templateId) => {
 
 buildTemplateAttraction = async (result, hotelId, templateId) => {
   try {
-    console.log("Details:", result.rows[0]?.details);
+    // console.log("Details:", result.rows[0]?.details);
 
     const template = await fs.readFile(
       `./template/temp1/attraction.html`,
@@ -788,84 +848,110 @@ const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
 
 //  // generate nginx config file for the built template
 
-// const generateNginxConfig = (hotelId, templateId) => {
-//
-//
-//
-// const getSiteName = await pool.query(
-//   "SELECT sitename FROM hotelinfo WHERE id = $1",
-//   [hotelId]
-// );
-//
-//
-//
-//
-//   const nginxConfig = `
-//   server {
-//     listen 80;
-//     server_name ${getSiteName.rows[0].sitename};
-//     root /var/www/template${templateId}/user${hotelId};
-//     index index.html;
-//     location / {
-//       try_files $uri $uri/ /index.html;
-//     }
-//   }
-//   `;
+const { exec } = require("child_process");
 
-//   const configPath = `/etc/nginx/sites-available/template${templateId}-user${hotelId}`;
+const generateNginxConfig = async (hotelId, templateId) => {
+  // console.log(hotelId);
+  const getSiteName = await pool.query(
+    "SELECT website FROM webtemplates WHERE hotelid = $1",
+    [hotelId]
+  );
+  // console.log(getSiteName);
 
-//   fssync.writeFileSync(configPath, nginxConfig);
+  const nginxFileExist = fssync.existsSync(
+    `/etc/nginx/sites-available/template${templateId}-user${hotelId}`
+  );
 
-//   exec(
-//     `sudo ln -s ${configPath} /etc/nginx/sites-enabled/`,
-//     (error, stdout, stderr) => {
-//       if (error) {
-//         console.error(`exec error: ${error}`);
-//         return;
-//       }
+  if (nginxFileExist) {
+    return console.log("nginx file exist");
+  }
 
-//       console.log(`stdout: ${stdout}`);
+  const nginxConfig = `
+  server {
+    listen 80;
+    server_name ${getSiteName.rows[0].website};
+    root /var/www/template${templateId}/user${hotelId};
+    index index.html;
+    location / {
+      try_files $uri $uri/ /index.html;
+    }
+  }
+  `;
 
-//       console.error(`stderr: ${stderr}`);
+  const configPath = `/etc/nginx/sites-available/template${templateId}-user${hotelId}`;
 
-//       exec("sudo systemctl restart nginx", (error, stdout, stderr) => {
-//         if (error) {
-//           console.error(`exec error: ${error}`);
-//           return;
-//         }
+  fssync.writeFileSync(configPath, nginxConfig);
 
-//         console.log(`stdout: ${stdout}`);
+  exec(
+    `sudo ln -s ${configPath} /etc/nginx/sites-enabled/`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
 
-//         console.error(`stderr: ${stderr}`);
-//       });
-//     }
-//   );
-// };
+      exec("sudo systemctl restart nginx", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+        console.log("nginx file successfully created");
+        addSslCertificate(hotelId, templateId, getSiteName);
+      });
+    }
+  );
+};
 
 // // add ssl certificate
 
-// const addSslCertificate = (hotelId, templateId) => {
-//   exec(
-//     `sudo certbot --nginx -d ${getSiteName.rows[0].sitename}`,
-//     (error, stdout, stderr) => {
-//       if (error) {
-//         console.error(`exec error: ${error}`);
-//         return;
-//       }
-//       console.log(`stdout: ${stdout}`);
-//       console.error(`stderr: ${stderr}`);
+const addSslCertificate = (hotelId, templateId, getSiteName) => {
+  const domain = getSiteName.rows[0].website;
 
-//       exec("sudo systemctl restart nginx", (error, stdout, stderr) => {
-//         if (error) {
-//           console.error(`exec error: ${error}`);
-//           return;
-//         }
-//         console.log(`stdout: ${stdout}`);
-//         console.error(`stderr: ${stderr}`);
-//       });
-//     }
-//   );
-// };
+  exec(
+    `sudo certbot certificates --domain ${domain}`,
+    (checkError, checkStdout, checkStderr) => {
+      if (checkError) {
+        console.error(`Error checking certificate: ${checkError}`);
+        return;
+      }
+
+      const certificateExists = checkStdout.includes(
+        `Certificate Name: ${domain}`
+      );
+
+      const certbotCommand = certificateExists
+        ? `sudo certbot --nginx -d ${domain} --reinstall`
+        : `sudo certbot --nginx -d ${domain}`;
+
+      console.log(`Running Certbot command: ${certbotCommand}`);
+
+      exec(certbotCommand, (certError, certStdout, certStderr) => {
+        if (certError) {
+          console.error(`Error handling SSL certificate: ${certError}`);
+          return;
+        }
+
+        console.log(certStdout);
+
+        exec(
+          "sudo systemctl restart nginx",
+          (nginxError, nginxStdout, nginxStderr) => {
+            if (nginxError) {
+              console.error(`Error restarting Nginx: ${nginxError}`);
+              return;
+            }
+
+            console.log(
+              `SSL certificate ${
+                certificateExists ? "reinstalled" : "installed"
+              } successfully for ${domain}`
+            );
+          }
+        );
+      });
+    }
+  );
+};
 
 //       //verify the symbolic link
 
