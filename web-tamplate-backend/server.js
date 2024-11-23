@@ -166,31 +166,8 @@ app.get("/build-template", async (req, res) => {
     //       "alt": "About Us Image 2",
     //       "src": "img/about-2.jpg"
     //     },
-    //     {
-    //       "alt": "About Us Image 3",
-    //       "src": "img/about-3.jpg"
-    //     },
-    //     {
-    //       "alt": "About Us Image 4",
-    //       "src": "img/about-4.jpg"
-    //     }
     //   ],
-    //   "mapIframeHtml": "<div style=\"max-width:100%;overflow:hidden;color:red;height:400px;\"><div id=\"display-google-map\" style=\"height:100%; width:100%;max-width:100%;\"><iframe style=\"height:100%;width:100%;border:0;\" frameborder=\"0\" src=\"https://www.google.com/maps/embed/v1/place?q=hillroost&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8\"></iframe></div><a class=\"from-embedmap-code\" href=\"https://www.bootstrapskins.com/themes\" id=\"auth-map-data\">premium bootstrap themes</a><style>#display-google-map img.text-marker{max-width:none!important;background:none!important;}img{max-width:none}</style></div>",
-    //   "attractionList": [],
-    //   "carouselImages": [
-    //     {
-    //       "alt": "Carousel Image 1",
-    //       "src": "img/carousel-1.jpg",
-    //       "carouselTitle": "Luxury Living",
-    //       "carouselDescription": "A luxury tourist residence..."
-    //     },
-    //     {
-    //       "alt": "Carousel Image 2",
-    //       "carouselTitle": "Luxury Living",
-    //       "carouselDescription": "A luxury tourist residence..."
-    //     }
-    //   ]
-    // }
+
     const data = {
       "#siteTitle": result.rows[0].details.title,
       "#siteEmail": result.rows[0].details.email,
