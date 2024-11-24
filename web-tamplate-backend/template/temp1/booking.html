@@ -233,18 +233,16 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-floating date" id="date3" data-target-input="nearest">
-                                            <input type="text" class="form-control datetimepicker-input" id="checkin"
-                                                placeholder="Check In" data-target="#date3"
-                                                data-toggle="datetimepicker" />
+                                        <div class="form-floating">
+                                            <input type="datetime-local" class="form-control" id="checkin"
+                                                placeholder="Check In">
                                             <label for="checkin">Check In</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-floating date" id="date4" data-target-input="nearest">
-                                            <input type="text" class="form-control datetimepicker-input" id="checkout"
-                                                placeholder="Check Out" data-target="#date4"
-                                                data-toggle="datetimepicker" />
+                                        <div class="form-floating">
+                                            <input type="datetime-local" class="form-control" id="checkout"
+                                                placeholder="Check Out">
                                             <label for="checkout">Check Out</label>
                                         </div>
                                     </div>
@@ -286,8 +284,8 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <a href="#hotelURL" class="btn btn-primary w-100 py-3" target="_blank">Book
-                                            Now</a>
+                                        <button id="bookingLink" class="btn btn-primary w-100 py-3" type="button">Book
+                                            Now</button>
                                     </div>
                                 </div>
                             </form>
@@ -528,6 +526,7 @@
             <!-- Template Javascript -->
             <script src="js/main.js"></script>
             <script src="js/index.js"></script>
+            #jsscript
 </body>
 
 </html>

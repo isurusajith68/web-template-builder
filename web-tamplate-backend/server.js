@@ -557,9 +557,51 @@ const buildTemplateContactUs = async (data, hotelId, templateId) => {
 const buildTemplateBooking = async (data, hotelId, templateId) => {
   const template = await fs.readFile(`./template/temp1/booking.html`, "utf8");
 
+  const jsscript = `
+<script>
+  function otherParms() {
+    let params = "";
+
+    const hotelId = ${hotelId};
+    const name = document.getElementById("name")?.value || "";
+    const email = document.getElementById("email")?.value || "";
+    const checkin = document.getElementById("checkin")?.value || "";
+    const checkout = document.getElementById("checkout")?.value || "";
+    const adults = document.getElementById("select1")?.value || "1";
+    const children = document.getElementById("select2")?.value || "0";
+    const rooms = document.getElementById("select3")?.value || "1";
+    const specialRequest = document.getElementById("message")?.value || "";
+
+    params += \`hotelId=\${encodeURIComponent(hotelId)}\`;
+    if (name) params += \`&name=\${encodeURIComponent(name)}\`;
+    if (email) params += \`&email=\${encodeURIComponent(email)}\`;
+    if (checkin) params += \`&checkin=\${encodeURIComponent(checkin)}\`;
+    if (checkout) params += \`&checkout=\${encodeURIComponent(checkout)}\`;
+    if (adults) params += \`&adults=\${encodeURIComponent(adults)}\`;
+    if (children) params += \`&children=\${encodeURIComponent(children)}\`;
+    if (rooms) params += \`&rooms=\${encodeURIComponent(rooms)}\`;
+    if (specialRequest) params += \`&specialRequest=\${encodeURIComponent(specialRequest)}\`;
+
+    return params;
+  }
+
+  document.getElementById("bookingLink").addEventListener("click", function () {
+    const baseUrl = "https://webbookings.ceyinfo.cloud";
+    const dynamicParams = otherParms();
+    const finalUrl = \`\${baseUrl}?\${dynamicParams}\`;
+    window.location.href = finalUrl;
+  });
+</script>
+`;
+
+  const data2 = {
+    ...data,
+    "#jsscript": jsscript,
+  };
+
   const result = template.replace(
     /#\w+/g,
-    (placeholder) => data[placeholder] || ""
+    (placeholder) => data2[placeholder] || ""
   );
 
   await fs.writeFile(
