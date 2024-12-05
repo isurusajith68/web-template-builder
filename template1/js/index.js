@@ -112,19 +112,19 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error loading site details:", errorText);
+          const err = await response.json();
+          console.error(err);
           this.isLoading = null;
-          this.isError = "Error loading site details";
+          this.isError = err.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
-          this.title = siteDetails.details.title;
-          this.email = siteDetails.details.email;
-          this.phoneNumber = siteDetails.details.phoneNumber;
+          // this.title = siteDetails.details.title;
+          // this.email = siteDetails.details.email;
+          // this.phoneNumber = siteDetails.details.phoneNumber;
           this.aboutUsImages = siteDetails.details.aboutUsImages;
           this.carouselImages = siteDetails?.details?.carouselImages;
           this.description = siteDetails?.details?.description;
@@ -140,7 +140,6 @@ const app = Vue.createApp({
           }, 5000);
         }
       } catch (error) {
-        console.error("Error fetching site details:", error);
         this.isLoading = null;
         this.isError = "Error fetching site details";
         setTimeout(() => {
@@ -180,10 +179,11 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error saving details:", errorText);
+          const err = await response.json();
+
+          console.error("Error saving details:", err.message);
           this.isLoading = null;
-          this.isError = "Error saving details";
+          this.isError = err.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);
@@ -215,10 +215,12 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error publishing changes:", errorText);
+          const err = await response.json();
+
+          console.log(err);
+          console.error("Error publishing changes:");
           this.isLoading = null;
-          this.isError = "Error publishing changes";
+          this.isError = err.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);
@@ -235,7 +237,7 @@ const app = Vue.createApp({
       } catch (error) {
         console.error("Error publishing changes:", error);
         this.isLoading = null;
-        this.isError = "Error publishing changes";
+        this.isError = error?.message;
         setTimeout(() => {
           this.isError = null;
         }, 5000);
@@ -249,8 +251,15 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
+          const err = await response.json();
+
           console.error("Error fetching hotel info:", errorText);
+
+          this.isLoading = null;
+          this.isError = err.message;
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
         } else {
           const result = await response.json();
           console.log("Hotel info fetched successfully:", result);

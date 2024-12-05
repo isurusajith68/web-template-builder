@@ -508,7 +508,7 @@ const { exec } = require("child_process");
 const generateNginxConfig = async (hotelId, templateId) => {
   // console.log(hotelId);
   const getSiteName = await pool.query(
-    "SELECT website FROM webtemplates WHERE hotelid = $1",
+    "SELECT url FROM hotelinfo WHERE id = $1",
     [hotelId]
   );
   // console.log(getSiteName);
@@ -524,7 +524,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
   const nginxConfig = `
   server {
     listen 80;
-    server_name ${getSiteName.rows[0].website};
+    server_name ${getSiteName.rows[0].url};
     root /var/www/template${templateId}/user${hotelId};
     index index.html;
     location / {
@@ -560,7 +560,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
 // // add ssl certificate
 
 const addSslCertificate = (hotelId, templateId, getSiteName) => {
-  const domain = getSiteName.rows[0].website;
+  const domain = getSiteName.rows[0].url;
 
   exec(
     `sudo certbot certificates --domain ${domain}`,

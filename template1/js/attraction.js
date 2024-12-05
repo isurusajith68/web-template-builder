@@ -199,6 +199,30 @@ const app = Vue.createApp({
         console.error("Error removing attraction:", error);
       }
     },
+    async hotelInfo() {
+      try {
+        const response = await fetch(
+          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error fetching hotel info:", errorText);
+        } else {
+          const result = await response.json();
+          console.log("Hotel info fetched successfully:", result);
+
+          if (result) {
+            this.title = result.name;
+            this.email = result.email;
+            this.phoneNumber = result.mobile;
+            this.address = result.address1;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching hotel info:", error);
+      }
+    },
   },
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);

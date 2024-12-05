@@ -62,6 +62,30 @@ const app = Vue.createApp({
           return null;
       }
     },
+    async hotelInfo() {
+      try {
+        const response = await fetch(
+          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
+        );
+
+        if (!response.ok) {
+          const errorText = await response.json();
+          console.error("Error fetching hotel info:", errorText);
+        } else {
+          const result = await response.json();
+          console.log("Hotel info fetched successfully:", result);
+
+          if (result) {
+            this.title = result.name;
+            this.email = result.email;
+            this.phoneNumber = result.mobile;
+            this.address = result.address1;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching hotel info:", error);
+      }
+    },
     async loadSiteDetails() {
       this.isLoading = "Loading site data...";
 
@@ -71,19 +95,19 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
+          const errorText = await response.json();
           console.error("Error loading site details:", errorText);
           this.isLoading = null;
-          this.isError = "Error loading site details";
+          this.isError = errorText.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
-          this.title = siteDetails.details.title;
-          this.email = siteDetails.details.email;
-          this.phoneNumber = siteDetails.details.phoneNumber;
+          // this.title = siteDetails.details.title;
+          // this.email = siteDetails.details.email;
+          // this.phoneNumber = siteDetails.details.phoneNumber;
           this.aboutUsImages = siteDetails.details.aboutUsImages;
           this.carouselImages = siteDetails?.details?.carouselImages;
           this.description = siteDetails?.details?.description;
@@ -117,10 +141,10 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
+          const errorText = await response.json();
           console.error("Error loading room details:", errorText);
           this.isLoading = null;
-          this.isError = "Error loading room details";
+          this.isError = errorText.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);
@@ -159,6 +183,7 @@ const app = Vue.createApp({
     } else {
       this.loadSiteDetails();
       this.loadRoomDetails();
+      this.hotelInfo();
     }
 
     // const urlParams = new URLSearchParams(window.location.search);

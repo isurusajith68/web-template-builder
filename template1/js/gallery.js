@@ -146,7 +146,30 @@ const gallery = Vue.createApp({
         }, 5000);
       }
     },
+    async hotelInfo() {
+      try {
+        const response = await fetch(
+          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
+        );
 
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error fetching hotel info:", errorText);
+        } else {
+          const result = await response.json();
+          console.log("Hotel info fetched successfully:", result);
+
+          if (result) {
+            this.title = result.name;
+            this.email = result.email;
+            this.phoneNumber = result.mobile;
+            this.address = result.address1;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching hotel info:", error);
+      }
+    },
     async loadSiteDetails() {
       this.isLoading = "Loading site data...";
 
@@ -156,24 +179,24 @@ const gallery = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
+          const errorText = await response.json();
           console.error("Error loading site details:", errorText);
           this.isLoading = null;
-          this.isError = "Error loading site details";
+          this.isError = errorText.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
-          if (siteDetails.details.realImages.getImgPathForTemplate.length > 0) {
+          if (siteDetails?.details?.realImages?.getImgPathForTemplate?.length > 0) {
             this.userUseRealImages = true;
             this.realImages = siteDetails.details.realImages;
           }
 
-          this.title = siteDetails.details.title;
-          this.email = siteDetails.details.email;
-          this.phoneNumber = siteDetails.details.phoneNumber;
+          // this.title = siteDetails.details.title;
+          // this.email = siteDetails.details.email;
+          // this.phoneNumber = siteDetails.details.phoneNumber;
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
           setTimeout(() => {

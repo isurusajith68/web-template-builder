@@ -43,6 +43,16 @@ app.post("/save-site-details", async (req, res) => {
   } = req.body;
 
   try {
+    const result = await pool.query("SELECT * FROM hotelinfo WHERE id = $1", [
+      hotelId,
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "No hotel information found please add hotel information",
+      });
+    }
+
     const existingResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
       [hotelId, templateId]
@@ -69,6 +79,13 @@ app.post("/save-site-details", async (req, res) => {
           templateId,
         ]
       );
+
+      if (updateResult.rows.length === 0) {
+        return res.status(404).json({
+          message: "No site details found",
+        });
+      }
+
       res.status(200).json(updateResult.rows[0]);
     } else {
       const insertResult = await pool.query(
@@ -91,18 +108,29 @@ app.post("/save-site-details", async (req, res) => {
           }),
         ]
       );
+
+      if (insertResult.rows.length === 0) {
+        return res.status(404).json({
+          message: "No site details found",
+        });
+      }
+
       res.status(201).json(insertResult.rows[0]);
     }
   } catch (err) {
     console.error("Error saving site details:", err);
-    res.status(500).send("Error saving site details");
+    res.status(500).json({
+      message: "Error saving site details",
+    });
   }
 });
 
 app.get("/site-details", async (req, res) => {
   const { hotelId, templateId } = req.query;
   if (!hotelId || !templateId) {
-    return res.status(400).send("hotelId and templateId are required");
+    return res.status(400).json({
+      message: "hotelId and templateId are required",
+    });
   }
 
   try {
@@ -112,20 +140,26 @@ app.get("/site-details", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("No site details found");
+      return res.status(404).json({
+        message: "site details not found",
+      });
     }
 
     res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error("Error loading site details:", err);
-    res.status(500).send("Error loading site details");
+    res.status(500).json({
+      message: "Error loading site details",
+    });
   }
 });
 
 app.get("/build-template", async (req, res) => {
   const { hotelId, templateId } = req.query;
   if (!hotelId || !templateId) {
-    return res.status(400).send("hotelId and templateId are required");
+    return res.status(404).json({
+      message: "hotelId and templateId are required",
+    });
   }
 
   try {
@@ -147,7 +181,9 @@ app.get("/build-template", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("No site details found");
+      return res.status(404).json({
+        message: "site details not found please save your changes",
+      });
     }
     // {
     //   "email": "katupitiya@gmail.com",
@@ -194,6 +230,24 @@ app.get("/build-template", async (req, res) => {
       "#mapIframeHtml": result.rows[0].details.mapIframeHtml,
     };
 
+    const getSiteName = await pool.query(
+      "SELECT url FROM hotelinfo WHERE id = $1",
+      [hotelId]
+    );
+    console.log(getSiteName);
+
+    if (getSiteName.rows.length === 0) {
+      return res.status(404).json({
+        message: "please update site information",
+      });
+    }
+
+    if (getSiteName.rows[0].url === null) {
+      return res.status(404).json({
+        message: "website domain not found",
+      });
+    }
+
     buildTemplate(data, hotelId, templateId);
     buildTemplateAboutUs(data, hotelId, templateId);
     buildTemplateGallery(result, hotelId, templateId);
@@ -208,6 +262,9 @@ app.get("/build-template", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      message: "server error plz try again",
+    });
   }
 });
 
@@ -223,10 +280,15 @@ app.get("/hotel-info", async (req, res) => {
   try {
     const hotelId = req.query.hotelId;
 
-    const result = await pool.query(
-      "SELECT * FROM hotelinfo WHERE hotelid = $1",
-      [hotelId]
-    );
+    const result = await pool.query("SELECT * FROM hotelinfo WHERE id = $1", [
+      hotelId,
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "No hotel information found please add hotel information",
+      });
+    }
 
     res.send(result.rows[0]);
   } catch (error) {
@@ -400,15 +462,15 @@ app.get("/rooms-info", async (req, res) => {
     const result = await pool.query(
       `
       SELECT 
-        htrm.hotelid,
+        htrm.id,
         htrm.roomviewid,
         htrm.roomtypeid,
         htrm.roomno,
         htrm.noofbed,
-        hrv.roomview,
-        hrt.roomtype,
+        hrv.label as roomview,
+        hrt.label as roomtype,
         hrp.fbprice,
-        ARRAY_AGG(amn.name) AS roomamenities
+        ARRAY_AGG(amn.label) AS roomamenities
       FROM 
         hotelrooms htrm
       JOIN 
@@ -423,24 +485,32 @@ app.get("/rooms-info", async (req, res) => {
       LEFT JOIN 
         roomamenities amn ON ram.amenityid = amn.id
       WHERE 
-        htrm.hotelid = $1
+        htrm.id = $1
       GROUP BY 
-        htrm.hotelid, 
+        htrm.id, 
         htrm.roomviewid, 
         htrm.roomtypeid, 
         htrm.roomno,
         htrm.noofbed, 
-        hrv.roomview, 
-        hrt.roomtype, 
+        hrv.label  ,
+        hrt.label , 
         hrp.fbprice
       `,
       [hotelId]
     );
 
-    res.send(result.rows);
+    if (result.rows.length === 0) {
+      return res.status(404).send({
+        message: "No rooms add to this hotel please add rooms",
+      });
+    }
+
+    res.status(200).json(result.rows);
   } catch (error) {
     console.log(error);
-    res.status(500).send("Failed fetching room information.");
+    res.status(500).send({
+      message: "Error loading room details",
+    });
   }
 });
 
@@ -710,11 +780,11 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
         htrm.roomviewid,
         htrm.roomtypeid,
         htrm.roomno,
-        htrm.noofbed, 
-        hrv.roomview,
-        hrt.roomtype,
+        htrm.noofbed,
+        hrv.label as roomview,
+        hrt.label as roomtype,
         hrp.fbprice,
-        ARRAY_AGG(amn.name) AS roomamenities
+        ARRAY_AGG(amn.label) AS roomamenities
       FROM 
         hotelrooms htrm
       JOIN 
@@ -734,12 +804,11 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
         htrm.hotelid, 
         htrm.roomviewid, 
         htrm.roomtypeid, 
-        htrm.roomno, 
+        htrm.roomno,
         htrm.noofbed, 
-        hrv.roomview, 
-        hrt.roomtype, 
-        hrp.fbprice
-      `,
+        hrv.label  ,
+        hrt.label , 
+        hrp.fbprice`,
       [hotelId]
     );
 
@@ -870,16 +939,41 @@ const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
 };
 
 //  // generate nginx config file for the built template
-
+// INSERT INTO hotelinfo (
+//     id,
+//     name,
+//     startdate,
+//     type,
+//     mobile,
+//     telephone,
+//     email,
+//     url,
+//     address1,
+//     address2,
+//     postalcode,
+//     city,
+//     province,
+//     country,
+//     timezone,
+//     tag,
+//     description,
+//     apprequestid,
+//   ) VALUES (
+//     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+//   )
 const { exec } = require("child_process");
 
 const generateNginxConfig = async (hotelId, templateId) => {
   // console.log(hotelId);
   const getSiteName = await pool.query(
-    "SELECT website FROM webtemplates WHERE hotelid = $1",
+    "SELECT url FROM hotelinfo WHERE id = $1",
     [hotelId]
   );
   // console.log(getSiteName);
+
+  if (getSiteName.rows[0].url === null) {
+    return console.log("website name not found");
+  }
 
   const nginxFileExist = fssync.existsSync(
     `/etc/nginx/sites-available/template${templateId}-user${hotelId}`
@@ -893,10 +987,16 @@ const generateNginxConfig = async (hotelId, templateId) => {
     return console.log("website name not found");
   }
 
+  // http and https remove
+
+  const domain = getSiteName.rows[0].url
+    .replace(/https?:\/\//, "")
+    .replace(/\/$/, "");
+
   const nginxConfig = `
   server {
     listen 80;
-    server_name ${getSiteName.rows[0].website};
+    server_name ${domain};
     root /var/www/template${templateId}/user${hotelId};
     index index.html;
     location / {
@@ -923,7 +1023,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
           return;
         }
         console.log("nginx file successfully created");
-        addSslCertificate(hotelId, templateId, getSiteName);
+        addSslCertificate(hotelId, templateId, domain);
       });
     }
   );
@@ -931,9 +1031,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
 
 // // add ssl certificate
 
-const addSslCertificate = (hotelId, templateId, getSiteName) => {
-  const domain = getSiteName.rows[0].website;
-
+const addSslCertificate = (hotelId, templateId, domain) => {
   exec(
     `sudo certbot certificates --domain ${domain}`,
     (checkError, checkStdout, checkStderr) => {
