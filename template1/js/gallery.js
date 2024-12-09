@@ -30,8 +30,24 @@ const gallery = Vue.createApp({
         "img/Capture9.jpg",
         "img/room7.jpg",
       ],
+      footerDescription: "Click to Edit Footer Description",
+
       userUseRealImages: false,
       realImages: [],
+      carouselImages: [
+        {
+          src: "img/carousel-1.jpg",
+          alt: "Carousel Image 1",
+          carouselTitle: "Luxury Living",
+          carouselDescription: "A luxury tourist residence...",
+        },
+        {
+          src: "img/carousel-2.jpg",
+          alt: "Carousel Image 2",
+          carouselTitle: "Luxury Living",
+          carouselDescription: "A luxury tourist residence...",
+        },
+      ],
 
       isLoading: null,
       isError: null,
@@ -194,6 +210,9 @@ const gallery = Vue.createApp({
           ) {
             this.userUseRealImages = true;
             this.realImages = siteDetails.details.realImages;
+            this.carouselImages = siteDetails?.details?.carouselImages;
+            this.footerDescription =
+              siteDetails?.details?.footerDescription || this.footerDescription;
           }
 
           // this.title = siteDetails.details.title;

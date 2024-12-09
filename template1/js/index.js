@@ -36,6 +36,12 @@ const app = Vue.createApp({
       description:
         "Hill Roost is located in Kandy, the most beautiful city in central Sri Lanka. We are at Ampitiya-Kandy road, about 3km away from the Kandy City Center. We are very close to the major tourist attractions of the city like the Temple of the Tooth, Kandy Lake, restaurants, and shopping areas.Kandy is the last kingdom of ancient Sri Lanka, and it is full of cultural, traditional,<br><br> and historical values to explore. Geographically, Kandy is a plateau located in the central highlands of Sri Lanka, surrounded by magnificent mountains. This provides beautiful landscapes, mountain views, and a pleasant climate, attracting millions of tourists every year.Hill Roost is more like a home for your stay in Kandy, offering luxury accommodation with<br><br> a unique boutique hotel concept. Hill Roost has 5 bedrooms with large common areas including lobbies, sitting areas, ",
       attraction: "WITHIN KANDY CITY",
+
+      subContainerTitle: "Click to Edit  Title",
+      subContainerDescription: "Click to Edit Footer Description",
+      subContainerImage: "img/hotel3.jpg",
+      footerDescription: "Click to Edit Footer Description",
+
       attractionList: [],
       roomsDetails: [],
 
@@ -48,6 +54,9 @@ const app = Vue.createApp({
 
       isEditingCarouselTitle: false,
       isEditingCarouselDescription: false,
+      isEditingSubContainerTitle: false,
+      isEditingSubContainerDescription: false,
+      isEditingFooterDescription: false,
 
       editCarouselText: [
         {
@@ -65,12 +74,18 @@ const app = Vue.createApp({
         { src: "", alt: "", carouselTitle: "", carouselDescription: "" },
       ],
 
+      editSubContainerTitle: "",
+      editSubContainerDescription: "",
+      editFooterDescription: "",
+
       editAboutUsImages: [
         { src: "", alt: "" },
         { src: "", alt: "" },
         { src: "", alt: "" },
         { src: "", alt: "" },
       ],
+
+      offers: [],
 
       aboutImgStyle: [
         {
@@ -104,6 +119,11 @@ const app = Vue.createApp({
   },
 
   methods: {
+    formatDate(dateString) {
+      const options = { year: "numeric", month: "short", day: "numeric" };
+      const date = new Date(dateString);
+      return date.toLocaleDateString(undefined, options);
+    },
     async loadSiteDetails() {
       this.isLoading = "Loading site data...";
 
@@ -133,7 +153,18 @@ const app = Vue.createApp({
           this.address = siteDetails?.details?.address;
           this.mapIframeHtml = siteDetails?.details?.mapIframeHtml;
           this.attraction = siteDetails?.details?.attraction;
-          this.attractionList = siteDetails?.details?.attractionList || [];
+          this.attractionList =
+            siteDetails?.details?.attractionList || this.attractionList;
+          this.subContainerTitle =
+            siteDetails?.details?.subContainerTitle || this.subContainerTitle;
+          this.subContainerDescription =
+            siteDetails?.details?.subContainerDescription ||
+            this.subContainerDescription;
+          this.subContainerImage =
+            siteDetails?.details?.subContainerImage || this.subContainerImage;
+          this.footerDescription =
+            siteDetails?.details?.footerDescription || this.footerDescription;
+
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
           setTimeout(() => {
@@ -165,6 +196,10 @@ const app = Vue.createApp({
         mapIframeHtml: this.mapIframeHtml,
         attraction: this.attraction,
         attractionList: this.attractionList,
+        subContainerTitle: this.subContainerTitle,
+        subContainerDescription: this.subContainerDescription,
+        subContainerImage: this.subContainerImage,
+        footerDescription: this.footerDescription,
       };
 
       try {
@@ -276,6 +311,36 @@ const app = Vue.createApp({
         console.error("Error fetching hotel info:", error);
       }
     },
+    async hotelOffers() {
+      try {
+        const response = await fetch(
+          `https://be-publish.ceyinfo.cloud/hotel-offers?hotelId=${this.hotelId}`
+        );
+
+        if (!response.ok) {
+          const err = await response.json();
+
+          console.error("Error fetching hotel info:", errorText);
+
+          this.isLoading = null;
+          this.isError = err.message;
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+        } else {
+          const result = await response.json();
+          console.log("Hotel info fetched successfully:", result);
+
+          console.log("result", result);
+
+          if (result) {
+            this.offers = result;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching hotel info:", error);
+      }
+    },
     async loadRoomDetails() {
       this.isLoading = "Loading room data...";
 
@@ -319,6 +384,58 @@ const app = Vue.createApp({
         setTimeout(() => {
           this.isError = null;
         }, 5000);
+      }
+    },
+
+    editClickFooterDescription() {
+      this.isEditingFooterDescription = true;
+      this.editFooterDescription = this.footerDescription;
+    },
+
+    updateFooterDescription() {
+      this.footerDescription = this.editFooterDescription;
+      this.isEditingFooterDescription = false;
+    },
+
+    editClickSubContainerTitle() {
+      this.isEditingSubContainerTitle = true;
+      this.editSubContainerTitle = this.subContainerTitle;
+    },
+    editClickSubContainerDescription() {
+      this.isEditingSubContainerDescription = true;
+      this.editSubContainerDescription = this.subContainerDescription;
+    },
+
+    updateSubContainerTitle() {
+      this.subContainerTitle = this.editSubContainerTitle;
+      this.isEditingSubContainerTitle = false;
+    },
+    updateSubContainerDescription() {
+      this.subContainerDescription = this.editSubContainerDescription;
+
+      this.isEditingSubContainerDescription = false;
+    },
+
+    triggerUploadSubContainerImage() {
+      const fileInput = this.$refs["fileInputSubContainer"];
+      if (fileInput) {
+        fileInput.click();
+      } else {
+        console.error("File input ref not found.");
+      }
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        console.log("Selected file:", file);
+        // this.subContainerImage = URL.createObjectURL(file);
+
+        //convert image to base64
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.subContainerImage = e.target.result;
+        };
+        reader.readAsDataURL(file);
       }
     },
     editClickCarouselImage(index) {
@@ -512,6 +629,7 @@ const app = Vue.createApp({
     } else {
       this.loadSiteDetails();
       this.hotelInfo();
+      this.hotelOffers();
       this.loadRoomDetails();
     }
   },

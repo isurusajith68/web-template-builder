@@ -80,8 +80,7 @@
         <div class="container-fluid bg-dark px-0">
             <div class="row gx-0">
                 <div class="col-lg-3 bg-dark d-none d-lg-flex">
-                    <img src="img/icon.png" alt="" width="60px" height="100px"
-                        style="margin-top: 5px; margin-left: 5px;">
+
                     <a class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
                         <h1 v-if="!isEditingTitle" @click="editClickTitle" class="m-0 text-primary text-uppercase">{{
                             title
@@ -555,12 +554,28 @@
                             <div class="p-5">
                                 <h6 class="section-title text-start text-white text-uppercase mb-3">Luxury Living
                                 </h6>
-                                <h1 class="text-white mb-4">Discover A Brand Luxurious Hotel</h1>
-                                <p class="text-white mb-4">A luxury tourist residence provides accommodation with a
-                                    unique
-                                    boutique
-                                    hotel concept
-                                    Calm, relaxing and elegant environment with excellent mountain views</p>
+                                <h1 v-if="!isEditingSubContainerTitle" class="text-white mb-4"
+                                    @click="editClickSubContainerTitle">
+                                    {{subContainerTitle}}
+                                </h1>
+
+                                <div>
+                                    <input
+                                        style="background-color: transparent; border: 2px solid whitesmoke; color: black; font-size: 1.5rem; background: white;"
+                                        class=" mb-4" v-if="isEditingSubContainerTitle" v-model="editSubContainerTitle"
+                                        @keyup.enter="updateSubContainerTitle" />
+                                </div>
+
+                                <p style="max-width: 40%;" class="text-white mb-4"
+                                    v-if="!isEditingSubContainerDescription" @click="editClickSubContainerDescription">
+                                    {{subContainerDescription}}
+                                </p>
+                                <div>
+                                    <textarea cols="50" rows="5" v-if="isEditingSubContainerDescription"
+                                        v-model="editSubContainerDescription"
+                                        @keyup.enter="updateSubContainerDescription"></textarea>
+                                </div>
+
                                 <a :href="`https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}`"
                                     class="btn btn-primary py-md-3 px-md-5 me-3">Our Rooms</a>
                                 <a :href="`https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}`"
@@ -568,9 +583,13 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div>
-                                <img src="img/hotel3.jpg" alt="" width="660px" height="660px" class="img"
+                            <div style="position: relative; display: inline-block;">
+                                <img :src="subContainerImage" alt="" width="660px" height="100%" class="img"
                                     style=" width:660px; height: 100%;">
+                                <i class="fa fa-upload" @click="triggerUploadSubContainerImage"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; color: #e2e60f; font-size: 2rem;"></i>
+                                <input ref="fileInputSubContainer" type="file" style="display: none;"
+                                    @change="handleFileChange">
                             </div>
                         </div>
                         <style>
@@ -837,13 +856,14 @@
                                             {{title}}
                                         </h1>
                                     </a>
-                                    <p class="text-white mb-0" style="text-align: justify;">
-                                        A luxury tourist residence provides accommodation with a unique boutique
-                                        hotel
-                                        concept
-                                        Calm,
-                                        relaxing and elegant environment with excellent mountain views
+                                    <p v-if="!isEditingFooterDescription" @click="editClickFooterDescription"
+                                        class="text-white mb-0" style="text-align: justify;">
+                                        {{
+                                        footerDescription
+                                        }}
                                     </p>
+                                    <textarea v-if="isEditingFooterDescription" v-model="editFooterDescription"
+                                        @keyup.enter="updateFooterDescription" style="width: 100%;"></textarea>
                                 </div>
                             </div>
                             <div class="col-md-6 col-lg-3">

@@ -69,8 +69,7 @@
         <div class="container-fluid bg-dark px-0">
             <div class="row gx-0">
                 <div class="col-lg-3 bg-dark d-none d-lg-flex">
-                    <img src="img/icon.png" alt="" width="60px" height="100px"
-                        style="margin-top: 5px; margin-left: 5px;">
+
                     <a :href="`index.html?hotelId=${hotelId}`"
                         class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
                         <h1 class="m-0 text-primary text-uppercase">{{title}}</h1>
@@ -132,7 +131,7 @@
         <!-- Header End -->
 
         <!-- Page Header Start -->
-        <div class="container-fluid page-header mb-5 p-0" style="background-image: url(img/carousel-1.jpg);">
+        <div class="container-fluid page-header mb-5 p-0" :style="{ backgroundImage: `url(${carouselImages[0].src})` }">
             <div class="container-fluid page-header-inner py-5">
                 <div class="container text-center pb-5">
                     <h1 class="display-3 text-white mb-3 animated slideInDown">Rooms</h1>
@@ -150,7 +149,7 @@
 
 
         <!-- Booking Start -->
-     
+
         <!-- Booking End -->
 
 
@@ -199,7 +198,8 @@
                                 <div class="d-flex justify-content-between">
                                     <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
                                     <a class="btn btn-sm btn-dark rounded py-2 px-4"
-                                        :href="`https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&roomno=${room.roomno}`">Book Now</a>
+                                        :href="`https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&roomno=${room.roomno}`">Book
+                                        Now</a>
                                 </div>
                             </div>
                         </div>
@@ -348,12 +348,13 @@
         <!-- Room End -->
 
         <!-- Newsletter Start -->
-       
+
         <!-- Newsletter end -->
 
 
         <!-- Footer Start -->
-        <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn" data-wow-delay="0.1s">
+        <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"
+            data-wow-delay="0.1s">
             <div class="container mt-5">
                 <div class="row g-5">
                     <div class="col-md-6 col-lg-4 col-sm-4">
@@ -362,8 +363,9 @@
                                 <h1 class="text-white text-uppercase mb-3">Hill Roost</h1>
                             </a>
                             <p class="text-white mb-0" style="text-align: justify;">
-                                A luxury tourist residence provides accommodation with a unique boutique hotel concept
-                                Calm, relaxing and elegant environment with excellent mountain views
+                                {{
+                                footerDescription
+                                }}
                             </p>
                         </div>
                     </div>

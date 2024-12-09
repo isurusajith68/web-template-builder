@@ -40,6 +40,10 @@ app.post("/save-site-details", async (req, res) => {
     mapIframeHtml,
     attraction,
     attractionList,
+    subContainerTitle,
+    subContainerDescription,
+    subContainerImage,
+    footerDescription,
   } = req.body;
 
   try {
@@ -74,6 +78,10 @@ app.post("/save-site-details", async (req, res) => {
             mapIframeHtml,
             attraction,
             attractionList,
+            subContainerTitle,
+            subContainerDescription,
+            subContainerImage,
+            footerDescription,
           }),
           hotelId,
           templateId,
@@ -105,6 +113,10 @@ app.post("/save-site-details", async (req, res) => {
             mapIframeHtml,
             attraction,
             attractionList,
+            subContainerTitle,
+            subContainerDescription,
+            subContainerImage,
+            footerDescription,
           }),
         ]
       );
@@ -186,16 +198,16 @@ app.get("/build-template", async (req, res) => {
       });
     }
 
-    const alreadyPublish = await pool.query(
-      "SELECT * FROM webtemplate WHERE hotelid = $1 AND templateId = $2",
-      [hotelId, templateId]
-    );
+    // const alreadyPublish = await pool.query(
+    //   "SELECT * FROM webtemplate WHERE hotelid = $1 AND templateId = $2",
+    //   [hotelId, templateId]
+    // );
 
-    if (alreadyPublish.rows.length > 0) {
-      return res.status(404).json({
-        message: `Template${templateId} already publish`
-      });
-    }
+    // if (alreadyPublish.rows.length > 0) {
+    //   return res.status(404).json({
+    //     message: `Template${templateId} already publish`,
+    //   });
+    // }
     // {
     //   "email": "katupitiya@gmail.com",
     //   "title": "Isuru",
@@ -239,6 +251,11 @@ app.get("/build-template", async (req, res) => {
       "#siteDescription": result.rows[0].details.description,
       "#siteAddress": result.rows[0].details.address,
       "#mapIframeHtml": result.rows[0].details.mapIframeHtml,
+      "#subContainerTitle": result.rows[0].details.subContainerTitle,
+      "#subContainerDescription":
+        result.rows[0].details.subContainerDescription,
+      "#subContainerImage": result.rows[0].details.subContainerImage,
+      "#footerDescription": result.rows[0].details.footerDescription,
     };
 
     const getSiteName = await pool.query(
@@ -307,6 +324,26 @@ app.get("/hotel-info", async (req, res) => {
   }
 });
 
+app.get("/hotel-offers", async (req, res) => {
+  try {
+    const hotelId = req.query.hotelId;
+
+    const result = await pool.query(
+      "SELECT * FROM hoteloffers WHERE hotelid = $1",
+      [hotelId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "No hotel offers found",
+      });
+    }
+
+    res.send(result.rows);
+  } catch (error) {
+    console.log(error);
+  }
+});
 const ensureDirectoryExistence = (dir) => {
   if (!fssync.existsSync(dir)) {
     fssync.mkdirSync(dir, { recursive: true });
@@ -726,6 +763,7 @@ const buildTemplateGallery = async (result, hotelId, templateId) => {
     "#sitePhoneNumber": result.rows[0].details.phoneNumber,
     "#siteAddress": result.rows[0].details.address,
     "#galleryImages": galleryHtml,
+    "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
   };
 
   const templatePath = `./template/temp${templateId}/gallery.html`;
@@ -1017,6 +1055,7 @@ GROUP BY
       "#sitePhoneNumber": result.rows[0].details.phoneNumber,
       "#siteAddress": result.rows[0].details.address,
       "#rooms": roomsHtml,
+      "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
     };
 
     const templatePath = `./template/temp${templateId}/room.html`;
@@ -1060,9 +1099,59 @@ const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
 
   const template = await fs.readFile(templatePath, "utf8");
 
+  const result = await pool.query(
+    "SELECT * FROM hoteloffers WHERE hotelid = $1",
+    [hotelId]
+  );
+
+  if (result.rows.length === 0) {
+    console.log("No special offers found");
+  }
+
+  const offersHtml = result.rows;
+
+  // <div v-for="offer in offers" :key="offer.id" class="col-md-4">
+  //                           <div class="offer-card">
+  //                               <img src="img/room2.jpg" alt="Offer Image">
+  //                               <div class="offer-body">
+  //                                   <h5 class="offer-title">{{ offer.offername }}</h5>
+  //                                   <!--discount-->
+  //                                   <span class="offer-highlight">Discount: {{ offer.discount }}</span>
+  //                                   <p class="offer-details">
+  //                                       Offer Valid: {{ formatDate(offer.startdate) }} to {{ formatDate(offer.enddate)
+  //                                       }} <br>
+  //                                   </p>
+  //                               </div>
+  //                           </div>
+  //                       </div>
+
+  const offersHtml2 = offersHtml.map(
+    (offer) => `
+      <div class="col-md-4">
+
+        <div class="offer-card">
+            <img src="img/room2.jpg" alt="Offer Image">
+            <div class="offer-body">
+                <h5 class="offer-title">${offer.offername}</h5>
+                <span class="offer-highlight">Discount: ${offer.discount}</span>
+                <p class="offer-details">
+                    Offer Valid: ${offer.startdate} to ${offer.enddate} <br>
+
+                </p>
+            </div>
+        </div>
+    </div>
+    `
+  );
+
+  const data2 = {
+    ...data,
+    "#offers": offersHtml2.join(""),
+  };
+  // console.log(data2);
   const outputHtml = template.replace(
     /#\w+/g,
-    (placeholder) => data[placeholder] || ""
+    (placeholder) => data2[placeholder] || ""
   );
 
   const outputPath = `/var/www/template${templateId}/user${hotelId}/specialOffers.html`;

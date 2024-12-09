@@ -100,8 +100,7 @@
         <div class="container-fluid bg-dark px-0">
             <div class="row gx-0">
                 <div class="col-lg-3 bg-dark d-none d-lg-flex">
-                    <img src="img/icon.png" alt="" width="60px" height="100px"
-                        style="margin-top: 5px; margin-left: 5px;">
+
                     <a :href="`index.html?hotelId=${hotelId}`"
                         class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
                         <h1 class="m-0 text-primary text-uppercase">{{title}}</h1>
@@ -174,7 +173,7 @@
 
 
         <!-- Page Header Start -->
-        <div class="container-fluid page-header mb-5 p-0" style="background-image: url(img/carousel-1.jpg);">
+        <div class="container-fluid page-header mb-5 p-0" :style="{ backgroundImage: `url(${carouselImages[0].src})` }">
             <div class="container-fluid page-header-inner py-5">
                 <div class="container text-center pb-5">
                     <h1 class="display-3 text-white mb-3 animated slideInDown">Special Offers</h1>
@@ -222,260 +221,242 @@
                     <!-- <h2 class="offer-header text-center mb-5">Special Offers</h2> -->
 
                     <div class="row">
-                        <!-- Offer 1 -->
-                        <div class="col-md-4">
+
+                        <div v-for="offer in offers" :key="offer.id" class="col-md-4">
                             <div class="offer-card">
-                                <img src="img/room1.jpg" alt="Offer 1 Image">
+                                <img src="img/room2.jpg" alt="Offer Image">
                                 <div class="offer-body">
-                                    <h5 class="offer-title">Stay 4 nights, get 1 night FREE!</h5>
-                                    <p class="offer-details">Offer Valid: 1 May 2023 to 31 December 2023 <br>
-                                        <span class="offer-highlight">(Excluding blackout dates)</span>
+                                    <h5 class="offer-title">{{ offer.offername }}</h5>
+                                    <!--discount-->
+                                    <span class="offer-highlight">Discount: {{ offer.discount }}</span>
+                                    <p class="offer-details">
+                                        Offer Valid: {{ formatDate(offer.startdate) }} to {{ formatDate(offer.enddate)
+                                        }} <br>
                                     </p>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Offer 2 -->
-                        <div class="col-md-4">
-                            <div class="offer-card">
-                                <img src="img/room2.jpg" alt="Offer 2 Image">
-                                <div class="offer-body">
-                                    <h5 class="offer-title">Seasonal Offer: 15% off</h5>
-                                    <p class="offer-details">Coupon Code: HILL15 <br>
-                                        Offer Valid: 1 May 2023 to 30 June 2023</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Offer 3 -->
-                        <div class="col-md-4">
-                            <div class="offer-card">
-                                <img src="img/room3.jpg" alt="Offer 3 Image">
-                                <div class="offer-body">
-                                    <h5 class="offer-title">Manager Special: Free Meal Coupon</h5>
-                                    <p class="offer-details">Get LKR 2000 meal coupon per each room reservation <br>
-                                        Offer Valid: 1 May 2023 to 30 June 2023</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Newsletter Start -->
+            <!-- Newsletter Start -->
 
-        <!-- Newsletter end -->
+            <!-- Newsletter end -->
 
-        <style>
-            @media (max-width: 768px) {
-                .newsletterup {
-                    width: 800px;
+            <style>
+                @media (max-width: 768px) {
+                    .newsletterup {
+                        width: 800px;
 
+                    }
                 }
-            }
-        </style>
+            </style>
 
 
 
-        <!-- Footer Start -->
-        <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn" data-wow-delay="0.1s">
-            <div class="container mt-5">
-                <div class="row g-5">
-                    <div class="col-md-6 col-lg-4 col-sm-4">
-                        <div class="bg-primary rounded p-4">
-                            <a :href="`index.html?hotelId=${hotelId}`">
-                                <h1 class="text-white text-uppercase mb-3">{{title}}</h1>
-                            </a>
-                            <p class="text-white mb-0" style="text-align: justify;">
-                                A luxury tourist residence provides accommodation with a unique boutique hotel concept
-                                Calm, relaxing and elegant environment with excellent mountain views
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3">
-                        <h6 class="section-title text-start text-primary text-uppercase mb-4">Contact</h6>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>{{address}}</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{phoneNumber}}</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{email}}</p>
-                        <div class="d-flex pt-2">
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-outline-light btn-social"
-                                href="https://www.facebook.com/hillroostkandy/"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-outline-light btn-social"
-                                href="https://www.booking.com/hotel/lk/hill-roost.en-gb.html" target="_blank"
-                                rel="noopener noreferrer">
-                                <i class="fas fa-bed"></i> <!-- Example icon for Booking.com -->
-                            </a>
-                            <a class="btn btn-outline-light btn-social"
-                                href="https://www.tripadvisor.ca/Hotel_Review-g11914132-d15015697-Reviews-Hill_Roost-Ampitiya_Kandy_District_Central_Province.html"
-                                target="_blank" rel="noopener noreferrer">
-                                <i class="fab fa-tripadvisor"></i> <!-- TripAdvisor icon -->
-                            </a>
-
-                        </div>
-                    </div>
-                    <div class="col-lg-5 col-md-12 ">
-                        <div class="row  g-4">
-                            <div class="col-md-6" style="margin-left:10%;">
-                                <h6 class="section-title text-start text-primary text-uppercase mb-4">Company</h6>
-                                <a class="btn btn-link" href="">About Us</a>
-                                <a class="btn btn-link" href="">Contact Us</a>
-                                <a class="btn btn-link" href="">Privacy Policy</a>
-                                <a class="btn btn-link" href="">Terms & Condition</a>
-                                <a class="btn btn-link" href="">Support</a>
+            <!-- Footer Start -->
+            <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"
+                data-wow-delay="0.1s">
+                <div class="container mt-5">
+                    <div class="row g-5">
+                        <div class="col-md-6 col-lg-4 col-sm-4">
+                            <div class="bg-primary rounded p-4">
+                                <a :href="`index.html?hotelId=${hotelId}`">
+                                    <h1 class="text-white text-uppercase mb-3">{{title}}</h1>
+                                </a>
+                                <p class="text-white mb-0" style="text-align: justify;">
+                                    {{
+                                    footerDescription
+                                    }}
+                                </p>
                             </div>
-
                         </div>
-                    </div>
-                </div>
+                        <div class="col-md-6 col-lg-3">
+                            <h6 class="section-title text-start text-primary text-uppercase mb-4">Contact</h6>
+                            <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>{{address}}</p>
+                            <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{phoneNumber}}</p>
+                            <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{email}}</p>
+                            <div class="d-flex pt-2">
+                                <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                                <a class="btn btn-outline-light btn-social"
+                                    href="https://www.facebook.com/hillroostkandy/"><i
+                                        class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-outline-light btn-social"
+                                    href="https://www.booking.com/hotel/lk/hill-roost.en-gb.html" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <i class="fas fa-bed"></i> <!-- Example icon for Booking.com -->
+                                </a>
+                                <a class="btn btn-outline-light btn-social"
+                                    href="https://www.tripadvisor.ca/Hotel_Review-g11914132-d15015697-Reviews-Hill_Roost-Ampitiya_Kandy_District_Central_Province.html"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <i class="fab fa-tripadvisor"></i> <!-- TripAdvisor icon -->
+                                </a>
 
-                <div class="container">
-                    <div class="copyright">
-                        <div class="row">
-                            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                                &copy; <a class="border-bottom" href="#">
-                                    {{title}}
-                                </a>, All Right Reserved.
-
-                                <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                                Designed By <a class="border-bottom" href="https://ceyinfo.com/">Ceyinfo Solutions (pvt)
-                                    Ltd. </a>
                             </div>
-                            <div class="col-md-6">
-                                <div class="footer-menu">
-                                    <a href="">Home</a>
-                                    <a href="">Cookies</a>
-                                    <a href="">Help</a>
-                                    <a href="">FQAs</a>
+                        </div>
+                        <div class="col-lg-5 col-md-12 ">
+                            <div class="row  g-4">
+                                <div class="col-md-6" style="margin-left:10%;">
+                                    <h6 class="section-title text-start text-primary text-uppercase mb-4">Company</h6>
+                                    <a class="btn btn-link" href="">About Us</a>
+                                    <a class="btn btn-link" href="">Contact Us</a>
+                                    <a class="btn btn-link" href="">Privacy Policy</a>
+                                    <a class="btn btn-link" href="">Terms & Condition</a>
+                                    <a class="btn btn-link" href="">Support</a>
                                 </div>
-                                <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
-                                        class="bi bi-arrow-up"></i></a>
+
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Footer End -->
-                <style>
-                    /* General container and spacing adjustments */
-                    .footer {
-                        padding: 40px 0;
-                    }
 
-                    .footer .container-fluid {
-                        padding: 0 15px;
-                    }
+                    <div class="container">
+                        <div class="copyright">
+                            <div class="row">
+                                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                                    &copy; <a class="border-bottom" href="#">
+                                        {{title}}
+                                    </a>, All Right Reserved.
 
-                    .footer .row {
-                        margin: 0 auto;
-                    }
-
-                    /* Styling for smaller screens */
-                    @media (max-width: 768px) {
+                                    <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                                    Designed By <a class="border-bottom" href="https://ceyinfo.com/">Ceyinfo Solutions
+                                        (pvt)
+                                        Ltd. </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="footer-menu">
+                                        <a href="">Home</a>
+                                        <a href="">Cookies</a>
+                                        <a href="">Help</a>
+                                        <a href="">FQAs</a>
+                                    </div>
+                                    <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
+                                            class="bi bi-arrow-up"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Footer End -->
+                    <style>
+                        /* General container and spacing adjustments */
                         .footer {
-                            padding: 0 40px;
-                            width: 100%;
-                            margin-top: -15px;
+                            padding: 40px 0;
                         }
 
-                        .newsletterup {
-                            width: 100%;
+                        .footer .container-fluid {
+                            padding: 0 15px;
                         }
 
-                        /* Adjust columns stacking for mobile */
-                        .footer .col-md-6,
-                        .footer .col-lg-4,
-                        .footer .col-lg-5 {
-                            flex: 0 0 100%;
-                            max-width: 100%;
-                            margin-bottom: 20px;
+                        .footer .row {
+                            margin: 0 auto;
                         }
 
-                        /* Centralize text for mobile */
-                        .footer .text-md-start {
-                            text-align: center !important;
+                        /* Styling for smaller screens */
+                        @media (max-width: 768px) {
+                            .footer {
+                                padding: 0 40px;
+                                width: 100%;
+                                margin-top: -15px;
+                            }
+
+                            .newsletterup {
+                                width: 100%;
+                            }
+
+                            /* Adjust columns stacking for mobile */
+                            .footer .col-md-6,
+                            .footer .col-lg-4,
+                            .footer .col-lg-5 {
+                                flex: 0 0 100%;
+                                max-width: 100%;
+                                margin-bottom: 20px;
+                            }
+
+                            /* Centralize text for mobile */
+                            .footer .text-md-start {
+                                text-align: center !important;
+                            }
+
+                            .footer .btn-social {
+                                margin: 0 5px;
+                            }
+
+                            /* Adjust the padding and size of social buttons */
+                            .footer .btn-social {
+                                width: 40px;
+                                height: 40px;
+                                font-size: 14px;
+                            }
+
+                            /* Footer links alignment */
+                            .footer .btn-link {
+                                display: block;
+                                margin-bottom: 5px;
+                                text-align: center;
+                            }
+
+                            .footer .copyright .row {
+                                flex-direction: column;
+                                align-items: center;
+                            }
+
+                            .footer .footer-menu {
+                                text-align: center;
+                                margin-top: 10px;
+                            }
+
+                            .footer .footer-menu a {
+                                margin: 0 10px;
+                            }
+
+                            /* Adjust scroll to top button */
+                            .footer .btn-lg-square {
+                                display: block;
+                                margin: 20px auto;
+                                width: 50px;
+                                height: 50px;
+                            }
                         }
 
-                        .footer .btn-social {
-                            margin: 0 5px;
+                        /* Styling for extra small screens (below 576px) */
+                        @media (max-width: 576px) {
+                            .footer .col-md-6 {
+                                margin-bottom: 10px;
+                            }
+
+                            .footer .btn-social {
+                                width: 36px;
+                                height: 36px;
+                            }
+
+                            .footer h6 {
+                                font-size: 16px;
+                            }
+
+                            .footer p,
+                            .footer .btn-link {
+                                font-size: 14px;
+                            }
                         }
+                    </style>
+                    <!-- Back to Top -->
+                </div>
 
-                        /* Adjust the padding and size of social buttons */
-                        .footer .btn-social {
-                            width: 40px;
-                            height: 40px;
-                            font-size: 14px;
-                        }
+                <!-- JavaScript Libraries -->
+                <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+                <script src="lib/wow/wow.min.js"></script>
+                <script src="lib/easing/easing.min.js"></script>
+                <script src="lib/waypoints/waypoints.min.js"></script>
+                <script src="lib/counterup/counterup.min.js"></script>
+                <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+                <script src="lib/tempusdominus/js/moment.min.js"></script>
+                <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+                <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
-                        /* Footer links alignment */
-                        .footer .btn-link {
-                            display: block;
-                            margin-bottom: 5px;
-                            text-align: center;
-                        }
-
-                        .footer .copyright .row {
-                            flex-direction: column;
-                            align-items: center;
-                        }
-
-                        .footer .footer-menu {
-                            text-align: center;
-                            margin-top: 10px;
-                        }
-
-                        .footer .footer-menu a {
-                            margin: 0 10px;
-                        }
-
-                        /* Adjust scroll to top button */
-                        .footer .btn-lg-square {
-                            display: block;
-                            margin: 20px auto;
-                            width: 50px;
-                            height: 50px;
-                        }
-                    }
-
-                    /* Styling for extra small screens (below 576px) */
-                    @media (max-width: 576px) {
-                        .footer .col-md-6 {
-                            margin-bottom: 10px;
-                        }
-
-                        .footer .btn-social {
-                            width: 36px;
-                            height: 36px;
-                        }
-
-                        .footer h6 {
-                            font-size: 16px;
-                        }
-
-                        .footer p,
-                        .footer .btn-link {
-                            font-size: 14px;
-                        }
-                    }
-                </style>
-                <!-- Back to Top -->
-            </div>
-
-            <!-- JavaScript Libraries -->
-            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="lib/wow/wow.min.js"></script>
-            <script src="lib/easing/easing.min.js"></script>
-            <script src="lib/waypoints/waypoints.min.js"></script>
-            <script src="lib/counterup/counterup.min.js"></script>
-            <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-            <script src="lib/tempusdominus/js/moment.min.js"></script>
-            <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-            <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-
-            <!-- Template Javascript -->
-            <script src="js/main.js"></script>
-            <script src="js/index.js"></script>
+                <!-- Template Javascript -->
+                <script src="js/main.js"></script>
+                <script src="js/index.js"></script>
 
 </body>
 
