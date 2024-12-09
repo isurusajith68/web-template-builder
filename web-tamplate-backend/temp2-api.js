@@ -175,39 +175,42 @@ const buildTemplate = async (result, hotelId, templateId) => {
   const rooms = await pool.query(
     `
       SELECT 
-        htrm.hotelid,
-        htrm.roomviewid,
-        htrm.roomtypeid,
-        htrm.roomno,
-        htrm.noofbed, 
-        hrv.roomview,
-        hrt.roomtype,
-        hrp.fbprice,
-        ARRAY_AGG(amn.name) AS roomamenities
-      FROM 
-        hotelrooms htrm
-      JOIN 
-        hotelroomview hrv ON htrm.roomviewid = hrv.id
-      JOIN 
-        hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
-      JOIN 
-        hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-        AND htrm.roomtypeid = hrp.roomtypeid
-      LEFT JOIN 
-        roomamenitydetails ram ON htrm.roomno = ram.roomid
-      LEFT JOIN 
-        roomamenities amn ON ram.amenityid = amn.id
-      WHERE 
-        htrm.hotelid = $1
-      GROUP BY 
-        htrm.hotelid, 
-        htrm.roomviewid, 
-        htrm.roomtypeid, 
-        htrm.roomno, 
-        htrm.noofbed, 
-        hrv.roomview, 
-        hrt.roomtype, 
-        hrp.fbprice
+    htrm.hotelid,
+    htrm.roomviewid,
+    htrm.roomtypeid,
+    htrm.roomno,
+    htrm.noofbed,
+    hrv.label AS roomview,
+    hrt.label AS roomtype,
+    hrp.fbprice,
+    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
+    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+FROM 
+    hotelrooms htrm
+JOIN 
+    hotelroomview hrv ON htrm.roomviewid = hrv.id
+JOIN 
+    hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
+JOIN 
+    hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
+                         AND htrm.roomtypeid = hrp.roomtypeid
+LEFT JOIN 
+    roomamenitydetails ram ON htrm.roomno = ram.roomid
+LEFT JOIN 
+    roomamenities amn ON ram.amenityid = amn.id
+LEFT JOIN 
+    roomimages rim ON htrm.roomno = rim.roomid
+WHERE 
+    htrm.hotelid = $1
+GROUP BY 
+    htrm.hotelid, 
+    htrm.roomviewid, 
+    htrm.roomtypeid, 
+    htrm.roomno, 
+    htrm.noofbed, 
+    hrv.label, 
+    hrt.label, 
+    hrp.fbprice;
       `,
     [hotelId]
   );
@@ -343,39 +346,42 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
   const rooms = await pool.query(
     `
       SELECT 
-        htrm.hotelid,
-        htrm.roomviewid,
-        htrm.roomtypeid,
-        htrm.roomno,
-        htrm.noofbed, 
-        hrv.roomview,
-        hrt.roomtype,
-        hrp.fbprice,
-        ARRAY_AGG(amn.name) AS roomamenities
-      FROM 
-        hotelrooms htrm
-      JOIN 
-        hotelroomview hrv ON htrm.roomviewid = hrv.id
-      JOIN 
-        hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
-      JOIN 
-        hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-        AND htrm.roomtypeid = hrp.roomtypeid
-      LEFT JOIN 
-        roomamenitydetails ram ON htrm.roomno = ram.roomid
-      LEFT JOIN 
-        roomamenities amn ON ram.amenityid = amn.id
-      WHERE 
-        htrm.hotelid = $1
-      GROUP BY 
-        htrm.hotelid, 
-        htrm.roomviewid, 
-        htrm.roomtypeid, 
-        htrm.roomno, 
-        htrm.noofbed, 
-        hrv.roomview, 
-        hrt.roomtype, 
-        hrp.fbprice
+    htrm.hotelid,
+    htrm.roomviewid,
+    htrm.roomtypeid,
+    htrm.roomno,
+    htrm.noofbed,
+    hrv.label AS roomview,
+    hrt.label AS roomtype,
+    hrp.fbprice,
+    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
+    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+FROM 
+    hotelrooms htrm
+JOIN 
+    hotelroomview hrv ON htrm.roomviewid = hrv.id
+JOIN 
+    hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
+JOIN 
+    hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
+                         AND htrm.roomtypeid = hrp.roomtypeid
+LEFT JOIN 
+    roomamenitydetails ram ON htrm.roomno = ram.roomid
+LEFT JOIN 
+    roomamenities amn ON ram.amenityid = amn.id
+LEFT JOIN 
+    roomimages rim ON htrm.roomno = rim.roomid
+WHERE 
+    htrm.hotelid = $1
+GROUP BY 
+    htrm.hotelid, 
+    htrm.roomviewid, 
+    htrm.roomtypeid, 
+    htrm.roomno, 
+    htrm.noofbed, 
+    hrv.label, 
+    hrt.label, 
+    hrp.fbprice;
       `,
     [hotelId]
   );

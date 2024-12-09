@@ -37,6 +37,7 @@ const app = Vue.createApp({
         "Hill Roost is located in Kandy, the most beautiful city in central Sri Lanka. We are at Ampitiya-Kandy road, about 3km away from the Kandy City Center. We are very close to the major tourist attractions of the city like the Temple of the Tooth, Kandy Lake, restaurants, and shopping areas.Kandy is the last kingdom of ancient Sri Lanka, and it is full of cultural, traditional,<br><br> and historical values to explore. Geographically, Kandy is a plateau located in the central highlands of Sri Lanka, surrounded by magnificent mountains. This provides beautiful landscapes, mountain views, and a pleasant climate, attracting millions of tourists every year.Hill Roost is more like a home for your stay in Kandy, offering luxury accommodation with<br><br> a unique boutique hotel concept. Hill Roost has 5 bedrooms with large common areas including lobbies, sitting areas, ",
       attraction: "WITHIN KANDY CITY",
       attractionList: [],
+      roomsDetails: [],
 
       isEditingCarouselImages: false,
       isEditingAboutUsImages: false,
@@ -275,7 +276,51 @@ const app = Vue.createApp({
         console.error("Error fetching hotel info:", error);
       }
     },
+    async loadRoomDetails() {
+      this.isLoading = "Loading room data...";
 
+      try {
+        const response = await fetch(
+          `https://be-publish.ceyinfo.cloud/rooms-info?hotelId=${this.hotelId}`
+        );
+
+        if (!response.ok) {
+          const errorText = await response.json();
+          console.error("Error loading room details:", errorText);
+          this.isLoading = null;
+          this.isError = errorText.message;
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+
+          // alert(
+          //   "This hotel does not have any rooms yet. Please add rooms and room prices to continue. You will be redirected to the admin panel."
+          // );
+          // return (window.location.href = "https://admin.ceyinfo.cloud");
+        } else {
+          const roomDetails = await response.json();
+          console.log("Room details loaded successfully:", roomDetails);
+
+          //slice 3 rooms
+
+          this.roomsDetails = roomDetails.slice(0, 3);
+
+          // this.roomsDetails = roomDetails;
+          this.isLoading = null;
+          this.isSuccess = "Room details loaded successfully";
+          setTimeout(() => {
+            this.isSuccess = null;
+          }, 5000);
+        }
+      } catch (error) {
+        console.error("Error fetching room details:", error);
+        this.isLoading = null;
+        this.isError = "Error fetching room details";
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+      }
+    },
     editClickCarouselImage(index) {
       this.isEditingCarouselImages = true;
 
@@ -354,7 +399,22 @@ const app = Vue.createApp({
         console.error(`File input for index ${index} not found.`);
       }
     },
+    getAmenityIcon(amenity) {
+      if (!amenity) return null;
 
+      switch (amenity.toLowerCase()) {
+        case "wifi":
+          return "fa-wifi";
+        case "tv":
+          return "fa-tv";
+        case "ac":
+          return "fa-snowflake";
+        case "balcony":
+          return "fa-building";
+        default:
+          return null;
+      }
+    },
     handleFileUpload(event, index) {
       console.log("index:", index);
       const file = event.target.files[0];
@@ -448,10 +508,11 @@ const app = Vue.createApp({
       this.hotelId == "undefined"
     ) {
       alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://admin.ceyinfo.cloud";
+      window.location.href = "https://entry.ceyinfo.cloud";
     } else {
       this.loadSiteDetails();
       this.hotelInfo();
+      this.loadRoomDetails();
     }
   },
 });

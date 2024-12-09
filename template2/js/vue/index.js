@@ -496,10 +496,10 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
+          const errorText = await response.json();
           console.error("Error loading room details:", errorText);
           this.isLoading = null;
-          this.isError = "Error loading room details";
+          this.isError = errorText.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);
@@ -603,7 +603,7 @@ const app = Vue.createApp({
       this.hotelId == "undefined"
     ) {
       alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://admin.ceyinfo.cloud";
+      window.location.href = "https://entry.ceyinfo.cloud";
     } else {
       this.loadSiteDetails();
       this.loadRoomDetails();

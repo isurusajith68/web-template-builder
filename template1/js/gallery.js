@@ -189,7 +189,9 @@ const gallery = Vue.createApp({
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
-          if (siteDetails?.details?.realImages?.getImgPathForTemplate?.length > 0) {
+          if (
+            siteDetails?.details?.realImages?.getImgPathForTemplate?.length > 0
+          ) {
             this.userUseRealImages = true;
             this.realImages = siteDetails.details.realImages;
           }
@@ -263,7 +265,7 @@ const gallery = Vue.createApp({
       this.hotelId == "undefined"
     ) {
       alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://admin.ceyinfo.cloud";
+      window.location.href = "https://entry.ceyinfo.cloud";
     } else {
       this.loadSiteDetails();
       this.hotelInfo();

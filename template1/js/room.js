@@ -179,7 +179,7 @@ const app = Vue.createApp({
       this.hotelId == "undefined"
     ) {
       alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://admin.ceyinfo.cloud";
+      window.location.href = "https://entry.ceyinfo.cloud";
     } else {
       this.loadSiteDetails();
       this.loadRoomDetails();

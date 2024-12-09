@@ -185,6 +185,17 @@ app.get("/build-template", async (req, res) => {
         message: "site details not found please save your changes",
       });
     }
+
+    const alreadyPublish = await pool.query(
+      "SELECT * FROM webtemplate WHERE hotelid = $1 AND templateId = $2",
+      [hotelId, templateId]
+    );
+
+    if (alreadyPublish.rows.length > 0) {
+      return res.status(404).json({
+        message: `Template${templateId} already publish`
+      });
+    }
     // {
     //   "email": "katupitiya@gmail.com",
     //   "title": "Isuru",
@@ -462,40 +473,43 @@ app.get("/rooms-info", async (req, res) => {
     const result = await pool.query(
       `
       SELECT 
-        htrm.id,
-        htrm.roomviewid,
-        htrm.roomtypeid,
-        htrm.roomno,
-        htrm.noofbed,
-        hrv.label as roomview,
-        hrt.label as roomtype,
-        hrp.fbprice,
-        ARRAY_AGG(amn.label) AS roomamenities
-      FROM 
-        hotelrooms htrm
-      JOIN 
-        hotelroomview hrv ON htrm.roomviewid = hrv.id
-      JOIN 
-        hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
-      JOIN 
-        hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-        AND htrm.roomtypeid = hrp.roomtypeid
-      LEFT JOIN 
-        roomamenitydetails ram ON htrm.roomno = ram.roomid
-      LEFT JOIN 
-        roomamenities amn ON ram.amenityid = amn.id
-      WHERE 
-        htrm.id = $1
-      GROUP BY 
-        htrm.id, 
-        htrm.roomviewid, 
-        htrm.roomtypeid, 
-        htrm.roomno,
-        htrm.noofbed, 
-        hrv.label  ,
-        hrt.label , 
-        hrp.fbprice
-      `,
+    htrm.hotelid,
+    htrm.roomviewid,
+    htrm.roomtypeid,
+    htrm.roomno,
+    htrm.noofbed,
+    hrv.label AS roomview,
+    hrt.label AS roomtype,
+    hrp.fbprice,
+    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
+    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+FROM 
+    hotelrooms htrm
+JOIN 
+    hotelroomview hrv ON htrm.roomviewid = hrv.id
+JOIN 
+    hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
+JOIN 
+    hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
+                         AND htrm.roomtypeid = hrp.roomtypeid
+LEFT JOIN 
+    roomamenitydetails ram ON htrm.roomno = ram.roomid
+LEFT JOIN 
+    roomamenities amn ON ram.amenityid = amn.id
+LEFT JOIN 
+    roomimages rim ON htrm.roomno = rim.roomid
+WHERE 
+    htrm.hotelid = $1
+GROUP BY 
+    htrm.hotelid, 
+    htrm.roomviewid, 
+    htrm.roomtypeid, 
+    htrm.roomno, 
+    htrm.noofbed, 
+    hrv.label, 
+    hrt.label, 
+    hrp.fbprice;
+  `,
       [hotelId]
     );
 
@@ -515,18 +529,139 @@ app.get("/rooms-info", async (req, res) => {
 });
 
 const buildTemplate = async (data, hotelId, templateId) => {
-  const templatePath = `./template/temp${templateId}/index.html`;
-  const template = await fs.readFile(templatePath, "utf8");
+  try {
+    const templatePath = `./template/temp${templateId}/index.html`;
+    const template = await fs.readFile(templatePath, "utf8");
 
-  const result = template.replace(
-    /#\w+/g,
-    (placeholder) => data[placeholder] || ""
-  );
+    const rooms = await pool.query(
+      `
+      SELECT 
+    htrm.hotelid,
+    htrm.roomviewid,
+    htrm.roomtypeid,
+    htrm.roomno,
+    htrm.noofbed,
+    hrv.label AS roomview,
+    hrt.label AS roomtype,
+    hrp.fbprice,
+    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
+    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+FROM 
+    hotelrooms htrm
+JOIN 
+    hotelroomview hrv ON htrm.roomviewid = hrv.id
+JOIN 
+    hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
+JOIN 
+    hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
+                         AND htrm.roomtypeid = hrp.roomtypeid
+LEFT JOIN 
+    roomamenitydetails ram ON htrm.roomno = ram.roomid
+LEFT JOIN 
+    roomamenities amn ON ram.amenityid = amn.id
+LEFT JOIN 
+    roomimages rim ON htrm.roomno = rim.roomid
+WHERE 
+    htrm.hotelid = $1
+GROUP BY 
+    htrm.hotelid, 
+    htrm.roomviewid, 
+    htrm.roomtypeid, 
+    htrm.roomno, 
+    htrm.noofbed, 
+    hrv.label, 
+    hrt.label, 
+    hrp.fbprice;
+`,
+      [hotelId]
+    );
 
-  const outputPath = `/var/www/template${templateId}/user${hotelId}/index.html`;
-  await fs.writeFile(outputPath, result, "utf8");
+    const limitedRooms = rooms.rows.slice(0, 3);
+    console.log("Rooms:", limitedRooms.rows);
 
-  console.log("Template built successfully");
+    const roomsHtml = limitedRooms
+      .map((room) => {
+        return `
+      <div class="col-lg-4 col-md-6 wow fadeInUp">
+        <div class="room-item shadow rounded overflow-hidden">
+          <div class="position-relative">
+            <img class="img-fluid" src="img/room4.jpg" alt="">
+            <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
+               Rs ${room.fbprice} / Night
+            </small>
+          </div>
+          <div class="p-4 mt-2">
+            <div class="d-flex justify-content-between mb-3">
+              <h6 class="mb-0"><b>${room.roomtype} / ${room.roomview}</b></h6>
+              <div class="ps-2">
+                ${[...Array(5)]
+                  .map(() => `<small class="fa fa-star text-primary"></small>`)
+                  .join("")}
+              </div>
+            </div>
+            <div class="d-flex mb-3">
+              <small class="border-end me-3 pe-3">
+                <i class="fa fa-h-square text-primary me-2"></i>Room No: ${
+                  room.roomno
+                }
+              </small>
+              <small class=" me-3 pe-3">
+                <i class="fa fa-bed text-primary me-2"></i>No Of Beds: ${
+                  room.noofbed
+                }
+              </small>
+            </div>
+
+            ${
+              room.roomamenities === null || room.roomamenities.length === 0
+                ? ""
+                : `<div class="d-flex mb-3">
+                    ${room.roomamenities
+                      .map(
+                        (amenity) => `
+                          <small class="me-3">
+                            <i class="fa ${getAmenityIcon(
+                              amenity
+                            )} text-primary me-2"></i>${
+                          amenity === null ? "" : amenity
+                        }
+                          </small>
+                        `
+                      )
+                      .join("")}
+                  </div>`
+            }
+            <p class="text-body mb-3">Recommended for 2 adults</p>
+            <div class="d-flex justify-content-between">
+              <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
+              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&room=${
+          room.roomno
+        }">Book Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+      })
+      .join("");
+
+    const data2 = {
+      ...data,
+      "#rooms": roomsHtml,
+    };
+
+    const result = template.replace(
+      /#\w+/g,
+      (placeholder) => data2[placeholder] || ""
+    );
+
+    const outputPath = `/var/www/template${templateId}/user${hotelId}/index.html`;
+    await fs.writeFile(outputPath, result, "utf8");
+
+    console.log("Template built successfully");
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const buildTemplateAboutUs = async (data, hotelId, templateId) => {
@@ -633,24 +768,15 @@ const buildTemplateBooking = async (data, hotelId, templateId) => {
     let params = "";
 
     const hotelId = ${hotelId};
-    const name = document.getElementById("name")?.value || "";
-    const email = document.getElementById("email")?.value || "";
+
     const checkin = document.getElementById("checkin")?.value || "";
     const checkout = document.getElementById("checkout")?.value || "";
-    const adults = document.getElementById("select1")?.value || "1";
-    const children = document.getElementById("select2")?.value || "0";
-    const rooms = document.getElementById("select3")?.value || "1";
-    const specialRequest = document.getElementById("message")?.value || "";
+   
 
     params += \`hotelId=\${encodeURIComponent(hotelId)}\`;
-    if (name) params += \`&name=\${encodeURIComponent(name)}\`;
-    if (email) params += \`&email=\${encodeURIComponent(email)}\`;
+   
     if (checkin) params += \`&checkin=\${encodeURIComponent(checkin)}\`;
     if (checkout) params += \`&checkout=\${encodeURIComponent(checkout)}\`;
-    if (adults) params += \`&adults=\${encodeURIComponent(adults)}\`;
-    if (children) params += \`&children=\${encodeURIComponent(children)}\`;
-    if (rooms) params += \`&rooms=\${encodeURIComponent(rooms)}\`;
-    if (specialRequest) params += \`&specialRequest=\${encodeURIComponent(specialRequest)}\`;
 
     return params;
   }
@@ -776,43 +902,47 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
     const rooms = await pool.query(
       `
       SELECT 
-        htrm.hotelid,
-        htrm.roomviewid,
-        htrm.roomtypeid,
-        htrm.roomno,
-        htrm.noofbed,
-        hrv.label as roomview,
-        hrt.label as roomtype,
-        hrp.fbprice,
-        ARRAY_AGG(amn.label) AS roomamenities
-      FROM 
-        hotelrooms htrm
-      JOIN 
-        hotelroomview hrv ON htrm.roomviewid = hrv.id
-      JOIN 
-        hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
-      JOIN 
-        hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-        AND htrm.roomtypeid = hrp.roomtypeid
-      LEFT JOIN 
-        roomamenitydetails ram ON htrm.roomno = ram.roomid
-      LEFT JOIN 
-        roomamenities amn ON ram.amenityid = amn.id
-      WHERE 
-        htrm.hotelid = $1
-      GROUP BY 
-        htrm.hotelid, 
-        htrm.roomviewid, 
-        htrm.roomtypeid, 
-        htrm.roomno,
-        htrm.noofbed, 
-        hrv.label  ,
-        hrt.label , 
-        hrp.fbprice`,
+    htrm.hotelid,
+    htrm.roomviewid,
+    htrm.roomtypeid,
+    htrm.roomno,
+    htrm.noofbed,
+    hrv.label AS roomview,
+    hrt.label AS roomtype,
+    hrp.fbprice,
+    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
+    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+FROM 
+    hotelrooms htrm
+JOIN 
+    hotelroomview hrv ON htrm.roomviewid = hrv.id
+JOIN 
+    hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
+JOIN 
+    hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
+                         AND htrm.roomtypeid = hrp.roomtypeid
+LEFT JOIN 
+    roomamenitydetails ram ON htrm.roomno = ram.roomid
+LEFT JOIN 
+    roomamenities amn ON ram.amenityid = amn.id
+LEFT JOIN 
+    roomimages rim ON htrm.roomno = rim.roomid
+WHERE 
+    htrm.hotelid = $1
+GROUP BY 
+    htrm.hotelid, 
+    htrm.roomviewid, 
+    htrm.roomtypeid, 
+    htrm.roomno, 
+    htrm.noofbed, 
+    hrv.label, 
+    hrt.label, 
+    hrp.fbprice;
+`,
       [hotelId]
     );
 
-    // console.log("Rooms:", rooms.rows);
+    console.log("Rooms:", rooms.rows);
 
     const roomsHtml = rooms.rows
       .map((room) => {
@@ -869,7 +999,10 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
             <p class="text-body mb-3">Recommended for 2 adults</p>
             <div class="d-flex justify-content-between">
               <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
-              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="booking.html">Book Now</a>
+              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&room=${
+          room.roomno
+        }"
+              >Book Now</a>
             </div>
           </div>
         </div>
@@ -938,29 +1071,6 @@ const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
   console.log("Template built successfully");
 };
 
-//  // generate nginx config file for the built template
-// INSERT INTO hotelinfo (
-//     id,
-//     name,
-//     startdate,
-//     type,
-//     mobile,
-//     telephone,
-//     email,
-//     url,
-//     address1,
-//     address2,
-//     postalcode,
-//     city,
-//     province,
-//     country,
-//     timezone,
-//     tag,
-//     description,
-//     apprequestid,
-//   ) VALUES (
-//     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
-//   )
 const { exec } = require("child_process");
 
 const generateNginxConfig = async (hotelId, templateId) => {
@@ -1023,10 +1133,31 @@ const generateNginxConfig = async (hotelId, templateId) => {
           return;
         }
         console.log("nginx file successfully created");
+
+        addPublishDetails(hotelId, templateId, domain);
+
         addSslCertificate(hotelId, templateId, domain);
       });
     }
   );
+};
+
+const addPublishDetails = async (hotelId, templateId, domain) => {
+  const publishDetails = {
+    hotelId,
+    templateId,
+    domain,
+  };
+  try {
+    const data = await pool.query(
+      "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
+      [hotelId, templateId, domain]
+    );
+
+    console.log("Publish details added successfully");
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 // // add ssl certificate
