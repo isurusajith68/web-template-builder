@@ -108,7 +108,10 @@ router.post("/save-site-details", async (req, res) => {
           templateId,
         ]
       );
-      res.status(200).json(updateResult.rows[0]);
+      res.status(200).json({
+        message: "Site details updated successfully",
+        data: updateResult.rows[0],
+      });
     } else {
       const insertResult = await pool.query(
         "INSERT INTO webtemplatedata (hotelId, templateId, details) VALUES ($1, $2, $3) RETURNING *",
@@ -158,11 +161,16 @@ router.post("/save-site-details", async (req, res) => {
           }),
         ]
       );
-      res.status(201).json(insertResult.rows[0]);
+      res.status(201).json({
+        message: "Site details saved successfully",
+        data: insertResult.rows[0],
+      });
     }
   } catch (err) {
     console.error("Error saving site details:", err);
-    res.status(500).send("Error saving site details");
+    res.status(500).json({
+      error: "Failed to save site details",
+    });
   }
 });
 
@@ -390,6 +398,16 @@ router.get("/build-template", async (req, res) => {
   } catch (error) {
     console.error("Error copying template:", error);
   }
+  try {
+    //copy hotel image folder
+    const sourceDir = path.resolve(__dirname, "/var/images/hotel" + hotelId);
+    const targetDir = `/var/www/template${templateId}/user${hotelId}/img`;
+
+    await fs.mkdir(targetDir, { recursive: true });
+    await fs.cp(sourceDir, targetDir, { recursive: true });
+  } catch (error) {
+    console.error("Error copying hotel images:", error);
+  }
 
   try {
     const result = await pool.query(
@@ -398,7 +416,9 @@ router.get("/build-template", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("No site details found");
+      return res.status(404).json({
+        message: "Site details not found",
+      });
     }
     // {
     //   "email": "abc@gmail.com",
@@ -464,6 +484,27 @@ router.get("/build-template", async (req, res) => {
     //     "img/images-1731339192583-185997996.jpg"
     //   ]
     // }
+
+    const tempIds = [1, 2];
+    for (const tempId of tempIds) {
+      try {
+        console.log("Checking if template is already published");
+        const alreadyPublish = await pool.query(
+          "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateId = $2",
+          [hotelId, tempId]
+        );
+
+        if (alreadyPublish.rows.length > 0) {
+          return res.status(400).json({
+            message: `Template ${tempId} is already linked to the domain ${alreadyPublish.rows[0].website}.`,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+    }
+
     const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
 
     const data = {
@@ -510,7 +551,7 @@ router.get("/build-template", async (req, res) => {
     buildTemplateContactUs(data, hotelId, templateId);
     generateNginxConfig(hotelId, templateId);
 
-    res.send({
+    res.json({
       message: "Template built successfully",
     });
   } catch (error) {
@@ -745,9 +786,11 @@ const { exec } = require("child_process");
 const generateNginxConfig = async (hotelId, templateId) => {
   // console.log(hotelId);
   const getSiteName = await pool.query(
-    "SELECT website FROM webtemplates WHERE hotelid = $1",
+    "SELECT url FROM hotelinfo WHERE id = $1",
     [hotelId]
   );
+  // console.log(getSiteName);
+  const domain = getSiteName.rows[0].url;
   // console.log(getSiteName);
 
   const nginxFileExist = fssync.existsSync(
@@ -788,7 +831,8 @@ const generateNginxConfig = async (hotelId, templateId) => {
           return;
         }
         console.log("nginx file successfully created");
-        addSslCertificate(hotelId, templateId, getSiteName);
+        addPublishDetails(hotelId, templateId, domain);
+        addSslCertificate(hotelId, templateId, domain);
       });
     }
   );
@@ -796,8 +840,8 @@ const generateNginxConfig = async (hotelId, templateId) => {
 
 // // add ssl certificate
 
-const addSslCertificate = (hotelId, templateId, getSiteName) => {
-  const domain = getSiteName.rows[0].website;
+const addSslCertificate = (hotelId, templateId, domain) => {
+  // const domain = getSiteName.rows[0].website;
 
   exec(
     `sudo certbot certificates --domain ${domain}`,

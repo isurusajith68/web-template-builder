@@ -187,6 +187,17 @@ app.get("/build-template", async (req, res) => {
   }
 
   try {
+    //copy hotel image folder
+    const sourceDir = path.resolve(__dirname, "/var/images/hotel" + hotelId);
+    const targetDir = `/var/www/template${templateId}/user${hotelId}/img`;
+
+    await fs.mkdir(targetDir, { recursive: true });
+    await fs.cp(sourceDir, targetDir, { recursive: true });
+  } catch (error) {
+    console.error("Error copying hotel images:", error);
+  }
+
+  try {
     const result = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
       [hotelId, templateId]
@@ -198,16 +209,26 @@ app.get("/build-template", async (req, res) => {
       });
     }
 
-    // const alreadyPublish = await pool.query(
-    //   "SELECT * FROM webtemplate WHERE hotelid = $1 AND templateId = $2",
-    //   [hotelId, templateId]
-    // );
+    const tempIds = [2, 3];
+    for (const tempId of tempIds) {
+      try {
+        console.log("Checking if template is already published");
+        const alreadyPublish = await pool.query(
+          "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateId = $2",
+          [hotelId, tempId]
+        );
 
-    // if (alreadyPublish.rows.length > 0) {
-    //   return res.status(404).json({
-    //     message: `Template${templateId} already publish`,
-    //   });
-    // }
+        if (alreadyPublish.rows.length > 0) {
+          return res.status(400).json({
+            message: `Template ${tempId} is already linked to the domain ${alreadyPublish.rows[0].website}.`,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+    }
+
     // {
     //   "email": "katupitiya@gmail.com",
     //   "title": "Isuru",
@@ -518,8 +539,8 @@ app.get("/rooms-info", async (req, res) => {
     hrv.label AS roomview,
     hrt.label AS roomtype,
     hrp.fbprice,
-    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
-    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+    ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
+    ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
 FROM 
     hotelrooms htrm
 JOIN 
@@ -528,22 +549,22 @@ JOIN
     hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
 JOIN 
     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-                         AND htrm.roomtypeid = hrp.roomtypeid
+    AND htrm.roomtypeid = hrp.roomtypeid
 LEFT JOIN 
-    roomamenitydetails ram ON htrm.roomno = ram.roomid
+    roomamenitydetails ram ON htrm.id = ram.roomid
 LEFT JOIN 
     roomamenities amn ON ram.amenityid = amn.id
 LEFT JOIN 
-    roomimages rim ON htrm.roomno = rim.roomid
+    roomimages ri ON htrm.id = ri.roomid
 WHERE 
     htrm.hotelid = $1
 GROUP BY 
     htrm.hotelid, 
     htrm.roomviewid, 
     htrm.roomtypeid, 
-    htrm.roomno, 
+    htrm.roomno,
     htrm.noofbed, 
-    hrv.label, 
+    hrv.label,
     hrt.label, 
     hrp.fbprice;
   `,
@@ -581,8 +602,8 @@ const buildTemplate = async (data, hotelId, templateId) => {
     hrv.label AS roomview,
     hrt.label AS roomtype,
     hrp.fbprice,
-    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
-    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+    ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
+    ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
 FROM 
     hotelrooms htrm
 JOIN 
@@ -591,22 +612,22 @@ JOIN
     hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
 JOIN 
     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-                         AND htrm.roomtypeid = hrp.roomtypeid
+    AND htrm.roomtypeid = hrp.roomtypeid
 LEFT JOIN 
-    roomamenitydetails ram ON htrm.roomno = ram.roomid
+    roomamenitydetails ram ON htrm.id = ram.roomid
 LEFT JOIN 
     roomamenities amn ON ram.amenityid = amn.id
 LEFT JOIN 
-    roomimages rim ON htrm.roomno = rim.roomid
+    roomimages ri ON htrm.id = ri.roomid
 WHERE 
     htrm.hotelid = $1
 GROUP BY 
     htrm.hotelid, 
     htrm.roomviewid, 
     htrm.roomtypeid, 
-    htrm.roomno, 
+    htrm.roomno,
     htrm.noofbed, 
-    hrv.label, 
+    hrv.label,
     hrt.label, 
     hrp.fbprice;
 `,
@@ -622,7 +643,7 @@ GROUP BY
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
-            <img class="img-fluid" src="img/room4.jpg" alt="">
+            <img class="img-fluid" src="img/${room.imagenames[0]}" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                Rs ${room.fbprice} / Night
             </small>
@@ -948,8 +969,8 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
     hrv.label AS roomview,
     hrt.label AS roomtype,
     hrp.fbprice,
-    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
-    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+    ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
+    ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
 FROM 
     hotelrooms htrm
 JOIN 
@@ -958,22 +979,22 @@ JOIN
     hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
 JOIN 
     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-                         AND htrm.roomtypeid = hrp.roomtypeid
+    AND htrm.roomtypeid = hrp.roomtypeid
 LEFT JOIN 
-    roomamenitydetails ram ON htrm.roomno = ram.roomid
+    roomamenitydetails ram ON htrm.id = ram.roomid
 LEFT JOIN 
     roomamenities amn ON ram.amenityid = amn.id
 LEFT JOIN 
-    roomimages rim ON htrm.roomno = rim.roomid
+    roomimages ri ON htrm.id = ri.roomid
 WHERE 
     htrm.hotelid = $1
 GROUP BY 
     htrm.hotelid, 
     htrm.roomviewid, 
     htrm.roomtypeid, 
-    htrm.roomno, 
+    htrm.roomno,
     htrm.noofbed, 
-    hrv.label, 
+    hrv.label,
     hrt.label, 
     hrp.fbprice;
 `,
@@ -988,7 +1009,7 @@ GROUP BY
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
-            <img class="img-fluid" src="img/room4.jpg" alt="">
+            <img class="img-fluid"  src="img/${room.imagenames[0]}" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                Rs ${room.fbprice} / Night
             </small>
@@ -1238,12 +1259,19 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
     domain,
   };
   try {
-    const data = await pool.query(
-      "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
-      [hotelId, templateId, domain]
+    const addedAlredy = await pool.query(
+      "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
+      [hotelId, templateId]
     );
 
-    console.log("Publish details added successfully");
+    if (!addedAlredy.rows.length > 0) {
+      // console.log("Publish details already added");
+      const data = await pool.query(
+        "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
+        [hotelId, templateId, domain]
+      );
+      console.log("Publish details added successfully");
+    }
   } catch (error) {
     console.log(error);
   }

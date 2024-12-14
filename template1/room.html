@@ -167,7 +167,8 @@
                         :data-wow-delay="`${0.1 * index}s`">
                         <div class="room-item shadow rounded overflow-hidden">
                             <div class="position-relative">
-                                <img class="img-fluid" :src="room.imgUrl || 'img/room4.jpg'" alt="">
+                                <img class="img-fluid" :src="room.imagenames[0] ? 'img/' + room.imagenames[0] : 'img/room4.jpg'" alt="Room image"
+                                    onerror="this.src='img/room4.jpg'">
                                 <small
                                     class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                                     Rs {{ room.fbprice }} / Night

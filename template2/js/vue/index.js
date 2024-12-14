@@ -410,7 +410,7 @@ const app = Vue.createApp({
           // this.email = siteDetails.details.email;
           // this.phoneNumber = siteDetails.details.phoneNumber;
           // this.address = siteDetails.details.address;
-          if (siteDetails.details.realImages.getImgPathForTemplate.length > 0) {
+          if (siteDetails?.details?.realImages?.getImgPathForTemplate?.length > 0) {
             this.userUseRealImages = true;
             this.realImages = siteDetails.details.realImages;
           }
@@ -565,10 +565,10 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
+          const errorText = await response.json();
           console.error("Error publishing changes:", errorText);
           this.isLoading = null;
-          this.isError = "Error publishing changes";
+          this.isError = errorText.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);

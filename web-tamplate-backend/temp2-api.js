@@ -66,7 +66,10 @@ router.post("/save-site-details", async (req, res) => {
           templateId,
         ]
       );
-      res.status(200).json(updateResult.rows[0]);
+      return res.status(200).json({
+        message: "Site details updated successfully",
+        data: updateResult.rows[0],
+      });
     } else {
       const insertResult = await pool.query(
         "INSERT INTO webtemplatedata (hotelId, templateId, details) VALUES ($1, $2, $3) RETURNING *",
@@ -95,18 +98,25 @@ router.post("/save-site-details", async (req, res) => {
           }),
         ]
       );
-      res.status(201).json(insertResult.rows[0]);
+      return res.status(201).json({
+        message: "Site details saved successfully",
+        data: insertResult.rows[0],
+      });
     }
   } catch (err) {
     console.error("Error saving site details:", err);
-    res.status(500).send("Error saving site details");
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 });
 
 router.get("/build-template", async (req, res) => {
   const { hotelId, templateId } = req.query;
   if (!hotelId || !templateId) {
-    return res.status(400).send("hotelId and templateId are required");
+    return res.status(400).json({
+      message: "Hotel ID and Template ID are required",
+    });
   }
 
   try {
@@ -122,13 +132,46 @@ router.get("/build-template", async (req, res) => {
   }
 
   try {
+    //copy hotel image folder
+    const sourceDir = path.resolve(__dirname, "/var/images/hotel" + hotelId);
+    const targetDir = `/var/www/template${templateId}/user${hotelId}/img`;
+
+    await fs.mkdir(targetDir, { recursive: true });
+    await fs.cp(sourceDir, targetDir, { recursive: true });
+  } catch (error) {
+    console.error("Error copying hotel images:", error);
+  }
+
+  try {
     const result = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
       [hotelId, templateId]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("No site details found");
+      return res.status(404).json({
+        message: "Site details not found",
+      });
+    }
+
+    const tempIds = [1, 3];
+    for (const tempId of tempIds) {
+      try {
+        console.log("Checking if template is already published");
+        const alreadyPublish = await pool.query(
+          "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateId = $2",
+          [hotelId, tempId]
+        );
+
+        if (alreadyPublish.rows.length > 0) {
+          return res.status(400).json({
+            message: `Template ${tempId} is already linked to the domain ${alreadyPublish.rows[0].website}.`,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
     }
 
     const data = {
@@ -160,7 +203,7 @@ router.get("/build-template", async (req, res) => {
     // buildTemplateBooking(data, hotelId, templateId);
     // buildTemplateSpecialOffers(data, hotelId, templateId);
     generateNginxConfig(hotelId, templateId);
-    res.send({
+    return res.send({
       message: "Template built successfully",
     });
   } catch (error) {
@@ -183,8 +226,8 @@ const buildTemplate = async (result, hotelId, templateId) => {
     hrv.label AS roomview,
     hrt.label AS roomtype,
     hrp.fbprice,
-    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
-    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+    ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
+    ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
 FROM 
     hotelrooms htrm
 JOIN 
@@ -193,22 +236,22 @@ JOIN
     hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
 JOIN 
     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-                         AND htrm.roomtypeid = hrp.roomtypeid
+    AND htrm.roomtypeid = hrp.roomtypeid
 LEFT JOIN 
-    roomamenitydetails ram ON htrm.roomno = ram.roomid
+    roomamenitydetails ram ON htrm.id = ram.roomid
 LEFT JOIN 
     roomamenities amn ON ram.amenityid = amn.id
 LEFT JOIN 
-    roomimages rim ON htrm.roomno = rim.roomid
+    roomimages ri ON htrm.id = ri.roomid
 WHERE 
     htrm.hotelid = $1
 GROUP BY 
     htrm.hotelid, 
     htrm.roomviewid, 
     htrm.roomtypeid, 
-    htrm.roomno, 
+    htrm.roomno,
     htrm.noofbed, 
-    hrv.label, 
+    hrv.label,
     hrt.label, 
     hrp.fbprice;
       `,
@@ -354,8 +397,8 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
     hrv.label AS roomview,
     hrt.label AS roomtype,
     hrp.fbprice,
-    ARRAY_AGG(DISTINCT amn.label) AS roomamenities,
-    ARRAY_AGG(DISTINCT rim.images) AS roomimages
+    ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
+    ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
 FROM 
     hotelrooms htrm
 JOIN 
@@ -364,22 +407,22 @@ JOIN
     hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
 JOIN 
     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-                         AND htrm.roomtypeid = hrp.roomtypeid
+    AND htrm.roomtypeid = hrp.roomtypeid
 LEFT JOIN 
-    roomamenitydetails ram ON htrm.roomno = ram.roomid
+    roomamenitydetails ram ON htrm.id = ram.roomid
 LEFT JOIN 
     roomamenities amn ON ram.amenityid = amn.id
 LEFT JOIN 
-    roomimages rim ON htrm.roomno = rim.roomid
+    roomimages ri ON htrm.id = ri.roomid
 WHERE 
     htrm.hotelid = $1
 GROUP BY 
     htrm.hotelid, 
     htrm.roomviewid, 
     htrm.roomtypeid, 
-    htrm.roomno, 
+    htrm.roomno,
     htrm.noofbed, 
-    hrv.label, 
+    hrv.label,
     hrt.label, 
     hrp.fbprice;
       `,
@@ -518,6 +561,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
     [hotelId]
   );
   // console.log(getSiteName);
+  const domain = getSiteName.rows[0].url;
 
   const nginxFileExist = fssync.existsSync(
     `/etc/nginx/sites-available/template${templateId}-user${hotelId}`
@@ -557,16 +601,43 @@ const generateNginxConfig = async (hotelId, templateId) => {
           return;
         }
         console.log("nginx file successfully created");
-        addSslCertificate(hotelId, templateId, getSiteName);
+        addPublishDetails(hotelId, templateId, domain);
+
+        addSslCertificate(hotelId, templateId, domain);
       });
     }
   );
 };
 
+const addPublishDetails = async (hotelId, templateId, domain) => {
+  const publishDetails = {
+    hotelId,
+    templateId,
+    domain,
+  };
+  try {
+    const addedAlredy = await pool.query(
+      "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
+      [hotelId, templateId]
+    );
+
+    if (!addedAlredy.rows.length > 0) {
+      // console.log("Publish details already added");
+      const data = await pool.query(
+        "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
+        [hotelId, templateId, domain]
+      );
+      console.log("Publish details added successfully");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 // // add ssl certificate
 
-const addSslCertificate = (hotelId, templateId, getSiteName) => {
-  const domain = getSiteName.rows[0].url;
+const addSslCertificate = (hotelId, templateId, domain) => {
+  // const domain = getSiteName.rows[0].url;
 
   exec(
     `sudo certbot certificates --domain ${domain}`,
