@@ -339,7 +339,10 @@ app.get("/hotel-info", async (req, res) => {
       });
     }
 
-    res.send(result.rows[0]);
+    res.send({
+      data: result.rows[0],
+      message: "Hotel information loaded successfully",
+    });
   } catch (error) {
     console.log(error);
   }
@@ -360,7 +363,10 @@ app.get("/hotel-offers", async (req, res) => {
       });
     }
 
-    res.send(result.rows);
+    res.send({
+      data: result.rows,
+      message: "successfully loaded hotel offers",
+    });
   } catch (error) {
     console.log(error);
   }
@@ -577,7 +583,10 @@ GROUP BY
       });
     }
 
-    res.status(200).json(result.rows);
+    res.status(200).json({
+      data: result.rows,
+      message: "Rooms loaded successfully",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({
