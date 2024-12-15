@@ -127,7 +127,10 @@ app.post("/save-site-details", async (req, res) => {
         });
       }
 
-      res.status(201).json(insertResult.rows[0]);
+      res.status(201).json({
+        message: "Site details saved successfully",
+        data: insertResult.rows[0],
+      });
     }
   } catch (err) {
     console.error("Error saving site details:", err);
