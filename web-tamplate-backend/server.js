@@ -813,6 +813,7 @@ const buildTemplateGallery = async (result, hotelId, templateId) => {
     "#siteAddress": result.rows[0].details.address,
     "#galleryImages": galleryHtml,
     "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
+    "#footerDescription": result.rows[0].details.footerDescription,
   };
 
   const templatePath = `./template/temp${templateId}/gallery.html`;
@@ -938,6 +939,8 @@ buildTemplateAttraction = async (result, hotelId, templateId) => {
       "#sitePhoneNumber": result.rows[0].details.phoneNumber,
       "#siteAddress": result.rows[0].details.address,
       "#attractionList": attractionListHtml,
+      "#footerDescription": result.rows[0].details.footerDescription,
+      "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
     };
     // console.log(data);
     const result1 = template.replace(
@@ -1102,6 +1105,7 @@ GROUP BY
       "#siteAddress": result.rows[0].details.address,
       "#rooms": roomsHtml,
       "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
+      "#footerDescription": result.rows[0].details.footerDescription,
     };
 
     const templatePath = `./template/temp${templateId}/room.html`;

@@ -90,11 +90,11 @@ const app = Vue.createApp({
         }
       } catch (error) {
         console.error("Error fetching site details:", error);
-        this.isLoading = null;
-        this.isError = "Error fetching site details";
-        setTimeout(() => {
-          this.isError = null;
-        }, 5000);
+        // this.isLoading = null;
+        // this.isError = "Error fetching site details";
+        // setTimeout(() => {
+        //   this.isError = null;
+        // }, 5000);
       }
     },
     triggerFileInput() {

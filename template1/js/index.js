@@ -172,11 +172,12 @@ const app = Vue.createApp({
           }, 5000);
         }
       } catch (error) {
-        this.isLoading = null;
-        this.isError = "Error fetching site details";
-        setTimeout(() => {
-          this.isError = null;
-        }, 5000);
+        // this.isLoading = null;
+        // this.isError = "Error fetching site details";
+        // setTimeout(() => {
+        //   this.isError = null;
+        // }, 5000);
+        console.log("Error fetching site details:", error);
       }
     },
 
