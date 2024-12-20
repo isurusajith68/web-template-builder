@@ -50,7 +50,7 @@
         <div class="container-fluid bg-dark px-0">
             <div class="row gx-0">
                 <div class="col-lg-3 bg-dark d-none d-lg-flex">
- 
+
                     <a :href="`index.html?hotelId=${hotelId}`"
                         class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
                         <h1 class="m-0 text-primary text-uppercase">{{ title}}</h1>
@@ -177,20 +177,20 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating date" id="date3" data-target-input="nearest">
-                                            <input type="text" class="form-control datetimepicker-input" id="checkin"
-                                                placeholder="Check In" data-target="#date3"
-                                                data-toggle="datetimepicker" />
+                                            <input type="date" class="form-control " id="checkin" placeholder="Check In"
+                                                data-target="#date3" data-toggle="datetimepicker" />
                                             <label for="checkin">Check In</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating date" id="date4" data-target-input="nearest">
-                                            <input type="text" class="form-control datetimepicker-input" id="checkout"
-                                                placeholder="Check Out" data-target="#date4"
-                                                data-toggle="datetimepicker" />
+                                            <input type="date" class="form-control " id="checkout"
+                                                placeholder="Check Out" data-target="#date4" data-toggle="
+                                                " />
                                             <label for="checkout">Check Out</label>
                                         </div>
                                     </div>
+
                                     <div class="col-12">
                                         <a class="btn btn-primary w-100 py-3"
                                             :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`">Book Now</a>
@@ -231,9 +231,9 @@
                                 <h1 class="text-white text-uppercase mb-3">{{title}}</h1>
                             </a>
                             <p class="text-white mb-0" style="text-align: justify;">
-                        {{
-                        footerDescription
-                        }}
+                                {{
+                                footerDescription
+                                }}
                             </p>
                         </div>
                     </div>

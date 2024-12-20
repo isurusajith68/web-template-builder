@@ -3,10 +3,10 @@ const app = Vue.createApp({
     return {
       hotelId: null,
       templateId: 1,
-      title: "Hill Roost",
-      email: "hillroostkandy@gmail.com",
-      phoneNumber: "0765280144",
-      address: "Hill Roost, Kandy, Sri Lanka",
+      title: "Site Name",
+      email: "Site email",
+      phoneNumber: "Site phone number",
+      address: "Site address",
       realImages: [],
 
       mapIframeHtml: `<div style="max-width:100%;overflow:hidden;color:red;height:400px;"><div id="display-google-map" style="height:100%; width:100%;max-width:100%;"><iframe style="height:100%;width:100%;border:0;" frameborder="0" src="https://www.google.com/maps/embed/v1/place?q=hillroost&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe></div><a class="from-embedmap-code" href="https://www.bootstrapskins.com/themes" id="auth-map-data">premium bootstrap themes</a><style>#display-google-map img.text-marker{max-width:none!important;background:none!important;}img{max-width:none}</style></div>`,
@@ -37,6 +37,7 @@ const app = Vue.createApp({
         "Hill Roost is located in Kandy, the most beautiful city in central Sri Lanka. We are at Ampitiya-Kandy road, about 3km away from the Kandy City Center. We are very close to the major tourist attractions of the city like the Temple of the Tooth, Kandy Lake, restaurants, and shopping areas.Kandy is the last kingdom of ancient Sri Lanka, and it is full of cultural, traditional,<br><br> and historical values to explore. Geographically, Kandy is a plateau located in the central highlands of Sri Lanka, surrounded by magnificent mountains. This provides beautiful landscapes, mountain views, and a pleasant climate, attracting millions of tourists every year.Hill Roost is more like a home for your stay in Kandy, offering luxury accommodation with<br><br> a unique boutique hotel concept. Hill Roost has 5 bedrooms with large common areas including lobbies, sitting areas, ",
       attraction: "WITHIN KANDY CITY",
       attractionList: [],
+      footerDescription: "Footer Description",
 
       roomsDetails: [],
 
@@ -76,10 +77,10 @@ const app = Vue.createApp({
           console.log("Hotel info fetched successfully:", result);
 
           if (result) {
-            this.title = result.name;
-            this.email = result.email;
-            this.phoneNumber = result.mobile;
-            this.address = result.address1;
+            this.title = result.data.name;
+            this.email = result.data.email;
+            this.phoneNumber = result.data.mobile;
+            this.address = result.data.address1;
           }
         }
       } catch (error) {
@@ -112,10 +113,13 @@ const app = Vue.createApp({
           this.carouselImages = siteDetails?.details?.carouselImages;
           this.description = siteDetails?.details?.description;
           this.realImages = siteDetails?.details?.realImages;
-          this.address = siteDetails?.details?.address;
+          // this.address = siteDetails?.details?.address;
           this.mapIframeHtml = siteDetails?.details?.mapIframeHtml;
           this.attraction = siteDetails?.details?.attraction;
           this.attractionList = siteDetails?.details?.attractionList || [];
+          this.footerDescription =
+            siteDetails?.details?.footerDescription || this.footerDescription;
+
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
           setTimeout(() => {
@@ -151,7 +155,8 @@ const app = Vue.createApp({
         } else {
           const roomDetails = await response.json();
           console.log("Room details loaded successfully:", roomDetails);
-          this.roomsDetails = roomDetails;
+          this.roomsDetails = roomDetails.data;
+
           this.isLoading = null;
           this.isSuccess = "Room details loaded successfully";
           setTimeout(() => {

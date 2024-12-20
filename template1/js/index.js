@@ -3,10 +3,10 @@ const app = Vue.createApp({
     return {
       hotelId: null,
       templateId: 1, // Template ID
-      title: "Hill Roost",
-      email: "hillroostkandy@gmail.com",
-      phoneNumber: "0765280144",
-      address: "Hill Roost, Kandy, Sri Lanka",
+      title: "Site Name",
+      email: "Site email",
+      phoneNumber: "Site phone number",
+      address: "Site address",
       realImages: [],
 
       mapIframeHtml: `<div style="max-width:100%;overflow:hidden;color:red;height:400px;"><div id="display-google-map" style="height:100%; width:100%;max-width:100%;"><iframe style="height:100%;width:100%;border:0;" frameborder="0" src="https://www.google.com/maps/embed/v1/place?q=hillroost&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe></div><a class="from-embedmap-code" href="https://www.bootstrapskins.com/themes" id="auth-map-data">premium bootstrap themes</a><style>#display-google-map img.text-marker{max-width:none!important;background:none!important;}img{max-width:none}</style></div>`,
@@ -38,9 +38,9 @@ const app = Vue.createApp({
       attraction: "WITHIN KANDY CITY",
 
       subContainerTitle: "Click to Edit  Title",
-      subContainerDescription: "Click to Edit Footer Description",
+      subContainerDescription: "Click to Edit  Description",
       subContainerImage: "img/hotel3.jpg",
-      footerDescription: "Click to Edit Footer Description",
+      footerDescription: "Edit Footer Description",
 
       attractionList: [],
       roomsDetails: [],
@@ -150,7 +150,7 @@ const app = Vue.createApp({
           this.carouselImages = siteDetails?.details?.carouselImages;
           this.description = siteDetails?.details?.description;
           this.realImages = siteDetails?.details?.realImages;
-          this.address = siteDetails?.details?.address;
+          // this.address = siteDetails?.details?.address;
           this.mapIframeHtml = siteDetails?.details?.mapIframeHtml;
           this.attraction = siteDetails?.details?.attraction;
           this.attractionList =
@@ -285,12 +285,12 @@ const app = Vue.createApp({
         const response = await fetch(
           `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
         );
-
+        console.log(response);
         if (!response.ok) {
           const err = await response.json();
 
-          console.error("Error fetching hotel info:", errorText);
-
+          console.error("Error fetching hotel info:", err);
+          console.log(err);
           this.isLoading = null;
           this.isError = err.message;
           setTimeout(() => {
@@ -301,10 +301,11 @@ const app = Vue.createApp({
           console.log("Hotel info fetched successfully:", result);
 
           if (result) {
-            this.title = result.name;
-            this.email = result.email;
-            this.phoneNumber = result.mobile;
-            this.address = result.address1;
+            console.log("result", result.data.name);
+            this.title = result.data.name;
+            this.email = result.data.email;
+            this.phoneNumber = result.data.mobile;
+            this.address = result.data.address1;
           }
         }
       } catch (error) {
@@ -368,7 +369,7 @@ const app = Vue.createApp({
 
           //slice 3 rooms
 
-          this.roomsDetails = roomDetails.slice(0, 3);
+          this.roomsDetails = roomDetails.data.slice(0, 3);
 
           // this.roomsDetails = roomDetails;
           this.isLoading = null;

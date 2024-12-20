@@ -3,10 +3,10 @@ const app = Vue.createApp({
     return {
       hotelId: null,
       templateId: 1,
-      title: "Hill Roost",
-      email: "hillroostkandy@gmail.com",
-      phoneNumber: "0765280144",
-      address: "Hill Roost, Kandy, Sri Lanka",
+      title: "Site Name",
+      email: "Site email",
+      phoneNumber: "Site phone number",
+      address: "Site address",
       realImages: [],
 
       mapIframeHtml: `<div style="max-width:100%;overflow:hidden;color:red;height:400px;"><div id="display-google-map" style="height:100%; width:100%;max-width:100%;"><iframe style="height:100%;width:100%;border:0;" frameborder="0" src="https://www.google.com/maps/embed/v1/place?q=hillroost&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe></div><a class="from-embedmap-code" href="https://www.bootstrapskins.com/themes" id="auth-map-data">premium bootstrap themes</a><style>#display-google-map img.text-marker{max-width:none!important;background:none!important;}img{max-width:none}</style></div>`,
@@ -38,7 +38,7 @@ const app = Vue.createApp({
 
       attraction: "WITHIN KANDY CITY",
       attractionList: [],
-
+      footerDescription: "Edit Footer Description",
       newAttractionTitle: "",
       newAttractionDescription: "",
       newAttractionImage: null,
@@ -68,17 +68,20 @@ const app = Vue.createApp({
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
-          this.title = siteDetails.details.title;
-          this.email = siteDetails.details.email;
-          this.phoneNumber = siteDetails.details.phoneNumber;
+          // this.title = siteDetails.details.title;
+          // this.email = siteDetails.details.email;
+          // this.phoneNumber = siteDetails.details.phoneNumber;
           this.aboutUsImages = siteDetails.details.aboutUsImages;
           this.carouselImages = siteDetails?.details?.carouselImages;
           this.description = siteDetails?.details?.description;
           this.realImages = siteDetails?.details?.realImages;
-          this.address = siteDetails?.details?.address;
+          // this.address = siteDetails?.details?.address;
           this.mapIframeHtml = siteDetails?.details?.mapIframeHtml;
           this.attraction = siteDetails?.details?.attraction;
           this.attractionList = siteDetails?.details?.attractionList || [];
+          this.footerDescription =
+            siteDetails?.details?.footerDescription || this.footerDescription;
+
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
           setTimeout(() => {
@@ -213,10 +216,10 @@ const app = Vue.createApp({
           console.log("Hotel info fetched successfully:", result);
 
           if (result) {
-            this.title = result.name;
-            this.email = result.email;
-            this.phoneNumber = result.mobile;
-            this.address = result.address1;
+            this.title = result.data.name;
+            this.email = result.data.email;
+            this.phoneNumber = result.data.mobile;
+            this.address = result.data.address1;
           }
         }
       } catch (error) {

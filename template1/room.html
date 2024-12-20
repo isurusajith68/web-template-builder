@@ -167,8 +167,9 @@
                         :data-wow-delay="`${0.1 * index}s`">
                         <div class="room-item shadow rounded overflow-hidden">
                             <div class="position-relative">
-                                <img class="img-fluid" :src="room.imagenames[0] ? 'img/' + room.imagenames[0] : 'img/room4.jpg'" alt="Room image"
-                                    onerror="this.src='img/room4.jpg'">
+                                <img class="img-fluid w-100" style="height: 250px;"
+                                    :src="room.imagenames[0] ? 'img/' + room.imagenames[0] : 'img/room4.jpg'"
+                                    alt="Room image" onerror="this.src='img/room4.jpg'">
                                 <small
                                     class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                                     Rs {{ room.fbprice }} / Night
@@ -361,7 +362,10 @@
                     <div class="col-md-6 col-lg-4 col-sm-4">
                         <div class="bg-primary rounded p-4">
                             <a :href="`index.html?hotelId=${hotelId}`">
-                                <h1 class="text-white text-uppercase mb-3">Hill Roost</h1>
+                                <h1 class="text-white text-uppercase mb-3">{{
+                                    title
+                                    }}
+                                </h1>
                             </a>
                             <p class="text-white mb-0" style="text-align: justify;">
                                 {{

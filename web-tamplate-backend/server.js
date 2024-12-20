@@ -155,17 +155,12 @@ app.get("/site-details", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({
-        message: "site details not found",
-      });
+      console.log("No site details found");
     }
 
     res.status(200).json(result.rows[0]);
   } catch (err) {
     console.error("Error loading site details:", err);
-    res.status(500).json({
-      message: "Error loading site details",
-    });
   }
 });
 
@@ -438,37 +433,10 @@ app.post("/upload-images", upload.array("images", 10), async (req, res) => {
       [hotelId, templateId]
     );
 
+    let previousFiles = [];
+
     if (dbGetResult.rows.length > 0) {
-      const previousFiles = dbGetResult.rows[0].details?.realImages?.filePaths;
-
-      if (previousFiles) {
-        previousFiles.forEach((file) => {
-          const filePath = path.join(
-            `/var/www/template${templateId}/user${hotelId}`,
-            file
-          );
-          // console.log(filePath);
-          if (fssync.existsSync(filePath)) {
-            fssync.unlinkSync(filePath);
-            console.log("File deleted successfully:", filePath);
-          }
-        });
-      }
-
-      //remove pre img files for template
-      const previousFilesForTemplate =
-        dbGetResult.rows[0].details?.realImages?.getImgPathForTemplate;
-
-      if (previousFilesForTemplate) {
-        previousFilesForTemplate.forEach((file) => {
-          const filePath = path.join(`/var/www/vue-temp${templateId}`, file);
-          // console.log(filePath);
-          if (fssync.existsSync(filePath)) {
-            fssync.unlinkSync(filePath);
-            console.log("File deleted successfully:", filePath);
-          }
-        });
-      }
+      previousFiles = dbGetResult.rows[0].details?.realImages?.filePaths || [];
     }
 
     req.files.forEach((file) => {
@@ -491,31 +459,77 @@ app.post("/upload-images", upload.array("images", 10), async (req, res) => {
       return match ? match[0] : pathString;
     };
 
-    const getLocalPath = req.files.map(
-      (file) =>
-        `web-tamplate-backend/build/template/temp${templateId}/img/${file.filename}`
-    );
-
-    const getImgPathForTemplate = req.files.map(
-      (file) => `/img/${file.filename}`
-    );
+    const combinedFilePaths = [...previousFiles, ...filePaths.map(getRealPath)];
 
     res.json({
       success: true,
       message: "Images uploaded successfully",
-      images: { filePaths: filePaths.map(getRealPath), getImgPathForTemplate },
-      // images: getLocalPath,
+      images: {
+        filePaths: combinedFilePaths,
+      },
     });
 
-    updateDataBase(
-      hotelId,
-      templateId,
-      filePaths.map(getRealPath),
-      getImgPathForTemplate
-    );
+    updateDataBase(hotelId, templateId, combinedFilePaths);
   } catch (error) {
     console.error("Error uploading images:", error);
     res.status(500).json({ success: false, message: "Image upload failed" });
+  }
+});
+
+app.delete("/remove-image", async (req, res) => {
+  try {
+    const { hotelId, templateId, imageName } = req.body;
+    console.log(
+      "hotelId",
+      hotelId,
+      "templateId",
+      templateId,
+      "imageName",
+      imageName
+    );
+    const filePathTemp = path.join(
+      `/var/www/vue-temp${templateId}/${imageName}`
+    );
+    const filePath = path.join(
+      `/var/www/template${templateId}/user${hotelId}/${imageName}`
+    );
+
+    if (fssync.existsSync(filePath) && fssync.existsSync(filePathTemp)) {
+      fssync.unlinkSync(filePath);
+      fssync.unlinkSync(filePathTemp);
+      console.log("Files deleted successfully:", filePath, filePathTemp);
+
+      const dbGetResult = await pool.query(
+        "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
+        [hotelId, templateId]
+      );
+
+      let previousFiles = [];
+
+      if (dbGetResult.rows.length > 0) {
+        previousFiles =
+          dbGetResult.rows[0].details?.realImages?.filePaths || [];
+      }
+
+      previousFiles = previousFiles.filter((file) => file !== imageName);
+
+      // Optionally, update the database (uncomment if needed)
+      await updateDataBase(hotelId, templateId, previousFiles);
+
+      return res.json({
+        success: true,
+        message: "Images removed successfully",
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, message: "Image not found" });
+    }
+  } catch (error) {
+    console.error("Error removing image:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Image removal failed" });
   }
 });
 
@@ -655,7 +669,9 @@ GROUP BY
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
-            <img class="img-fluid" src="img/${room.imagenames[0]}" alt="">
+            <img class="img-fluid w-100" style="height: 250px;" src="img/${
+              room.imagenames[0]
+            }" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                Rs ${room.fbprice} / Night
             </small>
@@ -941,12 +957,7 @@ buildTemplateAttraction = async (result, hotelId, templateId) => {
   }
 };
 
-const updateDataBase = async (
-  hotelId,
-  templateId,
-  filePaths,
-  getImgPathForTemplate
-) => {
+const updateDataBase = async (hotelId, templateId, filePaths) => {
   try {
     const result = await pool.query(
       "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
@@ -957,7 +968,7 @@ const updateDataBase = async (
 
     const newResult = {
       ...result.rows[0].details,
-      realImages: { filePaths, getImgPathForTemplate },
+      realImages: { filePaths },
     };
 
     await pool.query(
@@ -1021,7 +1032,9 @@ GROUP BY
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
-            <img class="img-fluid"  src="img/${room.imagenames[0]}" alt="">
+            <img class="img-fluid w-100" style="height: 250px;"  src="img/${
+              room.imagenames[0]
+            }" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                Rs ${room.fbprice} / Night
             </small>

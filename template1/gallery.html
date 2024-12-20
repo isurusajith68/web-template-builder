@@ -240,148 +240,38 @@
         </div>
 
         <div v-if="!userUseRealImages" class="gallery-container">
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[0]" alt="Image 1">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[1]" alt="Image 2">
-                </div>
-            </div>
-
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[2]" alt="Image 3">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[3]" alt="Image 4">
+            <div v-for="(row, rowIndex) in imageRows" :key="rowIndex" class="gallery-row">
+                <div v-for="(image, imageIndex) in row" :key="imageIndex" class="image-item"
+                    style="position: relative; height: 350px;">
+                    <div class="image-wrapper" style="position: relative; width: 100%; height: 100%; overflow: hidden;">
+                        <button @click="removeImage(rowIndex * 2 + imageIndex)" style="position: absolute; top: 8px; left: 8px; background-color: rgba(255, 0, 0, 0.7); 
+                     color: white; border: none; border-radius: 50%; width: 24px; height: 24px; 
+                     font-size: 14px; font-weight: bold; display: flex; justify-content: center; 
+                     align-items: center; cursor: pointer; z-index: 10;">X</button>
+                        <img :src="image" :alt="'Image ' + (rowIndex * 2 + imageIndex + 1)"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                 </div>
             </div>
-
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[4]" alt="Image 3">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[5]" alt="Image 4">
-                </div>
-            </div>
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[6]" alt="Image 5">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[7]" alt="Image 6">
-                </div>
-            </div>
-
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[8]" alt="Image 7">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[9]" alt="Image 8">
-                </div>
-            </div>
-
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[10]" alt="Image 19">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[11]" alt="Image 10">
-                </div>
-            </div>
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[12]" alt="Image 11">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[13]" alt="Image 12">
-                </div>
-            </div>
-
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[14]" alt="Image 13">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[15]" alt="Image 14">
-                </div>
-            </div>
-
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[16]" alt="Image 15">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[17]" alt="Image 16">
-                </div>
-            </div>
-
-
-
-            <div class="gallery-row">
-                <div class="image-item">
-                    <img :src="images[18]" alt="Image 17">
-                </div>
-
-
-                <div class="image-item">
-                    <img :src="images[19]" alt="Image 18">
-                </div>
-            </div>
-
-
-            <div class="gallery-row"></div>
-
         </div>
+
+        <!-- Real Uploaded Images -->
         <div v-if="userUseRealImages" class="gallery-container">
-            <div v-for="(row, index) in imageRows" :key="index" class="gallery-row">
-                <div class="image-item" v-for="(image, idx) in row" :key="idx">
-                    <img :src="image" :alt="'Image ' + (index * 2 + idx + 1)" />
+            <div v-for="(row, rowIndex) in imageRows" :key="rowIndex" class="gallery-row">
+                <div v-for="(image, imageIndex) in row" :key="imageIndex" class="image-item"
+                    style="position: relative; height: 350px;">
+                    <div class="image-wrapper" style="position: relative; width: 100%; height: 100%; overflow: hidden;">
+                        <button @click="removeRealImage(rowIndex * 2 + imageIndex)" style="position: absolute; top: 8px; left: 8px; background-color: rgba(255, 0, 0, 0.7); 
+                     color: white; border: none; border-radius: 50%; width: 24px; height: 24px; 
+                     font-size: 14px; font-weight: bold; display: flex; justify-content: center; 
+                     align-items: center; cursor: pointer; z-index: 10;">X</button>
+                        <img :src="image" :alt="'Image ' + (rowIndex * 2 + imageIndex + 1)"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                 </div>
             </div>
-            <!-- <div v-for="image in realImages" :key="image">
-                <img :src="image" alt="Image" />
-            </div> -->
-
         </div>
+
 
         <style>
             @media (max-width: 768px) {

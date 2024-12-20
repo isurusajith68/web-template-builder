@@ -410,7 +410,9 @@ const app = Vue.createApp({
           // this.email = siteDetails.details.email;
           // this.phoneNumber = siteDetails.details.phoneNumber;
           // this.address = siteDetails.details.address;
-          if (siteDetails?.details?.realImages?.getImgPathForTemplate?.length > 0) {
+          if (
+            siteDetails?.details?.realImages?.getImgPathForTemplate?.length > 0
+          ) {
             this.userUseRealImages = true;
             this.realImages = siteDetails.details.realImages;
           }
@@ -506,8 +508,8 @@ const app = Vue.createApp({
         } else {
           const roomDetails = await response.json();
           console.log("Room details loaded successfully:", roomDetails);
-          this.roomsDetails = roomDetails;
 
+          console.log(roomDetails);
           if (roomDetails.length < 0) {
             this.isLoading = null;
             this.isError = "Please add room your site";
@@ -515,6 +517,7 @@ const app = Vue.createApp({
               this.isError = null;
             }, 5000);
           } else {
+            this.roomsDetails = roomDetails.data;
             this.isLoading = null;
             this.isSuccess = "Room details loaded successfully";
             setTimeout(() => {

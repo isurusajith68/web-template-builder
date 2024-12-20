@@ -388,7 +388,7 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
 
   const rooms = await pool.query(
     `
-      SELECT 
+       SELECT 
     htrm.hotelid,
     htrm.roomviewid,
     htrm.roomtypeid,

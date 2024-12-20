@@ -3,33 +3,12 @@ const gallery = Vue.createApp({
     return {
       hotelId: null,
       templateId: 1,
-      title: "Hill Roost",
-      email: "hillroostkandy@gmail.com",
-      phoneNumber: "0765280144",
-      address: "Hill Roost, Kandy, Sri Lanka",
+      title: "Site Name",
+      email: "Site email",
+      phoneNumber: "Site phone number",
+      address: "Site address",
 
-      images: [
-        "img/room-1.jpg",
-        "img/about-2.jpg",
-        "img/Capture6.jpg",
-        "img/Capture10.jpg",
-        "img/Capture16.jpg",
-        "img/Capture15.jpg",
-        "img/Capture13.jpg",
-        "img/Capture4.jpg",
-        "img/about-.jpg",
-        "img/room7.jpg",
-        "img/about-4.jpg",
-        "img/room5.jpg",
-        "img/Capture6.jpg",
-        "img/room8.jpg",
-        "img/Capture17.jpg",
-        "img/room3.jpg",
-        "img/bath7.jpg",
-        "img/fdfs.jpg",
-        "img/Capture9.jpg",
-        "img/room7.jpg",
-      ],
+      images: [],
       footerDescription: "Click to Edit Footer Description",
 
       userUseRealImages: false,
@@ -68,6 +47,58 @@ const gallery = Vue.createApp({
       this.uploadImages(formData);
     },
 
+    removeRealImage(imageIndex) {
+      const imageName = this.imageRows.flat()[imageIndex];
+      this.removeImageFromServer(imageName);
+    },
+
+    async removeImageFromServer(imageName) {
+      try {
+        const response = await fetch(
+          "https://be-publish.ceyinfo.cloud/remove-image",
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              hotelId: this.hotelId,
+              templateId: this.templateId,
+              imageName: imageName,
+            }),
+          }
+        );
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          this.realImages = this.realImages.filter(
+            (image) => image !== imageName
+          );
+
+          this.isLoading = null;
+          this.isSuccess = "Image removed successfully";
+
+          setTimeout(() => {
+            this.isSuccess = null;
+          }, 5000);
+        } else {
+          this.isLoading = null;
+          this.isError = "Error removing image";
+
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+        }
+      } catch (error) {
+        this.isLoading = null;
+        this.isError = "Error removing image";
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+      }
+    },
     async uploadImages(formData) {
       this.isLoading = "Uploading...";
 
@@ -85,7 +116,7 @@ const gallery = Vue.createApp({
           console.log("Images uploaded successfully:", data);
 
           this.userUseRealImages = true;
-          this.realImages = data.images;
+          this.realImages = data.images.filePaths;
           console.log("Real images:", this.realImages);
 
           this.isLoading = null;
@@ -169,17 +200,24 @@ const gallery = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error fetching hotel info:", errorText);
+          const err = await response.json();
+
+          console.error("Error fetching hotel info:", err);
+          console.log(err);
+          this.isLoading = null;
+          this.isError = err.message;
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
         } else {
           const result = await response.json();
           console.log("Hotel info fetched successfully:", result);
 
           if (result) {
-            this.title = result.name;
-            this.email = result.email;
-            this.phoneNumber = result.mobile;
-            this.address = result.address1;
+            this.title = result.data.name;
+            this.email = result.data.email;
+            this.phoneNumber = result.data.mobile;
+            this.address = result.data.address1;
           }
         }
       } catch (error) {
@@ -205,11 +243,11 @@ const gallery = Vue.createApp({
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
-          if (
-            siteDetails?.details?.realImages?.getImgPathForTemplate?.length > 0
-          ) {
+          if (siteDetails?.details?.realImages?.filePaths?.length > 0) {
             this.userUseRealImages = true;
-            this.realImages = siteDetails.details.realImages;
+            this.realImages.push(
+              ...siteDetails?.details?.realImages?.filePaths
+            );
             this.carouselImages = siteDetails?.details?.carouselImages;
             this.footerDescription =
               siteDetails?.details?.footerDescription || this.footerDescription;
@@ -227,7 +265,7 @@ const gallery = Vue.createApp({
       } catch (error) {
         console.error("Error fetching site details:", error);
         this.isLoading = null;
-        this.isError = "Error fetching site details";
+        // this.isError = "Error fetching site details";
         setTimeout(() => {
           this.isError = null;
         }, 5000);
@@ -261,13 +299,12 @@ const gallery = Vue.createApp({
   },
   computed: {
     imageRows() {
+      const sourceImages = this.userUseRealImages
+        ? this.realImages
+        : this.images;
       const rows = [];
-      for (
-        let i = 0;
-        i < this.realImages.getImgPathForTemplate.length;
-        i += 2
-      ) {
-        rows.push(this.realImages.getImgPathForTemplate.slice(i, i + 2));
+      for (let i = 0; i < sourceImages.length; i += 2) {
+        rows.push(sourceImages.slice(i, i + 2));
       }
       return rows;
     },
