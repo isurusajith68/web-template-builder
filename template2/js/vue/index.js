@@ -387,7 +387,7 @@ const app = Vue.createApp({
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
-          this.title = siteDetails.details.title;
+          // this.title = siteDetails.details.title;
 
           this.aboutUsImages = siteDetails.details.aboutUsImages;
           this.carouselImages = siteDetails?.details?.carouselImages;
@@ -549,10 +549,10 @@ const app = Vue.createApp({
           console.log("Hotel info fetched successfully:", result);
 
           if (result) {
-            // this.title = result.name;
-            this.email = result.email;
-            this.phoneNumber = result.mobile;
-            this.address = result.address1;
+            this.title = result.data.name;
+            this.email = result.data.email;
+            this.phoneNumber = result.data.mobile;
+            this.address = result.data.address1;
           }
         }
       } catch (error) {

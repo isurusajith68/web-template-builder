@@ -275,6 +275,7 @@ app.get("/build-template", async (req, res) => {
         result.rows[0].details.subContainerDescription,
       "#subContainerImage": result.rows[0].details.subContainerImage,
       "#footerDescription": result.rows[0].details.footerDescription,
+      "#headerC": "#header-carousel",
     };
 
     const getSiteName = await pool.query(
