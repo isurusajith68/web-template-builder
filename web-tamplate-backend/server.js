@@ -1301,6 +1301,8 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
         [hotelId, templateId, domain]
       );
       console.log("Publish details added successfully");
+    } else {
+      console.log("Publish details already added");
     }
   } catch (error) {
     console.log(error);
