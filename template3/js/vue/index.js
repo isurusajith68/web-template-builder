@@ -949,7 +949,7 @@ const app = Vue.createApp({
           console.log("Changes published successfully:", result);
 
           this.isLoading = null;
-          this.isSuccess = "Changes published successfully";
+          this.isSuccess = result.message;
           setTimeout(() => {
             this.isSuccess = null;
           }, 5000);
