@@ -1146,69 +1146,69 @@ const getAmenityIcon = (amenity) => {
 };
 
 const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
-  const templatePath = `./template/temp${templateId}/specialOffers.html`;
+  try {
+    const templatePath = `./template/temp${templateId}/specialOffers.html`;
+    const template = await fs.readFile(templatePath, "utf8");
 
-  const template = await fs.readFile(templatePath, "utf8");
+    const result = await pool.query(
+      "SELECT * FROM hoteloffers WHERE hotelid = $1",
+      [hotelId]
+    );
 
-  const result = await pool.query(
-    "SELECT * FROM hoteloffers WHERE hotelid = $1",
-    [hotelId]
-  );
+    if (result.rows.length === 0) {
+      console.log("No special offers found");
+      return;
+    }
 
-  if (result.rows.length === 0) {
-    console.log("No special offers found");
-  }
+    const offersHtml = result.rows;
 
-  const offersHtml = result.rows;
+    const formatDate = (dateStr) => {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    };
 
-  // <div v-for="offer in offers" :key="offer.id" class="col-md-4">
-  //                           <div class="offer-card">
-  //                               <img src="img/room2.jpg" alt="Offer Image">
-  //                               <div class="offer-body">
-  //                                   <h5 class="offer-title">{{ offer.offername }}</h5>
-  //                                   <!--discount-->
-  //                                   <span class="offer-highlight">Discount: {{ offer.discount }}</span>
-  //                                   <p class="offer-details">
-  //                                       Offer Valid: {{ formatDate(offer.startdate) }} to {{ formatDate(offer.enddate)
-  //                                       }} <br>
-  //                                   </p>
-  //                               </div>
-  //                           </div>
-  //                       </div>
-
-  const offersHtml2 = offersHtml.map(
-    (offer) => `
-      <div class="col-md-4">
-
-        <div class="offer-card">
-            <img src="img/room2.jpg" alt="Offer Image">
-            <div class="offer-body">
-                <h5 class="offer-title">${offer.offername}</h5>
-                <span class="offer-highlight">Discount: ${offer.discount}</span>
-                <p class="offer-details">
-                    Offer Valid: ${offer.startdate} to ${offer.enddate} <br>
-
-                </p>
-            </div>
+    const offersHtml2 = offersHtml.map(
+      (offer) => `
+        <div class="col-md-4">
+          <div class="offer-card">
+              <img src="img/room2.jpg" alt="Offer Image">
+              <div class="offer-body">
+                  <h5 class="offer-title">${offer.offername}</h5>
+                  <span class="offer-highlight">Discount: ${
+                    offer.discount
+                  }</span>
+                  <p class="offer-details">
+                      Offer Valid: ${formatDate(
+                        offer.startdate
+                      )} to ${formatDate(offer.enddate)} <br>
+                  </p>
+              </div>
+          </div>
         </div>
-    </div>
-    `
-  );
+      `
+    );
 
-  const data2 = {
-    ...data,
-    "#offers": offersHtml2.join(""),
-  };
-  // console.log(data2);
-  const outputHtml = template.replace(
-    /#\w+/g,
-    (placeholder) => data2[placeholder] || ""
-  );
+    const data2 = {
+      ...data,
+      "#offers": offersHtml2.join(""),
+    };
 
-  const outputPath = `/var/www/template${templateId}/user${hotelId}/specialOffers.html`;
-  await fs.writeFile(outputPath, outputHtml, "utf8");
+    const outputHtml = template.replace(
+      /#\w+/g,
+      (placeholder) => data2[placeholder] || ""
+    );
 
-  console.log("Template built successfully");
+    const outputPath = `/var/www/template${templateId}/user${hotelId}/specialOffers.html`;
+    await fs.writeFile(outputPath, outputHtml, "utf8");
+
+    console.log("Template built successfully");
+  } catch (error) {
+    console.error("Error building template:", error);
+  }
 };
 
 const { exec } = require("child_process");

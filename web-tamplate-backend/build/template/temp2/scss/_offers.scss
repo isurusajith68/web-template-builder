@@ -1,90 +1,89 @@
-.offers_area{
-      padding-bottom: 100px;
-      @media #{$mobile_device} {
-        padding-bottom: 40px;
+.offers_area {
+  padding-bottom: 100px;
+  @media #{$mobile_device} {
+    padding-bottom: 40px;
+  }
+  &.padding_top {
+    padding-top: 200px;
+    @media #{$mobile_device} {
+      padding-top: 40px;
+    }
+    @media #{$tablet_device} {
+      padding-top: 80px;
+    }
+    @media #{$mid_device} {
+      padding-top: 80px;
+    }
+  }
+  .single_offers {
+    @media #{$mobile_device} {
+      margin-bottom: 30px;
+    }
+    .about_thumb {
+      overflow: hidden;
+      img {
+        width: 100%;
+        @include transform(scale(1));
+        @include transition(0.3s);
       }
-      &.padding_top{
-        padding-top: 200px;
-        @media #{$mobile_device} {
-          padding-top: 40px;
-        }
+    }
+    h3 {
+      font-size: 22px;
+      font-weight: 400;
+      color: #1f1f1f;
+      margin-top: 32px;
+      @media #{$tablet_device} {
+        font-size: 18px;
+      }
+      br {
         @media #{$tablet_device} {
-          padding-top: 80px;
-        }
-        @media #{$mid_device} {
-          padding-top: 80px;
+          display: none;
         }
       }
-      .single_offers{
-        @media #{$mobile_device} {
-          margin-bottom: 30px;
-        }
-      .about_thumb{
-          overflow: hidden;
-          img{
-              width: 100%;
-              @include transform(scale(1));
-              @include transition(.3s);
-          }
-      }
-      h3{
-        font-size: 22px;
-        font-weight: 400;
-        color: #1F1F1F;
-        margin-top: 32px;
-        @media #{$tablet_device}{
-          font-size: 18px;
-        }
-        br{
-          @media #{$tablet_device} {
-            display: none;
-          }
+    }
+    ul {
+      margin-top: 17px;
+      margin-bottom: 30px;
+      li {
+        font-size: 16px;
+        color: #4d4d4d;
+        line-height: 28px;
+        position: relative;
+        z-index: 9;
+        padding-left: 23px;
+        &::before {
+          position: absolute;
+          content: "";
+          width: 8px;
+          height: 8px;
+          background: #4d4d4d;
+          left: 0;
+          top: 50%;
+          @include transform(translateY(-50%));
+          border-radius: 50%;
         }
       }
-      ul{
-        margin-top: 17px;
-        margin-bottom: 30px;
-          li{
-            font-size: 16px;
-            color: #4D4D4D;
-            line-height: 28px;
-            position: relative;
-            z-index: 9;
-            padding-left: 23px;
-            &::before{
-                position: absolute;
-                content: "";
-                width: 8px;
-                height: 8px;
-                background: #4D4D4D;
-                left: 0;
-                top: 50%;
-                @include transform(translateY(-50%));
-                border-radius: 50%;
-            }
-          }
-      }
-      a{
+    }
+    a {
+      width: 100%;
+      text-align: center;
+    }
+    &:hover {
+      .about_thumb {
+        img {
           width: 100%;
-          text-align: center;
-      }
-      &:hover{
-        .about_thumb{
-            img{
-                width: 100%;
-                @include transform(scale(1.1));
-            }
+          @include transform(scale(1.1));
         }
       }
-  }  
+    }
+  }
 }
-
 
 // video_area
-.video_bg{
+.video_bg {
   background-image: url(../img/video/video.png);
 }
-.video_area{
+.video_area {
   padding: 250px 0;
   background-size: cover;
   background-position: center center;
@@ -94,12 +93,12 @@
   @media #{$tablet_device} {
     padding: 100px 0;
   }
-  .video_area_inner{
-    span{
+  .video_area_inner {
+    span {
       font-size: 14px;
       color: #fff;
     }
-    h3{
+    h3 {
       font-size: 46px;
       color: #fff;
       line-height: 56px;
@@ -108,18 +107,18 @@
       margin-bottom: 28px;
       @media #{$mobile_device} {
         font-size: 30px;
+      }
     }
-    }
-    a{
+    a {
       width: 60px;
       height: 60px;
       background: #fff;
       line-height: 60px;
       font-size: 15px;
-      color: #009DFF;
+      color: #009dff;
       display: inline-block;
       @include border-radius(50%);
-      i{
+      i {
         position: relative;
         left: 2px;
       }
@@ -128,25 +127,25 @@
 }
 
 // features_room start
-.features_room{
+.features_room {
   padding-top: 93px;
   display: block;
   overflow: hidden;
   @media #{$mobile_device} {
     padding-top: 40px;
-}
-@media #{$tablet_device}{
-  padding-top: 0;
-}
-  .rooms_here{
-    .single_rooms{
+  }
+  @media #{$tablet_device} {
+    padding-top: 0;
+  }
+  .rooms_here {
+    .single_rooms {
       position: relative;
-      width: 50%;
+      width: 30%;
       @media #{$mobile_device} {
         width: 100%;
         margin-bottom: 30px;
-    }
-      &::before{
+      }
+      &::before {
         position: absolute;
         left: 0;
         top: 0;
@@ -154,54 +153,66 @@
         height: 100%;
         content: "";
         /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,000000+100 */
-          background: #ffffff; /* Old browsers */
-          background: -moz-linear-gradient(top,  #ffffff 0%, #000000 77%); /* FF3.6-15 */
-          background: -webkit-linear-gradient(top,  #ffffff 0%,#000000 77%); /* Chrome10-25,Safari5.1-6 */
-          background: linear-gradient(to bottom,  #ffffff 0%,#000000 77%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
-          z-index: 1;
-          opacity: .5;
+        background: #ffffff; /* Old browsers */
+        background: -moz-linear-gradient(
+          top,
+          #ffffff 0%,
+          #000000 77%
+        ); /* FF3.6-15 */
+        background: -webkit-linear-gradient(
+          top,
+          #ffffff 0%,
+          #000000 77%
+        ); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(
+          to bottom,
+          #ffffff 0%,
+          #000000 77%
+        ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+        z-index: 1;
+        opacity: 0.5;
       }
       float: left;
-      .room_thumb{
+      .room_thumb {
         position: relative;
         overflow: hidden;
         // z-index: 8;
-        img{
+        img {
           width: 100%;
           @include transform(scale(1));
-          @include transition(.5s);
+          @include transition(0.5s);
         }
-        .room_heading{
+        .room_heading {
           position: absolute;
           left: 0;
           right: 0;
-         bottom: 0px;
-         padding: 60px 60px 47px 60px;
-         @media #{$mobile_device} {
-          padding: 20px;
-      }
-         @media #{$tablet_device} {
-          padding: 20px;
-      }
-          span{
+          bottom: 0px;
+          padding: 60px 60px 47px 60px;
+          @media #{$mobile_device} {
+            padding: 20px;
+          }
+          @media #{$tablet_device} {
+            padding: 20px;
+          }
+          span {
             font-size: 14px;
-            color: #FFFFFF;
+            color: #ffffff;
             margin-bottom: 9px;
             display: block;
             position: relative;
             z-index: 8;
           }
-          h3{
+          h3 {
             font-size: 30px;
             color: #fff;
             position: relative;
             z-index: 8;
             @media #{$mobile_device} {
               font-size: 20px;
+            }
           }
-          }
-          a{
+          a {
             color: #fff;
             text-transform: capitalize;
             font-weight: 600;
@@ -210,19 +221,19 @@
             @include transform(translateY(-40px));
             opacity: 0;
             visibility: hidden;
-            &:hover{
-              color: #009DFF;
+            &:hover {
+              color: #009dff;
             }
           }
         }
       }
-      &:hover{
-        img{
+      &:hover {
+        img {
           width: 100%;
           @include transform(scale(1.1));
         }
-        .room_heading{
-          a{
+        .room_heading {
+          a {
             @include transform(translateY(0px));
             opacity: 1;
             visibility: visible;
@@ -233,81 +244,79 @@
   }
 }
 
-
 // forQuery start
-.forQuery{
+.forQuery {
   padding-top: 200px;
   padding-bottom: 200px;
   @media #{$mobile_device} {
     padding: 60px 0;
-}
+  }
   @media #{$tablet_device} {
     padding: 100px 0;
-}
+  }
   @media #{$mid_device} {
     padding: 100px 0;
-}
+  }
   @media #{$large_device} {
     padding: 100px 0;
-}
-  .Query_border{
-    border: 1px solid #BABABA;
+  }
+  .Query_border {
+    border: 1px solid #bababa;
     padding: 38px 50px;
     @media #{$mobile_device} {
-     padding: 20px 20px;
-  }
-    .Query_text{
+      padding: 20px 20px;
+    }
+    .Query_text {
       text-align: left;
     }
-    p{
+    p {
       font-size: 30px;
-      color: #1F1F1F;
+      color: #1f1f1f;
       font-weight: 400;
       margin-bottom: 0;
       @media #{$mobile_device} {
         margin-bottom: 20px;
         font-size: 18px;
         text-align: center;
-    }
+      }
       @media #{$tablet_device} {
         font-size: 18px;
+      }
     }
-    }
-    .phone_num{
+    .phone_num {
       text-align: right;
       @media #{$mobile_device} {
         text-align: center;
-    }
-      a{
-        background: #009DFF;
+      }
+      a {
+        background: #009dff;
         color: #fff;
         padding: 12px 53px;
         border-radius: 30px;
         display: inline-block;
         font-size: 18px;
         border: 1px solid transparent;
-        &:hover{
-          color: #009DFF;
-          border: 1px solid #009DFF;
+        &:hover {
+          color: #009dff;
+          border: 1px solid #009dff;
           background: #fff;
         }
       }
     }
-
   }
 }
 
 // instragram_area
-.instragram_area{
+.instragram_area {
   display: block;
   overflow: hidden;
   @media #{$mobile_device} {
     // margin-bottom: 30px;
-}
+  }
   @media #{$tablet_device} {
     // margin-bottom: 30px;
-}
-  .single_instagram{
+  }
+  .single_instagram {
     width: 20%;
     float: left;
     position: relative;
@@ -315,27 +324,27 @@
     @media #{$mobile_device} {
       width: 100%;
       // margin-bottom: 30px;
-  }
+    }
     @media #{$tablet_device} {
       width: 50%;
-  }
-    img{
+    }
+    img {
       width: 100%;
       @include transform(scaleX(1));
-      @include transition(.5s);
+      @include transition(0.5s);
     }
-    .ovrelay{
+    .ovrelay {
       position: absolute;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,.2) ;
+      background: rgba(0, 0, 0, 0.2);
       @include transform(translateX(-80%));
-      @include transition(.5s);
+      @include transition(0.5s);
       opacity: 0;
       visibility: hidden;
-      a{
+      a {
         color: #fff;
         position: absolute;
         left: 0;
@@ -347,29 +356,29 @@
         @include transform(translateY(-50%));
       }
     }
-    &:hover{
-      .ovrelay{
+    &:hover {
+      .ovrelay {
         @include transform(translateX(0%));
         opacity: 1;
         visibility: visible;
       }
-      img{
+      img {
         @include transform(scaleX(1.1));
       }
     }
   }
 }
 
-#test-form{
-  .white-popup-block{
-    .popup_inner{
-      .gj-datepicker{
-        span{
+#test-form {
+  .white-popup-block {
+    .popup_inner {
+      .gj-datepicker {
+        span {
           color: red;
         }
       }
     }
-    input{
+    input {
       width: 100%;
       height: 50px;
     }
@@ -395,13 +404,13 @@
   top: 16px;
 }
 .gj-picker-md {
-  font-family: "Roboto","Helvetica","Arial",sans-serif;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   font-size: 16px;
   font-weight: 400;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
   line-height: 1;
-  color: rgba(0,0,0,.87);
+  color: rgba(0, 0, 0, 0.87);
   padding: 10px;
   padding: 20px;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
 }

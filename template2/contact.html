@@ -118,22 +118,32 @@
     <section class="contact-section">
         <div class="container">
             <div>
-                <label>
-                    <p>
-                        your location
-                        <span>
-                            <a href="https://www.embed-map.com/">(Click here to create google
-                                map)</a>
-                        </span>
-                    </p>
-                </label>
+                <h5 style="font-size: 1.2em; color: #333; margin-bottom: 10px; text-decoration: underline;">
+                    Follow the steps below to embed a Google Map on your website:
+                </h5>
+
+                <ol
+                    style="background: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                    <li style="margin: 10px 0; color: #555;">
+                        Go to <a href="https://www.embed-map.com/" target="_blank"
+                            style="color: #007BFF; text-decoration: none;">https://www.embed-map.com/</a>.
+                    </li>
+                    <li style="margin: 10px 0; color: #555;">Search for the location you want to embed using the
+                        search bar.</li>
+                    <li style="margin: 10px 0; color: #555;">Customize the map (zoom level, size, map type).
+                    </li>
+                    <li style="margin: 10px 0; color: #555;">Copy the HTML embed code provided at the bottom.
+                    </li>
+                    <li style="margin: 10px 0; color: #555;">Paste the code in the text area below.</li>
+                    <li style="margin: 10px 0; color: #555;">Click the "Save Changes" button.</li>
+                </ol>
                 <textarea cols="20" rows="5" type="text" class="form-control" placeholder="Enter your google map src"
                     v-model="mapIframeHtml" @keyup.enter="mapSrc">
                                     </textarea>
                 <button
                     style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
                     @click="mapSrc">
-                    Save Map
+                    Save Changes
                 </button>
 
             </div>
@@ -306,7 +316,7 @@
     <form id="test-form" class="white-popup-block mfp-hide">
         <div class="popup_box ">
             <div class="popup_inner">
-                <h3>Check Availability</h3>
+                <h3>Book A Room</h3>
                 <form action="#">
                     <div class="row">
                         <div class="col-xl-6">
@@ -315,33 +325,9 @@
                         <div class="col-xl-6">
                             <input id="datepicker2" placeholder="Check out date">
                         </div>
-                        <div class="col-xl-6">
-                            <select class="form-select wide" id="default-select" class="">
-                                <option data-display="Adult">1</option>
-                                <option value="1">2</option>
-                                <option value="2">3</option>
-                                <option value="3">4</option>
-                            </select>
-                        </div>
-                        <div class="col-xl-6">
-                            <select class="form-select wide" id="default-select" class="">
-                                <option data-display="Children">1</option>
-                                <option value="1">2</option>
-                                <option value="2">3</option>
-                                <option value="3">4</option>
-                            </select>
-                        </div>
+
                         <div class="col-xl-12">
-                            <select class="form-select wide" id="default-select" class="">
-                                <option data-display="Room type">Room type</option>
-                                <option value="1">Laxaries Rooms</option>
-                                <option value="2">Deluxe Room</option>
-                                <option value="3">Signature Room</option>
-                                <option value="4">Couple Room</option>
-                            </select>
-                        </div>
-                        <div class="col-xl-12">
-                            <button type="submit" class="boxed-btn3">Check Availability</button>
+                            <button type="submit" class="boxed-btn3">Book A Room</button>
                         </div>
                     </div>
                 </form>

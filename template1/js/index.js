@@ -331,12 +331,12 @@ const app = Vue.createApp({
           }, 5000);
         } else {
           const result = await response.json();
-          console.log("Hotel info fetched successfully:", result);
+          console.log("Hotel info fetched successfully:", result?.data);
 
-          console.log("result", result);
+          console.log("result", result?.data);
 
           if (result) {
-            this.offers = result;
+            this.offers = result.data;
           }
         }
       } catch (error) {

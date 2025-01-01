@@ -313,6 +313,19 @@ const app = Vue.createApp({
         return;
       }
 
+      if (
+        this.realImages &&
+        this.realImages.filePaths &&
+        this.realImages.filePaths.length + files.length > maxFiles
+      ) {
+        this.isError = `You can upload a maximum of ${maxFiles} images.`;
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+        return;
+      }
+
       const formData = new FormData();
 
       for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
@@ -321,6 +334,65 @@ const app = Vue.createApp({
 
       this.uploadImages(formData);
     },
+    removeRealImage(imageIndex) {
+      const imageName = this.realImages.filePaths[imageIndex];
+      console.log("Removing image:", imageName);
+      this.removeImageFromServer(imageName);
+    },
+
+    removeImage(index) {
+      const image = this.images[index];
+      this.images = this.images.filter((img) => img !== image);
+    },
+
+    async removeImageFromServer(imageName) {
+      try {
+        const response = await fetch(
+          "https://be-publish.ceyinfo.cloud/remove-image",
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              hotelId: this.hotelId,
+              templateId: this.templateId,
+              imageName: imageName,
+            }),
+          }
+        );
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          this.realImages.filePaths = this.realImages.filePaths.filter(
+            (image) => image !== imageName
+          );
+
+          this.isLoading = null;
+          this.isSuccess = "Image removed successfully";
+
+          setTimeout(() => {
+            this.isSuccess = null;
+          }, 5000);
+        } else {
+          this.isLoading = null;
+          this.isError = "Error removing image";
+
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+        }
+      } catch (error) {
+        this.isLoading = null;
+        this.isError = "Error removing image";
+
+        setTimeout(() => {
+          this.isError = null;
+        }, 5000);
+      }
+    },
+
     async uploadImages(formData) {
       this.isLoading = "Uploading...";
 
@@ -410,9 +482,7 @@ const app = Vue.createApp({
           // this.email = siteDetails.details.email;
           // this.phoneNumber = siteDetails.details.phoneNumber;
           // this.address = siteDetails.details.address;
-          if (
-            siteDetails?.details?.realImages?.getImgPathForTemplate?.length > 0
-          ) {
+          if (siteDetails?.details?.realImages?.filePaths?.length > 0) {
             this.userUseRealImages = true;
             this.realImages = siteDetails.details.realImages;
           }

@@ -217,8 +217,8 @@
                            
                         </div>
                     </div> -->
-                <div class="container offer-section">
-                    <!-- <h2 class="offer-header text-center mb-5">Special Offers</h2> -->
+                <!-- <h2 class="offer-header text-center mb-5">Special Offers</h2> -->
+                <!-- <div class="container offer-section">
 
                     <div class="row">
 
@@ -227,7 +227,7 @@
                                 <img src="img/room2.jpg" alt="Offer Image">
                                 <div class="offer-body">
                                     <h5 class="offer-title">{{ offer.offername }}</h5>
-                                    <!--discount-->
+
                                     <span class="offer-highlight">Discount: {{ offer.discount }}</span>
                                     <p class="offer-details">
                                         Offer Valid: {{ formatDate(offer.startdate) }} to {{ formatDate(offer.enddate)
@@ -237,7 +237,13 @@
                             </div>
                         </div>
                     </div>
+                </div> -->
+
+                <div class="d-flex justify-content-center align-items-center" v-for="offer in offers" :key="offer.id">
+                    <img :src="'img/' + offer.offerimage" alt="Offer Image" class="img-fluid">
                 </div>
+
+
             </div>
 
             <!-- Newsletter Start -->

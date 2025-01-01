@@ -98,11 +98,14 @@
                                 <a :href="`index.html?hotelId=${hotelId}`" class="nav-item nav-link  ms-3">Home</a>
                                 <a :href="`about.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">About</a>
                                 <a :href="`room.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Rooms</a>
-                                <a :href="`specialOffers.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Special Offers</a>
+                                <a :href="`specialOffers.html?hotelId=${hotelId}`"
+                                    class="nav-item nav-link ms-3">Special Offers</a>
                                 <a :href="`gallery.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Gallery</a>
-                                <a :href="`attraction.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Attractions</a>
+                                <a :href="`attraction.html?hotelId=${hotelId}`"
+                                    class="nav-item nav-link ms-3">Attractions</a>
                                 <a :href="`booking.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Bookings</a>
-                                <a :href="`contact.html?hotelId=${hotelId}`" class="nav-item nav-link active ms-3">Contact</a>
+                                <a :href="`contact.html?hotelId=${hotelId}`"
+                                    class="nav-item nav-link active ms-3">Contact</a>
 
                                 <!-- <div class="nav-item dropdown">
                                     <a href="#" class="nav-link dropdown-toggle ms-3" data-bs-toggle="dropdown">Pages</a>
@@ -140,7 +143,7 @@
 
 
         <!-- Booking Start -->
-       
+
         <!-- Booking End -->
 
 
@@ -169,15 +172,25 @@
                         </div> -->
                     </div>
                     <div>
-                        <label>
-                            <p>
-                                your location
-                                <span>
-                                    <a href="https://www.embed-map.com/">(Click here to create google
-                                        map)</a>
-                                </span>
-                            </p>
-                        </label>
+                        <h5 style="font-size: 1.2em; color: #333; margin-bottom: 10px; text-decoration: underline;">
+                            Follow the steps below to embed a Google Map on your website:
+                        </h5>
+
+                        <ol
+                            style="background: #fff; border: 1px solid #ddd; border-radius: 5px; padding: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                            <li style="margin: 10px 0; color: #555;">
+                                Go to <a href="https://www.embed-map.com/" target="_blank"
+                                    style="color: #007BFF; text-decoration: none;">https://www.embed-map.com/</a>.
+                            </li>
+                            <li style="margin: 10px 0; color: #555;">Search for the location you want to embed using the
+                                search bar.</li>
+                            <li style="margin: 10px 0; color: #555;">Customize the map (zoom level, size, map type).
+                            </li>
+                            <li style="margin: 10px 0; color: #555;">Copy the HTML embed code provided at the bottom.
+                            </li>
+                            <li style="margin: 10px 0; color: #555;">Paste the code in the text area below.</li>
+                            <li style="margin: 10px 0; color: #555;">Click the "Save Changes" button.</li>
+                        </ol>
                         <textarea cols="20" rows="5" type="text" class="form-control"
                             placeholder="Enter your google map src" v-model="mapIframeHtml" @keyup.enter="mapSrc">
                         </textarea>
@@ -232,7 +245,7 @@
 
 
         <!-- Newsletter Start -->
-     
+
         <!-- Newsletter end -->
 
 
@@ -248,7 +261,8 @@
 
 
         <!-- Footer Start -->
-        <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn" data-wow-delay="0.1s">
+        <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"
+            data-wow-delay="0.1s">
             <div class="container mt-5">
                 <div class="row g-5">
                     <div class="col-md-6 col-lg-4 col-sm-4">
@@ -257,9 +271,9 @@
                                 <h1 class="text-white text-uppercase mb-3">{{title}}</h1>
                             </a>
                             <p class="text-white mb-0" style="text-align: justify;">
-            {{
-            footerDescription
-            }}
+                                {{
+                                footerDescription
+                                }}
                             </p>
                         </div>
                     </div>
@@ -305,8 +319,8 @@
                         <div class="row">
                             <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
                                 &copy; <a class="border-bottom" href="#">{{
-                                title
-                                }}</a>, All Right Reserved.
+                                    title
+                                    }}</a>, All Right Reserved.
 
                                 <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                                 Designed By <a class="border-bottom" href="https://ceyinfo.com/">Ceyinfo Solutions (pvt)
