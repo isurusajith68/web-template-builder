@@ -49,7 +49,7 @@ const app = Vue.createApp({
       ],
       userUseRealImages: false,
       realImages: [],
-
+      offers: [],
       editTitle: "",
       editCarouselImages: [
         { src: "", alt: "", carouselTitle: "", carouselDescription: "" },
@@ -664,6 +664,36 @@ const app = Vue.createApp({
         }, 5000);
       }
     },
+    async hotelOffers() {
+      try {
+        const response = await fetch(
+          `https://be-publish.ceyinfo.cloud/hotel-offers?hotelId=${this.hotelId}`
+        );
+
+        if (!response.ok) {
+          const err = await response.json();
+
+          console.error("Error fetching hotel info:", errorText);
+
+          this.isLoading = null;
+          this.isError = err.message;
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+        } else {
+          const result = await response.json();
+          console.log("Hotel info fetched successfully:", result?.data);
+
+          console.log("result", result?.data);
+
+          if (result) {
+            this.offers = result.data;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching hotel info:", error);
+      }
+    },
   },
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -681,6 +711,7 @@ const app = Vue.createApp({
       this.loadSiteDetails();
       this.loadRoomDetails();
       this.hotelInfo();
+      this.hotelOffers();
     }
   },
 });

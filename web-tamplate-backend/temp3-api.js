@@ -790,7 +790,9 @@ const generateNginxConfig = async (hotelId, templateId) => {
     [hotelId]
   );
   // console.log(getSiteName);
-  const domain = getSiteName.rows[0].url;
+  const domain = getSiteName.rows[0].url
+    .replace(/https?:\/\//, "")
+    .replace(/\/$/, "");
   // console.log(getSiteName);
 
   const nginxFileExist = fssync.existsSync(
@@ -804,7 +806,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
   const nginxConfig = `
   server {
     listen 80;
-    server_name ${getSiteName.rows[0].website};
+    server_name ${domain};
     root /var/www/template${templateId}/user${hotelId};
     index index.html;
     location / {
@@ -839,6 +841,30 @@ const generateNginxConfig = async (hotelId, templateId) => {
 };
 
 // // add ssl certificate
+const addPublishDetails = async (hotelId, templateId, domain) => {
+  const publishDetails = {
+    hotelId,
+    templateId,
+    domain,
+  };
+  try {
+    const addedAlredy = await pool.query(
+      "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
+      [hotelId, templateId]
+    );
+
+    if (!addedAlredy.rows.length > 0) {
+      // console.log("Publish details already added");
+      const data = await pool.query(
+        "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
+        [hotelId, templateId, domain]
+      );
+      console.log("Publish details added successfully");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const addSslCertificate = (hotelId, templateId, domain) => {
   // const domain = getSiteName.rows[0].website;

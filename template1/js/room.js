@@ -137,7 +137,7 @@ const app = Vue.createApp({
     },
 
     async loadRoomDetails() {
-      this.isLoading = "Loading room data...";
+      this.isLoading = "Loading room data...s";
 
       try {
         const response = await fetch(
@@ -153,15 +153,14 @@ const app = Vue.createApp({
             this.isError = null;
           }, 5000);
         } else {
-          const roomDetails = await response.json();
-          console.log("Room details loaded successfully:", roomDetails);
-          this.roomsDetails = roomDetails.data;
-
           this.isLoading = null;
           this.isSuccess = "Room details loaded successfully";
           setTimeout(() => {
             this.isSuccess = null;
           }, 5000);
+          const roomDetails = await response.json();
+          console.log("Room details loaded successfully:", roomDetails);
+          this.roomsDetails = roomDetails.data;
         }
       } catch (error) {
         console.error("Error fetching room details:", error);

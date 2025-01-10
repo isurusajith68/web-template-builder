@@ -117,69 +117,11 @@
     <!-- bradcam_area_end -->
 
     <!-- offers_area_start -->
-    <div class="offers_area padding_top">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-12">
-                    <div class="section_title text-center mb-100">
-                        <span>Our Offers</span>
-                        <h3>Ongoing Offers</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xl-4 col-md-4">
-                    <div class="single_offers">
-                        <div class="about_thumb">
-                            <img src="img/offers/1.png" alt="">
-                        </div>
-                        <h3>Up to 35% savings on Club <br>
-                            rooms and Suites</h3>
-                        <ul>
-                            <li>Luxaries condition</li>
-                            <li>3 Adults & 2 Children size</li>
-                            <li>Sea view side</li>
-                        </ul>
-                        <a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`" class="book_now">book now</a>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-4">
-                    <div class="single_offers">
-                        <div class="about_thumb">
-                            <img src="img/offers/2.png" alt="">
-                        </div>
-                        <h3>Up to 35% savings on Club <br>
-                            rooms and Suites</h3>
-                        <ul>
-                            <li>Luxaries condition</li>
-                            <li>3 Adults & 2 Children size</li>
-                            <li>Sea view side</li>
-                        </ul>
-                        <a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`" class="book_now">book now</a>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-md-4">
-                    <div class="single_offers">
-                        <div class="about_thumb">
-                            <img src="img/offers/3.png" alt="">
-                        </div>
-                        <h3>Up to 35% savings on Club <br>
-                            rooms and Suites</h3>
-                        <ul>
-                            <li>Luxaries condition</li>
-                            <li>3 Adults & 2 Children size</li>
-                            <li>Sea view side</li>
-                        </ul>
-                        <a :href="`https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`" class="book_now">book now</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <!-- offers_area_end -->
 
     <!-- features_room_startt -->
-    <div class="features_room">
+    <div class="features_room" style="margin-bottom: 50px;">
         <div class="container">
             <div class="row">
                 <div class="col-xl-12">
@@ -193,8 +135,8 @@
         <div class="rooms_here">
             <div class="single_rooms" v-for="(room, index) in roomsDetails" :key="index">
                 <div class="room_thumb">
-                    <img :src="room.imagenames[0] ? 'img/' + room.imagenames[0] : 'img/rooms/1.png'" alt=""
-                        style="min-height: 400px; max-height: 400px;">
+                    <img :src="room.imagenames ? 'img/' + room.imagenames[0] : 'img/rooms/1.png'" alt=""
+                        style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center">
                         <div class="room_heading_inner">
                             <span>From Rs {{ room.fbprice }}</span>
@@ -214,9 +156,35 @@
 
         </div>
     </div>
-    <!-- features_room_end -->
 
+    <style>
+        @media (max-width: 768px) {
+            .rooms_here {}
 
+            .single_rooms {
+                width: 100%;
+            }
+
+        }
+    </style>
+    <div class="offers_area padding_top">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="section_title text-center mb-100">
+                        <span>Our Offers</span>
+                        <h3>Ongoing Offers</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;"
+                v-for="offer in offers" :key="offer.id">
+                <img :src="'img/' + offer.offerimage" alt="Offer Image" class="img-fluid"
+                    style="max-width: 700px;min-width: 700px; height: auto; object-fit: cover;">
+            </div>
+
+        </div>
+    </div>
     <!-- footer -->
     <footer class="footer">
         <div class="footer_top">
@@ -310,27 +278,49 @@
     </footer>
 
     <!-- form itself end-->
-    <form id="test-form" class="white-popup-block mfp-hide">
-        <div class="popup_box ">
+    <form id="test-form" class="white-popup-block mfp-hide"
+        style="max-width: 500px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+        <div class="popup_box">
             <div class="popup_inner">
-                <h3>Book A Room</h3>
+                <h3 style="font-size: 1.5rem; margin-bottom: 20px; text-align: center;">Book A Room</h3>
                 <form action="#">
                     <div class="row">
-                        <div class="col-xl-6">
-                            <input id="datepicker" placeholder="Check in date">
+                        <div class="col-md-6" style="padding: 5px;">
+                            <input type="date" id="datepicker" class="form-control" placeholder="Check-in Date"
+                                style="width: 100%; height: 45px; border: 1px solid #ddd; border-radius: 5px; padding: 10px; box-sizing: border-box;">
                         </div>
-                        <div class="col-xl-6">
-                            <input id="datepicker2" placeholder="Check out date">
+                        <div class="col-md-6" style="padding: 5px;">
+                            <input type="date" id="datepicker2" class="form-control" placeholder="Check-out Date"
+                                style="width: 100%; height: 45px; border: 1px solid #ddd; border-radius: 5px; padding: 10px; box-sizing: border-box;">
                         </div>
-
-                        <div class="col-xl-12">
-                            <button type="submit" class="boxed-btn3">Book A Room</button>
+                        <div class="col-md-12" style="padding: 5px; margin-top: 15px;">
+                            <button id="book-room" type="submit" class="btn btn-primary btn-block"
+                                style="width: 100%; height: 45px; font-size: 1rem; background-color: #007bff; border: none; border-radius: 5px; color: #fff; cursor: pointer;">
+                                Book A Room
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkInDate = document.getElementById("datepicker");
+            const checkOutDate = document.getElementById("datepicker2");
+            const hotelId = new URLSearchParams(window.location.search).get("hotelId");
+
+
+
+            const bookRoomButton = document.getElementById("book-room");
+
+            bookRoomButton.addEventListener("click", function (event) {
+                event.preventDefault();
+                window.location.href = `https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&checkin=${checkInDate.value}&checkout=${checkOutDate.value}`;
+            });
+        });
+    </script>
     <!-- form itself end -->
 
 

@@ -192,6 +192,7 @@ router.get("/build-template", async (req, res) => {
         result.rows[0].details.carouselImages[1].carouselDescription,
 
       "#siteAddress": result.rows[0].details.address,
+      "#testF": "#test-form",
     };
 
     buildTemplate(result, hotelId, templateId);
@@ -281,7 +282,11 @@ GROUP BY
     .map((room) => {
       return `<div class="single_rooms">
                 <div class="room_thumb  ">
-                  <img src="img/rooms/1.png" alt="">
+                   <img src="${
+                     room.imagenames
+                       ? "img/" + room.imagenames[0]
+                       : "img/rooms/1.png"
+                   }" alt="" style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center">
                          <div class="room_heading_inner">
                         <span>From Rs ${room.fbprice}</span>
@@ -348,6 +353,41 @@ GROUP BY
     : "";
   const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
 
+  // <script>
+  //     document.addEventListener("DOMContentLoaded", function () {
+  //         const checkInDate = document.getElementById("datepicker");
+  //         const checkOutDate = document.getElementById("datepicker2");
+  //         const hotelId = new URLSearchParams(window.location.search).get("hotelId");
+
+  //         const bookRoomButton = document.getElementById("book-room");
+
+  //         bookRoomButton.addEventListener("click", function (event) {
+  //             event.preventDefault();
+
+  //             window.location.href = `https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&checkin=${checkInDate.value}&checkout=${checkOutDate.value}`;
+  //         });
+  //     });
+  // </script>
+
+  const bookScript = `<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkInDate = document.getElementById("datepicker");
+        const checkOutDate = document.getElementById("datepicker2");
+        const hotelId = ${hotelId};
+
+        const bookRoomButton = document.getElementById("book-room");
+
+        bookRoomButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            window.location.href = \`https://webbookings.ceyinfo.cloud/?hotelId=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
+        });
+    });
+</script>`;
+  const siteAddress = `<div>
+        <span>${result.rows[0].details.address}</span>
+        <span>${result.rows[0].details.phoneNumber}</span>
+</div>`;
+
   const data = {
     "#hotelURL": hotelURL,
     "#siteTitle": result.rows[0].details.title,
@@ -369,6 +409,8 @@ GROUP BY
     "#siteAboutUsImages1Alt": result.rows[0].details.aboutUsImages[0].alt,
     "#siteAboutUsImages2Alt": result.rows[0].details.aboutUsImages[1].alt,
     "#imagesSection": imagesSection,
+    "#testF": "#test-form",
+    "#bookScript": bookScript,
   };
 
   const result2 = template.replace(
@@ -385,6 +427,21 @@ GROUP BY
 const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
   const templatePath = `./template/temp${templateId}/rooms.html`;
   const template = await fs.readFile(templatePath, "utf8");
+
+  const offer = await pool.query(
+    "SELECT * FROM hoteloffers WHERE hotelid = $1",
+    [hotelId]
+  );
+
+  const offersHtml = offer.rows;
+
+  const offersHtml2 = offersHtml.map(
+    (offer) => `
+      <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;">
+        <img src="img/${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
+        </div>
+      `
+  );
 
   const rooms = await pool.query(
     `
@@ -448,11 +505,19 @@ GROUP BY
                 </div>
             </div> */
   }
+
+  // img :src="room.imagenames ? 'img/' + room.imagenames[0] : 'img/rooms/1.png'" alt=""
+  //                       style="min-height: 400px; max-height: 400px; ">
+
   const roomsHtml = rooms.rows
     .map((room) => {
       return `<div class="single_rooms">
                 <div class="room_thumb  ">
-                  <img src="img/rooms/1.png" alt="">
+                  <img src="${
+                    room.imagenames
+                      ? "img/" + room.imagenames[0]
+                      : "img/rooms/1.png"
+                  }" alt="" style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center">
                          <div class="room_heading_inner">
                         <span>From Rs ${room.fbprice}</span>
@@ -473,6 +538,21 @@ GROUP BY
     .join("");
   const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
 
+  const bookScript = `<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkInDate = document.getElementById("datepicker");
+        const checkOutDate = document.getElementById("datepicker2");
+        const hotelId = ${hotelId};
+
+        const bookRoomButton = document.getElementById("book-room");
+
+        bookRoomButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            window.location.href = \`https://webbookings.ceyinfo.cloud/?hotelId=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
+        });
+    });
+</script>`;
+
   const data = {
     "#hotelURL": hotelURL,
     "#siteTitle": result.rows[0].details.title,
@@ -481,6 +561,9 @@ GROUP BY
     "#rooms": roomsHtml,
     "#siteAddress": result.rows[0].details.address,
     "#siteAboutUsBeadCrumb": result.rows[0].details.imageRoomBradCam,
+    "#testF": "#test-form",
+    "#bookScript": bookScript,
+    "#offers": offersHtml2,
   };
 
   const result2 = template.replace(
@@ -499,6 +582,21 @@ const buildTemplateAboutUs = async (result, hotelId, templateId) => {
   const templatePath = `./template/temp${templateId}/about.html`;
   const template = await fs.readFile(templatePath, "utf8");
 
+  const bookScript = `<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkInDate = document.getElementById("datepicker");
+        const checkOutDate = document.getElementById("datepicker2");
+        const hotelId = ${hotelId};
+
+        const bookRoomButton = document.getElementById("book-room");
+
+        bookRoomButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            window.location.href = \`https://webbookings.ceyinfo.cloud/?hotelId=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
+        });
+    });
+</script>`;
+
   const data = {
     "#siteTitle": result.rows[0].details.title,
     "#siteEmail": result.rows[0].details.email,
@@ -511,6 +609,8 @@ const buildTemplateAboutUs = async (result, hotelId, templateId) => {
     "#siteAboutUsImages2Alt": result.rows[0].details.aboutUsImages[1].alt,
     "#siteAddress": result.rows[0].details.address,
     "#siteAboutUsBeadCrumb": result.rows[0].details.imageAboutBradCam,
+    "#testF": "#test-form",
+    "#bookScript": bookScript,
   };
 
   const result2 = template.replace(
@@ -529,6 +629,21 @@ const buildTemplateContactUs = async (result, hotelId, templateId) => {
   const templatePath = `./template/temp${templateId}/contact.html`;
   const template = await fs.readFile(templatePath, "utf8");
 
+  const bookScript = `<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkInDate = document.getElementById("datepicker");
+        const checkOutDate = document.getElementById("datepicker2");
+        const hotelId = ${hotelId};
+
+        const bookRoomButton = document.getElementById("book-room");
+
+        bookRoomButton.addEventListener("click", function (event) {
+            event.preventDefault();
+            window.location.href = \`https://webbookings.ceyinfo.cloud/?hotelId=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
+        });
+    });
+</script>`;
+
   const data = {
     "#siteTitle": result.rows[0].details.title,
     "#siteEmail": result.rows[0].details.email,
@@ -536,6 +651,8 @@ const buildTemplateContactUs = async (result, hotelId, templateId) => {
     "#siteAddress": result.rows[0].details.address,
     "#siteMapIframe": result.rows[0].details.mapIframeHtml,
     "#siteAboutUsBeadCrumb": result.rows[0].details.imageContactBradCam,
+    "#testF": "#test-form",
+    "#bookScript": bookScript,
   };
 
   const result2 = template.replace(
@@ -561,7 +678,9 @@ const generateNginxConfig = async (hotelId, templateId) => {
     [hotelId]
   );
   // console.log(getSiteName);
-  const domain = getSiteName.rows[0].url;
+  const domain = getSiteName.rows[0].url
+    .replace(/https?:\/\//, "")
+    .replace(/\/$/, "");
 
   const nginxFileExist = fssync.existsSync(
     `/etc/nginx/sites-available/template${templateId}-user${hotelId}`
@@ -574,7 +693,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
   const nginxConfig = `
   server {
     listen 80;
-    server_name ${getSiteName.rows[0].url};
+    server_name ${domain};
     root /var/www/template${templateId}/user${hotelId};
     index index.html;
     location / {

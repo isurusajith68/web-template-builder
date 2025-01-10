@@ -141,6 +141,7 @@
     .single_rooms {
       position: relative;
       width: 30%;
+
       @media #{$mobile_device} {
         width: 100%;
         margin-bottom: 30px;

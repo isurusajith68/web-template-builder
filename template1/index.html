@@ -499,7 +499,7 @@
                                 <div class="room-item shadow rounded overflow-hidden">
                                     <div class="position-relative">
                                         <img class="img-fluid w-100" style="height: 250px;"
-                                            :src="room.imagenames[0] ? 'img/' + room.imagenames[0] : 'img/room4.jpg'"
+                                            :src="room.imagenames ? 'img/' + room.imagenames[0] : 'img/room4.jpg'"
                                             alt="Room image" onerror="this.src='img/room4.jpg'">
                                         <small
                                             class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
@@ -920,8 +920,8 @@
                                 <div class="row">
                                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
                                         &copy; <a class="border-bottom" href="#">{{
-                                        title
-                                        }}</a>, All Right Reserved.
+                                            title
+                                            }}</a>, All Right Reserved.
 
                                         <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                                         Designed By <a class="border-bottom" href="https://ceyinfo.com/">Ceyinfo

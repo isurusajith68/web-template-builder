@@ -1170,24 +1170,15 @@ const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
         day: "numeric",
       });
     };
-
+//  <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;"
+//                     v-for="offer in offers" :key="offer.id">
+//                     <img :src="'img/' + offer.offerimage" alt="Offer Image" class="img-fluid"
+//                         style="max-width: 700px; height: auto; object-fit: cover;">
+//                 </div>
     const offersHtml2 = offersHtml.map(
       (offer) => `
-        <div class="col-md-4">
-          <div class="offer-card">
-              <img src="img/room2.jpg" alt="Offer Image">
-              <div class="offer-body">
-                  <h5 class="offer-title">${offer.offername}</h5>
-                  <span class="offer-highlight">Discount: ${
-                    offer.discount
-                  }</span>
-                  <p class="offer-details">
-                      Offer Valid: ${formatDate(
-                        offer.startdate
-                      )} to ${formatDate(offer.enddate)} <br>
-                  </p>
-              </div>
-          </div>
+      <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;">
+        <img src="img/${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
         </div>
       `
     );
