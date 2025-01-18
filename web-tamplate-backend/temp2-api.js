@@ -174,7 +174,7 @@ router.get("/build-template", async (req, res) => {
       }
     }
 
-    const data = {
+    const dataNew = {
       "#siteTitle": result.rows[0].details.title,
       "#siteEmail": result.rows[0].details.email,
       "#sitePhoneNumber": result.rows[0].details.phoneNumber,
