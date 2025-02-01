@@ -559,7 +559,6 @@ app.get("/rooms-info", async (req, res) => {
     htrm.roomviewid,
     htrm.roomtypeid,
     htrm.roomno,
-    htrm.noofbed,
     hrv.label AS roomview,
     hrt.label AS roomtype,
     hrp.fbprice,
@@ -587,7 +586,6 @@ GROUP BY
     htrm.roomviewid, 
     htrm.roomtypeid, 
     htrm.roomno,
-    htrm.noofbed, 
     hrv.label,
     hrt.label, 
     hrp.fbprice;
@@ -968,8 +966,6 @@ const updateDataBase = async (hotelId, templateId, filePaths) => {
       [hotelId, templateId]
     );
 
-    // console.log("result:", result.rows[0].details);
-
     const newResult = {
       ...result.rows[0].details,
       realImages: { filePaths },
@@ -984,7 +980,7 @@ const updateDataBase = async (hotelId, templateId, filePaths) => {
 
 const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
   try {
-    //get hotel rooms
+
     const rooms = await pool.query(
       `
       SELECT 
