@@ -421,7 +421,6 @@ const app = Vue.createApp({
           }, 5000);
         } else {
           const errorText = await response.text();
-          console.error("Error uploading images:", errorText);
 
           this.isLoading = null;
           this.isError = "Error uploading images";
@@ -450,7 +449,6 @@ const app = Vue.createApp({
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error("Error loading site details:", errorText);
           this.isLoading = null;
           this.isError = "Error loading site details";
           setTimeout(() => {
@@ -458,7 +456,7 @@ const app = Vue.createApp({
           }, 5000);
         } else {
           const siteDetails = await response.json();
-          console.log("Site details", siteDetails);
+          // console.log("Site details", siteDetails);
           // this.title = siteDetails.details.title;
 
           this.aboutUsImages = siteDetails.details.aboutUsImages;
@@ -524,7 +522,7 @@ const app = Vue.createApp({
         realImages: this.realImages,
       };
       this.isLoading = "Saving changes...";
-      console.log("Data to save:", data);
+      // console.log("Data to save:", data);
       try {
         const response = await fetch(
           "https://be-publish.ceyinfo.cloud/temp2/save-site-details",
@@ -551,7 +549,7 @@ const app = Vue.createApp({
           }, 5000);
         }
       } catch (error) {
-        console.error("Failed to save changes", error);
+        // console.error("Failed to save changes", error);
         this.isLoading = null;
         this.isError = "Failed to save changes";
         setTimeout(() => {
@@ -569,7 +567,7 @@ const app = Vue.createApp({
 
         if (!response.ok) {
           const errorText = await response.json();
-          console.error("Error loading room details:", errorText);
+          // console.error("Error loading room details:", errorText);
           this.isLoading = null;
           this.isError = errorText.message;
           setTimeout(() => {
@@ -577,7 +575,7 @@ const app = Vue.createApp({
           }, 5000);
         } else {
           const roomDetails = await response.json();
-          console.log("Room details loaded successfully:", roomDetails);
+          // console.log("Room details loaded successfully:", roomDetails);
 
           console.log(roomDetails);
           if (roomDetails.length < 0) {
@@ -616,7 +614,7 @@ const app = Vue.createApp({
           console.error("Error fetching hotel info:", errorText);
         } else {
           const result = await response.json();
-          console.log("Hotel info ", result);
+          // console.log("Hotel info ", result);
 
           if (result) {
             this.title = result.data.name;
@@ -652,7 +650,7 @@ const app = Vue.createApp({
           }, 5000);
         } else {
           const result = await response.json();
-          console.log("Changes published successfully:", result);
+          // console.log("Changes published successfully:", result);
 
           this.isLoading = null;
           this.isSuccess = "Changes published successfully";
@@ -687,9 +685,9 @@ const app = Vue.createApp({
           }, 5000);
         } else {
           const result = await response.json();
-          console.log(result?.data);
+          // console.log(result?.data);
 
-          console.log("result", result?.data);
+          // console.log("result", result?.data);
 
           if (result) {
             this.offers = result.data;
