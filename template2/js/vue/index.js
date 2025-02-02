@@ -620,13 +620,10 @@ const app = Vue.createApp({
             this.title = result.data.name;
             this.email = result.data.email;
             this.phoneNumber = result.data.mobile;
-            //new line
-            this.address = result.data.address1 + ",<br>" + result.data.address2;
+            this.address =
+              result.data.address1 +
+              (result.data.address2 ? ",<br>" + result.data.address2 : "");
           }
-
-          console.log(
-            `results\n${result.data.address1}\n${result.data.address2}`
-          );
         }
       } catch (error) {
         console.error("Error fetching hotel info:", error);
