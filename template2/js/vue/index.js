@@ -458,7 +458,7 @@ const app = Vue.createApp({
           }, 5000);
         } else {
           const siteDetails = await response.json();
-          console.log("Site details loaded successfully:", siteDetails);
+          console.log("Site details", siteDetails);
           // this.title = siteDetails.details.title;
 
           this.aboutUsImages = siteDetails.details.aboutUsImages;
@@ -616,14 +616,19 @@ const app = Vue.createApp({
           console.error("Error fetching hotel info:", errorText);
         } else {
           const result = await response.json();
-          console.log("Hotel info fetched successfully:", result);
+          console.log("Hotel info ", result);
 
           if (result) {
             this.title = result.data.name;
             this.email = result.data.email;
             this.phoneNumber = result.data.mobile;
-            this.address = result.data.address1;
+            //new line
+            this.address = result.data.address1 + ",<br>" + result.data.address2;
           }
+
+          console.log(
+            `results\n${result.data.address1}\n${result.data.address2}`
+          );
         }
       } catch (error) {
         console.error("Error fetching hotel info:", error);
@@ -682,7 +687,7 @@ const app = Vue.createApp({
           }, 5000);
         } else {
           const result = await response.json();
-          console.log("Hotel info fetched successfully:", result?.data);
+          console.log(result?.data);
 
           console.log("result", result?.data);
 
