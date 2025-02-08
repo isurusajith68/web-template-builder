@@ -486,28 +486,7 @@ GROUP BY
     [hotelId]
   );
   {
-    /* <div class="single_rooms" v-for="(room, index) in roomsDetails" :key="index">
-                <div class="room_thumb">
-                    <img src="img/rooms/1.png" alt="">
-                    <div class="room_heading d-flex justify-content-between align-items-center">
-                        <div class="room_heading_inner">
-                            <span>From Rs {{ room.fbprice }}</span>
-                            <h3>{{ room.roomtype }}</h3>
-                            <p style="color: white; font-weight: 600;">{{ room.roomview }} View, {{ room.noofbed }} Beds
-                            </p>
-                            <p style="color: white;font-weight: 600;"
-                                v-if="room.roomamenities && room.roomamenities[0]">
-                                Amenities: {{ room.roomamenities.join(', ') }}
-                            </p>
-                        </div>
-                        <a href="#" class="line-button">book now</a>
-                    </div>
-                </div>
-            </div> */
   }
-
-  // img :src="room.imagenames ? 'img/' + room.imagenames[0] : 'img/rooms/1.png'" alt=""
-  //                       style="min-height: 400px; max-height: 400px; ">
 
   const roomsHtml = rooms.rows
     .map((room) => {
@@ -672,12 +651,10 @@ const buildTemplateContactUs = async (result, hotelId, templateId) => {
 const { exec } = require("child_process");
 
 const generateNginxConfig = async (hotelId, templateId) => {
-  // console.log(hotelId);
   const getSiteName = await pool.query(
     "SELECT url FROM hotelinfo WHERE id = $1",
     [hotelId]
   );
-  // console.log(getSiteName);
   const domain = getSiteName.rows[0].url
     .replace(/https?:\/\//, "")
     .replace(/\/$/, "");
@@ -741,7 +718,6 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
     );
 
     if (!addedAlredy.rows.length > 0) {
-      // console.log("Publish details already added");
       const data = await pool.query(
         "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
         [hotelId, templateId, domain]
@@ -756,7 +732,6 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
 // // add ssl certificate
 
 const addSslCertificate = (hotelId, templateId, domain) => {
-  // const domain = getSiteName.rows[0].url;
 
   exec(
     `sudo certbot certificates --domain ${domain}`,

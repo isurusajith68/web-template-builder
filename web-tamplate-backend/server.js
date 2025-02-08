@@ -185,7 +185,6 @@ app.get("/build-template", async (req, res) => {
   }
 
   try {
-    //copy hotel image folder
     const sourceDir = path.resolve(__dirname, "/var/images/hotel" + hotelId);
     const targetDir = `/var/www/template${templateId}/user${hotelId}/img`;
 
@@ -226,25 +225,6 @@ app.get("/build-template", async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
       }
     }
-
-    // {
-    //   "email": "katupitiya@gmail.com",
-    //   "title": "Isuru",
-    //   "address": "Gammana 05, kuda kathnoruwa",
-    //   "attraction": "WITHIN KANDY CITY",
-    //   "realImages": [],
-    //   "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    //   "phoneNumber": "0761455221",
-    //   "aboutUsImages": [
-    //     {
-    //       "alt": "About Us Image 1",
-    //       "src": "img/about-1.jpg"
-    //     },
-    //     {
-    //       "alt": "About Us Image 2",
-    //       "src": "img/about-2.jpg"
-    //     },
-    //   ],
 
     const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
 
@@ -428,7 +408,6 @@ app.post("/upload-images", upload.array("images", 10), async (req, res) => {
   try {
     const { hotelId, templateId } = req.query;
 
-    //remove pre img files
     const dbGetResult = await pool.query(
       "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
       [hotelId, templateId]
@@ -514,7 +493,6 @@ app.delete("/remove-image", async (req, res) => {
 
       previousFiles = previousFiles.filter((file) => file !== imageName);
 
-      // Optionally, update the database (uncomment if needed)
       await updateDataBase(hotelId, templateId, previousFiles);
 
       return res.json({
@@ -537,20 +515,6 @@ app.delete("/remove-image", async (req, res) => {
 app.get("/rooms-info", async (req, res) => {
   try {
     const hotelId = req.query.hotelId;
-
-    // const result = await pool.query(
-    // `
-    // SELECT
-    //   htrm.hotelid,
-    //   htrm.roomviewid,
-    //   htrm.roomtypeid,
-    //   htrm.roomno,
-    //   htrm.noofbed,
-    //   hrv.roomview,
-    //   hrt.roomtype,
-    //   hrp.fbprice,
-    //   ARRAY_AGG(amn.name) AS roomamenities
-    // FROM
 
     const result = await pool.query(
       `
@@ -767,17 +731,6 @@ const buildTemplateAboutUs = async (data, hotelId, templateId) => {
 };
 
 const buildTemplateGallery = async (result, hotelId, templateId) => {
-  //  <div v-for="(row, index) in imageRows" :key="index" class="gallery-row">
-  //           <div class="image-item" v-for="(image, idx) in row" :key="idx">
-  //               <img :src="image" :alt="'Image ' + (index * 2 + idx + 1)" />
-  //           </div>
-  //       </div>
-
-  //  <div v-for="(row, index) in imageRows" :key="index" class="gallery-row">
-  //           <div class="image-item" v-for="(image, idx) in row" :key="idx">
-  //               <img :src="image" :alt="'Image ' + (index * 2 + idx + 1)" />
-  //           </div>
-  //       </div>
   if (
     !result.rows[0].details.realImages.filePaths ||
     !Array.isArray(result.rows[0].details.realImages.filePaths)
@@ -802,8 +755,6 @@ const buildTemplateGallery = async (result, hotelId, templateId) => {
   }
 
   const galleryHtml = imageRows.join("");
-
-  // console.log(galleryHtml);
 
   const data = {
     "#siteTitle": result.rows[0].details.title,
@@ -898,8 +849,6 @@ const buildTemplateBooking = async (data, hotelId, templateId) => {
 
 buildTemplateAttraction = async (result, hotelId, templateId) => {
   try {
-    // console.log("Details:", result.rows[0]?.details);
-
     const template = await fs.readFile(
       `./template/temp1/attraction.html`,
       "utf8"
@@ -941,7 +890,7 @@ buildTemplateAttraction = async (result, hotelId, templateId) => {
       "#footerDescription": result.rows[0].details.footerDescription,
       "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
     };
-    // console.log(data);
+
     const result1 = template.replace(
       /#\w+/g,
       (placeholder) => data[placeholder] || ""
@@ -980,7 +929,6 @@ const updateDataBase = async (hotelId, templateId, filePaths) => {
 
 const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
   try {
-
     const rooms = await pool.query(
       `
       SELECT 
@@ -1166,11 +1114,11 @@ const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
         day: "numeric",
       });
     };
-//  <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;"
-//                     v-for="offer in offers" :key="offer.id">
-//                     <img :src="'img/' + offer.offerimage" alt="Offer Image" class="img-fluid"
-//                         style="max-width: 700px; height: auto; object-fit: cover;">
-//                 </div>
+    //  <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;"
+    //                     v-for="offer in offers" :key="offer.id">
+    //                     <img :src="'img/' + offer.offerimage" alt="Offer Image" class="img-fluid"
+    //                         style="max-width: 700px; height: auto; object-fit: cover;">
+    //                 </div>
     const offersHtml2 = offersHtml.map(
       (offer) => `
       <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;">

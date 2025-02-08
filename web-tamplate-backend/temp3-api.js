@@ -289,7 +289,6 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
 });
 
 const updateDatabase = async (hotelId, templateId, response) => {
-  // console.log("updateDatabase", hotelId, templateId, response);
   try {
     const existingResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
@@ -399,7 +398,6 @@ router.get("/build-template", async (req, res) => {
     console.error("Error copying template:", error);
   }
   try {
-    //copy hotel image folder
     const sourceDir = path.resolve(__dirname, "/var/images/hotel" + hotelId);
     const targetDir = `/var/www/template${templateId}/user${hotelId}/img`;
 
@@ -732,7 +730,6 @@ const buildTemplateGallery = async (data, hotelId, templateId, result) => {
   const outputPath = `/var/www/template${templateId}/user${hotelId}/gallery.html`;
   await fs.writeFile(outputPath, result2, "utf8");
 
-  // console.log(data2);
 };
 const buildTemplateReservation = async (data, hotelId, templateId) => {
   const templatePath = `./template/temp${templateId}/reservation.html`;
@@ -784,16 +781,13 @@ const buildTemplateContactUs = async (data, hotelId, templateId) => {
 const { exec } = require("child_process");
 
 const generateNginxConfig = async (hotelId, templateId) => {
-  // console.log(hotelId);
   const getSiteName = await pool.query(
     "SELECT url FROM hotelinfo WHERE id = $1",
     [hotelId]
   );
-  // console.log(getSiteName);
   const domain = getSiteName.rows[0].url
     .replace(/https?:\/\//, "")
     .replace(/\/$/, "");
-  // console.log(getSiteName);
 
   const nginxFileExist = fssync.existsSync(
     `/etc/nginx/sites-available/template${templateId}-user${hotelId}`
@@ -854,7 +848,6 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
     );
 
     if (!addedAlredy.rows.length > 0) {
-      // console.log("Publish details already added");
       const data = await pool.query(
         "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
         [hotelId, templateId, domain]
@@ -867,7 +860,6 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
 };
 
 const addSslCertificate = (hotelId, templateId, domain) => {
-  // const domain = getSiteName.rows[0].website;
 
   exec(
     `sudo certbot certificates --domain ${domain}`,
