@@ -20,3 +20,14 @@ const tenetMiddleware = (req, res, next) => {
   console.log("Tenet Middleware");
   next();
 };
+
+app.use(tenetMiddleware);
+
+app.get("/tenet", (req, res) => {
+  pool.query("SELECT * FROM tenet", (error, results) => {
+    if (error) {
+      throw error;
+    }
+    res.status(200).json(results.rows);
+  });
+});
