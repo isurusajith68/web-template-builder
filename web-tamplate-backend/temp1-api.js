@@ -3,9 +3,12 @@ const express = require("express");
 const temp1 = express.Router();
 
 temp1.get("/site-details", async (req, res) => {
-  const { hotelId, templateId } = req.query;
+  const pool = req.tenantPool;
+  const propertyId = req.propertyId;
 
-  if (!hotelId || !templateId) {
+  const { templateId } = req.query;
+
+  if (!propertyId || !templateId) {
     return res.status(400).json({
       message: "hotelId and templateId are required",
     });
@@ -14,7 +17,7 @@ temp1.get("/site-details", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [propertyId, templateId]
     );
 
     if (result.rows.length === 0) {
