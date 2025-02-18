@@ -8,11 +8,20 @@ const fssync = require("fs");
 const multer = require("multer");
 const temp2 = require("./temp2-api");
 const temp3 = require("./temp3-api");
+const temp1 = require("./temp1-api");
 const app = express();
+const dotenv = require("dotenv");
+dotenv.config();
+const { loadTenantConfigs } = require("./utils/load-tenant-configs");
+const { exec } = require("child_process");
+const requireAuth = require("./middleware/auth-middleware");
+const tenantMiddleware = require("./middleware/tenet-middleware");
+const cookieParser = require("cookie-parser");
 
 app.use(
   cors({
-    origin: "*",
+    origin: ["http://localhost:5500", "http://127.0.0.1:5500/"],
+    credentials: true,
   })
 );
 
@@ -21,13 +30,13 @@ app.use(
     limit: "50mb",
   })
 );
-
+app.use(cookieParser());
+app.use("/temp1", requireAuth, tenantMiddleware, temp1);
 app.use("/temp2", temp2);
 app.use("/temp3", temp3);
 
 app.post("/save-site-details", async (req, res) => {
   const {
-    hotelId,
     templateId,
     title,
     email,
@@ -47,9 +56,10 @@ app.post("/save-site-details", async (req, res) => {
   } = req.body;
 
   try {
-    const result = await pool.query("SELECT * FROM hotelinfo WHERE id = $1", [
-      hotelId,
-    ]);
+    const result = await pool.query(
+      "SELECT * FROM opreation_property WHERE id = $1",
+      [propertyId]
+    );
 
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -59,7 +69,7 @@ app.post("/save-site-details", async (req, res) => {
 
     const existingResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [propertyId, templateId]
     );
 
     if (existingResult.rows.length > 0) {
@@ -83,7 +93,7 @@ app.post("/save-site-details", async (req, res) => {
             subContainerImage,
             footerDescription,
           }),
-          hotelId,
+          propertyId,
           templateId,
         ]
       );
@@ -99,7 +109,7 @@ app.post("/save-site-details", async (req, res) => {
       const insertResult = await pool.query(
         "INSERT INTO webtemplatedata (hotelId, templateId, details) VALUES ($1, $2, $3) RETURNING *",
         [
-          hotelId,
+          propertyId,
           templateId,
           JSON.stringify({
             title,
@@ -142,6 +152,7 @@ app.post("/save-site-details", async (req, res) => {
 
 app.get("/site-details", async (req, res) => {
   const { hotelId, templateId } = req.query;
+
   if (!hotelId || !templateId) {
     return res.status(400).json({
       message: "hotelId and templateId are required",
@@ -1146,8 +1157,6 @@ const buildTemplateSpecialOffers = async (data, hotelId, templateId) => {
   }
 };
 
-const { exec } = require("child_process");
-
 const generateNginxConfig = async (hotelId, templateId) => {
   // console.log(hotelId);
   const getSiteName = await pool.query(
@@ -1356,6 +1365,7 @@ const startServer = async () => {
   try {
     await pool.connect();
     console.log("Database connection successful");
+    await loadTenantConfigs();
 
     app.listen(4000, () => {
       console.log(`Server is running on port http://localhost:4000`);

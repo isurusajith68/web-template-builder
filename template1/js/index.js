@@ -2,7 +2,7 @@ const app = Vue.createApp({
   data() {
     return {
       hotelId: null,
-      templateId: 1, // Template ID
+      templateId: 1,
       title: "Site Name",
       email: "Site email",
       phoneNumber: "Site phone number",
@@ -129,7 +129,10 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `https://be-publish.ceyinfo.cloud/temp1/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -205,12 +208,13 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          "https://be-publish.ceyinfo.cloud/save-site-details",
+          "http://localhost:4000/temp1/save-site-details",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify(details),
           }
         );
@@ -284,7 +288,10 @@ const app = Vue.createApp({
     async hotelInfo() {
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
+          `http://localhost:4000/temp1/hotel-info?hotelId=${this.hotelId}`,
+          {
+            credentials: "include",
+          }
         );
         console.log(response);
         if (!response.ok) {
@@ -313,36 +320,36 @@ const app = Vue.createApp({
         console.error("Error fetching hotel info:", error);
       }
     },
-    async hotelOffers() {
-      try {
-        const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/hotel-offers?hotelId=${this.hotelId}`
-        );
+    // async hotelOffers() {
+    //   try {
+    //     const response = await fetch(
+    //       `http://localhost:4000/hotel-offers?hotelId=${this.hotelId}`
+    //     );
 
-        if (!response.ok) {
-          const err = await response.json();
+    //     if (!response.ok) {
+    //       const err = await response.json();
 
-          console.error("Error fetching hotel info:", errorText);
+    //       console.error("Error fetching hotel info:", errorText);
 
-          this.isLoading = null;
-          this.isError = err.message;
-          setTimeout(() => {
-            this.isError = null;
-          }, 5000);
-        } else {
-          const result = await response.json();
-          console.log("Hotel info fetched successfully:", result?.data);
+    //       this.isLoading = null;
+    //       this.isError = err.message;
+    //       setTimeout(() => {
+    //         this.isError = null;
+    //       }, 5000);
+    //     } else {
+    //       const result = await response.json();
+    //       console.log("Hotel info fetched successfully:", result?.data);
 
-          console.log("result", result?.data);
+    //       console.log("result", result?.data);
 
-          if (result) {
-            this.offers = result.data;
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching hotel info:", error);
-      }
-    },
+    //       if (result) {
+    //         this.offers = result.data;
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching hotel info:", error);
+    //   }
+    // },
     async loadRoomDetails() {
       this.isLoading = "Loading room data...";
 
@@ -618,22 +625,11 @@ const app = Vue.createApp({
   },
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
-    this.hotelId = urlParams.get("hotelId");
 
-    if (
-      !this.hotelId ||
-      this.hotelId == "" ||
-      this.hotelId == "null" ||
-      this.hotelId == "undefined"
-    ) {
-      alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://entry.ceyinfo.cloud";
-    } else {
-      this.loadSiteDetails();
-      this.hotelInfo();
-      this.hotelOffers();
-      this.loadRoomDetails();
-    }
+    this.loadSiteDetails();
+    this.hotelInfo();
+    this.hotelOffers();
+    this.loadRoomDetails();
   },
 });
 app.mount("#app");
