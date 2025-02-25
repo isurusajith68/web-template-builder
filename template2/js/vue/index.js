@@ -696,23 +696,10 @@ const app = Vue.createApp({
     },
   },
   mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
-    this.hotelId = urlParams.get("hotelId");
-
-    if (
-      !this.hotelId ||
-      this.hotelId == "" ||
-      this.hotelId == "null" ||
-      this.hotelId == "undefined"
-    ) {
-      alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://entry.ceyinfo.cloud";
-    } else {
-      this.loadSiteDetails();
-      this.loadRoomDetails();
-      this.hotelInfo();
-      this.hotelOffers();
-    }
+    this.loadSiteDetails();
+    this.loadRoomDetails();
+    this.hotelInfo();
+    this.hotelOffers();
   },
 });
 

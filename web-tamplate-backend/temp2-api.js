@@ -11,8 +11,10 @@ router.get("/test", (req, res) => {
 });
 
 router.post("/save-site-details", async (req, res) => {
+  const pool = req.tenantPool;
+  const propertyId = req.propertyId;
+
   const {
-    hotelId,
     templateId,
     title,
     carouselImages,
@@ -35,7 +37,7 @@ router.post("/save-site-details", async (req, res) => {
   try {
     const existingResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [propertyId, templateId]
     );
 
     if (existingResult.rows.length > 0) {
@@ -43,7 +45,7 @@ router.post("/save-site-details", async (req, res) => {
         "UPDATE webtemplatedata SET details = $1 WHERE hotelId = $2 AND templateId = $3 RETURNING *",
         [
           JSON.stringify({
-            hotelId,
+            propertyId,
             templateId,
             title,
             carouselImages,
@@ -62,7 +64,7 @@ router.post("/save-site-details", async (req, res) => {
             mapIframeHtml,
             realImages,
           }),
-          hotelId,
+          propertyId,
           templateId,
         ]
       );
@@ -74,10 +76,10 @@ router.post("/save-site-details", async (req, res) => {
       const insertResult = await pool.query(
         "INSERT INTO webtemplatedata (hotelId, templateId, details) VALUES ($1, $2, $3) RETURNING *",
         [
-          hotelId,
+          propertyId,
           templateId,
           JSON.stringify({
-            hotelId,
+            propertyId,
             templateId,
             title,
             carouselImages,
@@ -112,7 +114,10 @@ router.post("/save-site-details", async (req, res) => {
 });
 
 router.get("/build-template", async (req, res) => {
-  const { hotelId, templateId } = req.query;
+  const pool = req.tenantPool;
+  const hotelId = req.propertyId;
+
+  const { templateId } = req.query;
   if (!hotelId || !templateId) {
     return res.status(400).json({
       message: "Hotel ID and Template ID are required",
@@ -732,7 +737,6 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
 // // add ssl certificate
 
 const addSslCertificate = (hotelId, templateId, domain) => {
-
   exec(
     `sudo certbot certificates --domain ${domain}`,
     (checkError, checkStdout, checkStderr) => {

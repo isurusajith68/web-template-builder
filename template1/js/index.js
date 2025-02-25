@@ -129,7 +129,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/temp1/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -252,7 +252,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `http://localhost:4000/temp1/build-template?templateId=${this.templateId}`
         );
 
         if (!response.ok) {
@@ -287,12 +287,9 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(
-          `http://localhost:4000/temp1/hotel-info?hotelId=${this.hotelId}`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`http://localhost:4000/temp1/hotel-info`, {
+          credentials: "include",
+        });
         console.log(response);
         if (!response.ok) {
           const err = await response.json();
@@ -320,43 +317,14 @@ const app = Vue.createApp({
         console.error("Error fetching hotel info:", error);
       }
     },
-    // async hotelOffers() {
-    //   try {
-    //     const response = await fetch(
-    //       `http://localhost:4000/hotel-offers?hotelId=${this.hotelId}`
-    //     );
 
-    //     if (!response.ok) {
-    //       const err = await response.json();
-
-    //       console.error("Error fetching hotel info:", errorText);
-
-    //       this.isLoading = null;
-    //       this.isError = err.message;
-    //       setTimeout(() => {
-    //         this.isError = null;
-    //       }, 5000);
-    //     } else {
-    //       const result = await response.json();
-    //       console.log("Hotel info fetched successfully:", result?.data);
-
-    //       console.log("result", result?.data);
-
-    //       if (result) {
-    //         this.offers = result.data;
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching hotel info:", error);
-    //   }
-    // },
     async loadRoomDetails() {
       this.isLoading = "Loading room data...";
 
       try {
-        const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/rooms-info?hotelId=${this.hotelId}`
-        );
+        const response = await fetch(`http://localhost:4000/temp1/rooms-info`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.json();
@@ -393,6 +361,39 @@ const app = Vue.createApp({
         setTimeout(() => {
           this.isError = null;
         }, 5000);
+      }
+    },
+    async hotelOffers() {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/temp1/hotel-offers`,
+          {
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          const err = await response.json();
+
+          console.error("Error fetching hotel info:", errorText);
+
+          this.isLoading = null;
+          this.isError = err.message;
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+        } else {
+          const result = await response.json();
+          console.log("Hotel info fetched successfully:", result?.data);
+
+          console.log("result", result?.data);
+
+          if (result) {
+            this.offers = result.data;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching hotel info:", error);
       }
     },
 
@@ -624,12 +625,10 @@ const app = Vue.createApp({
     },
   },
   mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
-
+    this.loadRoomDetails();
     this.loadSiteDetails();
     this.hotelInfo();
     this.hotelOffers();
-    this.loadRoomDetails();
   },
 });
 app.mount("#app");

@@ -66,7 +66,10 @@ const app = Vue.createApp({
     async hotelInfo() {
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
+          `http://localhost:4000/temp1/hotel-info`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -92,7 +95,10 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `http://localhost:4000/temp1/site-details`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -140,9 +146,9 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...s";
 
       try {
-        const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/rooms-info?hotelId=${this.hotelId}`
-        );
+        const response = await fetch(`http://localhost:4000/temp1/rooms-info`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.json();
@@ -173,27 +179,9 @@ const app = Vue.createApp({
     },
   },
   mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
-    this.hotelId = urlParams.get("hotelId");
-
-    if (
-      !this.hotelId ||
-      this.hotelId == "" ||
-      this.hotelId == "null" ||
-      this.hotelId == "undefined"
-    ) {
-      alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://entry.ceyinfo.cloud";
-    } else {
-      this.loadSiteDetails();
-      this.loadRoomDetails();
-      this.hotelInfo();
-    }
-
-    // const urlParams = new URLSearchParams(window.location.search);
-    // this.hotelId = urlParams.get("hotelId");
-    // this.templateId = urlParams.get("templateId");
-    // console.log(this.hotelId, this.templateId);
+    this.loadSiteDetails();
+    this.loadRoomDetails();
+    this.hotelInfo();
   },
 });
 
