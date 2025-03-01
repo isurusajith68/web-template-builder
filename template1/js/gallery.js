@@ -55,7 +55,7 @@ const gallery = Vue.createApp({
     async removeImageFromServer(imageName) {
       try {
         const response = await fetch(
-          "https://be-publish.ceyinfo.cloud/remove-image",
+          "http://localhost:4000/temp1/remove-image",
           {
             method: "DELETE",
             headers: {
@@ -66,6 +66,7 @@ const gallery = Vue.createApp({
               templateId: this.templateId,
               imageName: imageName,
             }),
+            credentials: "include",
           }
         );
 
@@ -104,10 +105,11 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             body: formData,
+            credentials: "include",
           }
         );
 
@@ -153,7 +155,7 @@ const gallery = Vue.createApp({
       this.isLoading = "Saving...";
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             headers: {
@@ -164,6 +166,7 @@ const gallery = Vue.createApp({
               templateId,
               images: this.realImages,
             }),
+            credentials: "include",
           }
         );
 
@@ -195,10 +198,9 @@ const gallery = Vue.createApp({
     },
     async hotelInfo() {
       try {
-        const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
-        );
-
+        const response = await fetch(`http://localhost:4000/temp1/hotel-info`, {
+          credentials: "include",
+        });
         if (!response.ok) {
           const err = await response.json();
 
@@ -229,7 +231,10 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -271,31 +276,6 @@ const gallery = Vue.createApp({
         // }, 5000);
       }
     },
-
-    // async hotelInfo() {
-    //   try {
-    //     const response = await fetch(
-    //       `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
-    //     );
-
-    //     if (!response.ok) {
-    //       const errorText = await response.text();
-    //       console.error("Error fetching hotel info:", errorText);
-    //     } else {
-    //       const result = await response.json();
-    //       console.log("Hotel info fetched successfully:", result);
-
-    //       if (result) {
-    //         this.title = result.name;
-    //         this.email = result.email;
-    //         this.phoneNumber = result.mobile;
-    //         this.address = result.address1;
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching hotel info:", error);
-    //   }
-    // },
   },
   computed: {
     imageRows() {
@@ -311,21 +291,8 @@ const gallery = Vue.createApp({
   },
 
   mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
-    this.hotelId = urlParams.get("hotelId");
-
-    if (
-      !this.hotelId ||
-      this.hotelId == "" ||
-      this.hotelId == "null" ||
-      this.hotelId == "undefined"
-    ) {
-      alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://entry.ceyinfo.cloud";
-    } else {
-      this.loadSiteDetails();
-      this.hotelInfo();
-    }
+    this.loadSiteDetails();
+    this.hotelInfo();
   },
 });
 

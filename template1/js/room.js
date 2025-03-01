@@ -65,12 +65,9 @@ const app = Vue.createApp({
     },
     async hotelInfo() {
       try {
-        const response = await fetch(
-          `http://localhost:4000/temp1/hotel-info`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`http://localhost:4000/temp1/hotel-info`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.json();
@@ -95,8 +92,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/site-details`,
-          {
+          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,{
             credentials: "include",
           }
         );

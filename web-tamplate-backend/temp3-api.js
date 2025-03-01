@@ -1,7 +1,6 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const pool = require("./database/db");
 const router = express.Router();
 const fssync = require("fs");
 const fs = require("fs/promises");
@@ -11,8 +10,9 @@ router.get("/temp3", (req, res) => {
 });
 
 router.post("/save-site-details", async (req, res) => {
+  const pool = req.tenantPool;
+  const propertyId = req.propertyId;
   const {
-    hotelId,
     templateId,
     title,
     address,
@@ -56,7 +56,7 @@ router.post("/save-site-details", async (req, res) => {
   try {
     const existingResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [propertyId, templateId]
     );
 
     if (existingResult.rows.length > 0) {
@@ -64,7 +64,7 @@ router.post("/save-site-details", async (req, res) => {
         "UPDATE webtemplatedata SET details = $1 WHERE hotelId = $2 AND templateId = $3 RETURNING *",
         [
           JSON.stringify({
-            hotelId,
+            propertyId,
             templateId,
             title,
             address,
@@ -104,7 +104,7 @@ router.post("/save-site-details", async (req, res) => {
             aboutHeaderTitle,
             aboutHeaderImage,
           }),
-          hotelId,
+          propertyId,
           templateId,
         ]
       );
@@ -116,10 +116,10 @@ router.post("/save-site-details", async (req, res) => {
       const insertResult = await pool.query(
         "INSERT INTO webtemplatedata (hotelId, templateId, details) VALUES ($1, $2, $3) RETURNING *",
         [
-          hotelId,
+          propertyId,
           templateId,
           JSON.stringify({
-            hotelId,
+            propertyId,
             templateId,
             title,
             address,
@@ -203,7 +203,8 @@ const ensureDirectoryExistence2 = async (dir, templateId, hotelId) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const { hotelId, templateId } = req.query;
+    const { templateId } = req.query;
+    const hotelId = req.propertyId;
 
     const uploadDir = path.join(
       `/var/www/template${templateId}/user${hotelId}/img`
@@ -229,10 +230,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post("/upload-single", upload.single("image"), async (req, res) => {
+  const pool = req.tenantPool;
+  const propertyId = req.propertyId;
   try {
     const { file } = req;
     const filePath = `img/${file.filename}`;
-    const hotelId = req.body.hotelId;
     const templateId = req.body.templateId;
     const imageType = req.body.imageType;
 
@@ -250,7 +252,7 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
 
     const dbGetResult = await pool.query(
       "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [propertyId, templateId]
     );
 
     if (dbGetResult.rows.length > 0) {
@@ -263,7 +265,7 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
       if (previousFiles) {
         const oldPaths = [
           path.join(
-            `/var/www/template${templateId}/user${hotelId}`,
+            `/var/www/template${templateId}/user${propertyId}`,
             previousFiles
           ),
           path.join(`/var/www/vue-temp${templateId}`, previousFiles),
@@ -279,7 +281,7 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
     }
 
     const response = { [imageType]: filePath };
-    const result = await updateDatabase(hotelId, templateId, response);
+    const result = await updateDatabase(propertyId, templateId, response);
 
     res.json(result);
   } catch (error) {
@@ -288,11 +290,11 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
   }
 });
 
-const updateDatabase = async (hotelId, templateId, response) => {
+const updateDatabase = async (propertyId, templateId, response) => {
   try {
     const existingResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [propertyId, templateId]
     );
 
     const newResult = {
@@ -319,18 +321,18 @@ const updateDatabase = async (hotelId, templateId, response) => {
 router.post("/upload-images", upload.array("images", 5), async (req, res) => {
   try {
     const files = req.files;
-    const hotelId = req.query.hotelId;
+    const propertyId = req.query.hotelId;
     const templateId = req.query.templateId;
     const imageType = req.query.imageType;
 
     const uploadDir = path.join(
-      `/var/www/template${templateId}/user${hotelId}/img`
+      `/var/www/template${templateId}/user${propertyId}/img`
     );
     const imageForTemplateDir = path.join(`/var/www/vue-temp${templateId}/img`);
 
     const dbGetResult = await pool.query(
       "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [propertyId, templateId]
     );
 
     if (dbGetResult.rows.length > 0) {
@@ -343,7 +345,7 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
       if (Array.isArray(previousFiles)) {
         previousFiles.forEach((file) => {
           const oldPaths = [
-            path.join(`/var/www/template${templateId}/user${hotelId}`, file),
+            path.join(`/var/www/template${templateId}/user${propertyId}`, file),
             path.join(`/var/www/vue-temp${templateId}`, file),
           ];
           oldPaths.forEach((oldPath) => {
@@ -366,7 +368,7 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
       console.log("File copied to:", secondaryFilePath);
     }
 
-    const result = await updateDatabase(hotelId, templateId, {
+    const result = await updateDatabase(propertyId, templateId, {
       [imageType]: galleryFirstFiveImages,
     });
 
@@ -381,7 +383,8 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
 });
 
 router.get("/build-template", async (req, res) => {
-  const { hotelId, templateId } = req.query;
+  const { templateId } = req.query;
+  const hotelId = req.propertyId;
   if (!hotelId || !templateId) {
     return res.status(400).send("hotelId and templateId are required");
   }
@@ -729,7 +732,6 @@ const buildTemplateGallery = async (data, hotelId, templateId, result) => {
 
   const outputPath = `/var/www/template${templateId}/user${hotelId}/gallery.html`;
   await fs.writeFile(outputPath, result2, "utf8");
-
 };
 const buildTemplateReservation = async (data, hotelId, templateId) => {
   const templatePath = `./template/temp${templateId}/reservation.html`;
@@ -860,7 +862,6 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
 };
 
 const addSslCertificate = (hotelId, templateId, domain) => {
-
   exec(
     `sudo certbot certificates --domain ${domain}`,
     (checkError, checkStdout, checkStderr) => {

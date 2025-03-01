@@ -562,10 +562,11 @@ const app = Vue.createApp({
 
         try {
           const response = await fetch(
-            `https://be-publish.ceyinfo.cloud/temp3/upload-single?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+            `http://localhost:4000/temp3/upload-single?hotelId=${this.hotelId}&templateId=${this.templateId}`,
             {
               method: "POST",
               body: formData,
+              credentials: "include",
             }
           );
 
@@ -688,10 +689,11 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
+          `http://localhost:4000/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
           {
             method: "POST",
             body: formData,
+            credentials: "include",
           }
         );
 
@@ -736,7 +738,10 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -750,7 +755,6 @@ const app = Vue.createApp({
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
-          this.title = siteDetails.details.title;
           this.address = siteDetails.details.address;
           this.phoneNumber = siteDetails.details.phoneNumber;
           this.email = siteDetails.details.email;
@@ -871,13 +875,14 @@ const app = Vue.createApp({
       console.log("Data to save:", data);
       try {
         const response = await fetch(
-          "https://be-publish.ceyinfo.cloud/temp3/save-site-details",
+          "http://localhost:4000/temp3/save-site-details",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
+            credentials: "include",
           }
         );
 
@@ -906,9 +911,9 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
-        );
+        const response = await fetch(`http://localhost:4000/temp1/hotel-info`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -919,9 +924,12 @@ const app = Vue.createApp({
 
           if (result) {
             // this.title = result.name;
-            this.email = result.email;
-            this.phoneNumber = result.mobile;
-            this.address = result.address1;
+            console.log("Hotel info fetched successfully:", result.data);
+            this.hotelId = result.data.id;
+            this.title = result.data.name;
+            this.email = result.data.email;
+            this.phoneNumber = result.data.mobile;
+            this.address = result.data.address1;
           }
         }
       } catch (error) {
@@ -933,7 +941,10 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/temp3/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `http://localhost:4000/temp3/build-template?templateId=${this.templateId}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -965,21 +976,8 @@ const app = Vue.createApp({
     },
   },
   mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
-    this.hotelId = urlParams.get("hotelId");
-
-    if (
-      !this.hotelId ||
-      this.hotelId == "" ||
-      this.hotelId == "null" ||
-      this.hotelId == "undefined"
-    ) {
-      alert("Hotel ID not found in URL parameters.");
-      window.location.href = "https://entry.ceyinfo.cloud";
-    } else {
-      this.loadSiteDetails();
-      this.hotelInfo();
-    }
+    this.loadSiteDetails();
+    this.hotelInfo();
   },
 });
 

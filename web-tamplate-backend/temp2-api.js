@@ -13,7 +13,7 @@ router.get("/test", (req, res) => {
 router.post("/save-site-details", async (req, res) => {
   const pool = req.tenantPool;
   const propertyId = req.propertyId;
-
+  console.log(req.propertyId);
   const {
     templateId,
     title,

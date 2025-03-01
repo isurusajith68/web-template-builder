@@ -348,7 +348,7 @@ const app = Vue.createApp({
     async removeImageFromServer(imageName) {
       try {
         const response = await fetch(
-          "https://be-publish.ceyinfo.cloud/remove-image",
+          "http://localhost:4000/temp1/remove-image",
           {
             method: "DELETE",
             headers: {
@@ -398,10 +398,11 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             body: formData,
+            credentials: "include",
           }
         );
 
@@ -444,7 +445,14 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/site-details?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -525,13 +533,14 @@ const app = Vue.createApp({
       // console.log("Data to save:", data);
       try {
         const response = await fetch(
-          "https://be-publish.ceyinfo.cloud/temp2/save-site-details",
+          "http://localhost:4000/temp2/save-site-details",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
+            credentials: "include",
           }
         );
 
@@ -561,9 +570,13 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...";
 
       try {
-        const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/rooms-info?hotelId=${this.hotelId}`
-        );
+        const response = await fetch(`http://localhost:4000/temp1/rooms-info`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.json();
@@ -605,9 +618,9 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/hotel-info?hotelId=${this.hotelId}`
-        );
+        const response = await fetch(`http://localhost:4000/temp1/hotel-info`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.text();
@@ -634,7 +647,9 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/temp2/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`
+          `http://localhost:4000/temp2/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`,{
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -667,7 +682,10 @@ const app = Vue.createApp({
     async hotelOffers() {
       try {
         const response = await fetch(
-          `https://be-publish.ceyinfo.cloud/hotel-offers?hotelId=${this.hotelId}`
+          `http://localhost:4000/temp1/hotel-offers`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {

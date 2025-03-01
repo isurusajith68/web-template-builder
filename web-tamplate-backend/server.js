@@ -32,8 +32,8 @@ app.use(
 );
 app.use(cookieParser());
 app.use("/temp1", requireAuth, tenantMiddleware, temp1);
-app.use("/temp2", temp2);
-app.use("/temp3", temp3);
+app.use("/temp2", requireAuth, tenantMiddleware, temp2);
+app.use("/temp3", requireAuth, tenantMiddleware, temp3);
 
 app.post("/save-site-details", async (req, res) => {
   const {
