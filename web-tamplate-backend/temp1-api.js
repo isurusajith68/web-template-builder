@@ -80,7 +80,7 @@ temp1.post("/save-site-details", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT * FROM opreation_property WHERE id = $1",
+      "SELECT * FROM operation_property WHERE id = $1",
       [propertyId]
     );
     console.log(result.rows);
@@ -271,7 +271,7 @@ temp1.get("/build-template", async (req, res) => {
     };
 
     const getSiteName = await pool.query(
-      "SELECT url FROM opreation_property WHERE id = $1",
+      "SELECT url FROM operation_property WHERE id = $1",
       [hotelId]
     );
     console.log(getSiteName);
@@ -360,6 +360,7 @@ const ensureDirectoryExistence2 = async (dir, templateId, hotelId) => {
     }
   }
 };
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const hotelId = req.propertyId;
@@ -386,6 +387,7 @@ const storage = multer.diskStorage({
     );
   },
 });
+
 const upload = multer({ storage: storage });
 
 temp1.post("/upload-images", upload.array("images", 10), async (req, res) => {
@@ -503,7 +505,7 @@ temp1.delete("/remove-image", async (req, res) => {
 temp1.get("/rooms-info", async (req, res) => {
   const pool = req.tenantPool;
   const hotelId = req.propertyId;
-
+  console.log("hotelId", hotelId);
   try {
     const result = await pool.query(
       `
@@ -514,7 +516,7 @@ temp1.get("/rooms-info", async (req, res) => {
       htrm.roomno_text,
       hrv.roomview AS roomview,
       crt.room_type AS roomtype,
-      orb.count AS noofbed,
+      SUM(orb.count) as noofbed,
       hrp.fbprice,
       COALESCE(ARRAY_AGG(DISTINCT amn.amenity_label) FILTER (WHERE amn.amenity_label IS NOT NULL), '{}') AS roomamenities,
       COALESCE(ARRAY_AGG(DISTINCT ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL), '{}') AS imagenames
@@ -544,10 +546,8 @@ temp1.get("/rooms-info", async (req, res) => {
       htrm.roomclass_id, 
       htrm.roomno_text,
       hrv.roomview,
-      crt.room_type, 
-      orb.count,
+      crt.room_type,
       hrp.fbprice;
-
   `,
       [hotelId]
     );

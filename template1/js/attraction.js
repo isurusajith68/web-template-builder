@@ -54,7 +54,8 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,{
+          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          {
             credentials: "include",
           }
         );

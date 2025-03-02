@@ -647,7 +647,8 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp2/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`,{
+          `http://localhost:4000/temp2/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          {
             credentials: "include",
           }
         );
