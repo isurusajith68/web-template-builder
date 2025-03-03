@@ -224,42 +224,44 @@ const buildTemplate = async (result, hotelId, templateId) => {
   const rooms = await pool.query(
     `
       SELECT 
-    htrm.hotelid,
-    htrm.roomviewid,
-    htrm.roomtypeid,
-    htrm.roomno,
-    htrm.noofbed,
-    hrv.label AS roomview,
-    hrt.label AS roomtype,
-    hrp.fbprice,
-    ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
-    ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
-FROM 
-    hotelrooms htrm
-JOIN 
-    hotelroomview hrv ON htrm.roomviewid = hrv.id
-JOIN 
-    hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
-JOIN 
-    hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
-    AND htrm.roomtypeid = hrp.roomtypeid
-LEFT JOIN 
-    roomamenitydetails ram ON htrm.id = ram.roomid
-LEFT JOIN 
-    roomamenities amn ON ram.amenityid = amn.id
-LEFT JOIN 
-    roomimages ri ON htrm.id = ri.roomid
-WHERE 
-    htrm.hotelid = $1
-GROUP BY 
-    htrm.hotelid, 
-    htrm.roomviewid, 
-    htrm.roomtypeid, 
-    htrm.roomno,
-    htrm.noofbed, 
-    hrv.label,
-    hrt.label, 
-    hrp.fbprice;
+      htrm.property_id,
+      htrm.view_id,
+      htrm.roomclass_id,
+      htrm.roomno_text,
+      hrv.roomview AS roomview,
+      crt.room_type AS roomtype,
+      SUM(orb.count) as noofbed,
+      hrp.fbprice,
+      COALESCE(ARRAY_AGG(DISTINCT amn.amenity_label) FILTER (WHERE amn.amenity_label IS NOT NULL), '{}') AS roomamenities,
+      COALESCE(ARRAY_AGG(DISTINCT ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL), '{}') AS imagenames
+  FROM 
+      operation_rooms htrm
+  JOIN 
+      operation_roomreclass hrt ON htrm.roomclass_id = hrt.id
+  JOIN
+      operation_roombeds orb ON htrm.id = orb.room_id
+  JOIN 
+      core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
+  JOIN
+      core_view hrv ON htrm.view_id = hrv.id
+  LEFT JOIN
+      core_roomtypes crt ON hrt.roomtype_id = crt.id
+  JOIN 
+      operation_roomprices hrp ON htrm.id = hrp.room_id
+  LEFT JOIN
+      operation_roomamenities amn ON amn.room_id = htrm.id  -- FIXED JOIN
+  LEFT JOIN 
+      operation_roomimages ri ON htrm.id = ri.room_id
+  WHERE 
+      htrm.property_id = $1
+  GROUP BY 
+      htrm.property_id, 
+      htrm.view_id, 
+      htrm.roomclass_id, 
+      htrm.roomno_text,
+      hrv.roomview,
+      crt.room_type,
+      hrp.fbprice;
       `,
     [hotelId]
   );
