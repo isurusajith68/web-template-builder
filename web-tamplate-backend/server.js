@@ -17,11 +17,13 @@ const { exec } = require("child_process");
 const requireAuth = require("./middleware/auth-middleware");
 const tenantMiddleware = require("./middleware/tenet-middleware");
 const cookieParser = require("cookie-parser");
+const imageUpload = require("./image-upload");
 
 app.use(
   cors({
     origin: [
       "http://localhost:5500",
+      "http://localhost:3000",
       "http://127.0.0.1:5500",
       "https://temp1.ceyinfo.com",
       "https://temp2.ceyinfo.com",
@@ -40,6 +42,7 @@ app.use(cookieParser());
 app.use("/temp1", requireAuth, tenantMiddleware, temp1);
 app.use("/temp2", requireAuth, tenantMiddleware, temp2);
 app.use("/temp3", requireAuth, tenantMiddleware, temp3);
+app.use("/api/v1", requireAuth, tenantMiddleware, imageUpload);
 
 // app.post("/save-site-details", async (req, res) => {
 //   const {
