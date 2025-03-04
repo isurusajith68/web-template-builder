@@ -311,6 +311,8 @@ const buildTemplate = async (
                 </div>
             </div> */
   }
+  // const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
+
   const roomsHtml = rooms.rows
     .map((room) => {
       return `<div class="single_rooms">
@@ -332,7 +334,7 @@ const buildTemplate = async (
                             Amenities: ${room.roomamenities.join(", ")}
                         </p>
                        </div>
-                       <a href="https://webbookings.ceyinfo.cloud?hotelId=${hotelId}" class="line-button">book now</a>
+                       <a href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}" class="line-button">book now</a>
                        </div>
                 </div>
             </div>`;
@@ -384,7 +386,7 @@ const buildTemplate = async (
         })
         .join("")
     : "";
-  const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
+  const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
 
   // <script>
   //     document.addEventListener("DOMContentLoaded", function () {
@@ -397,7 +399,7 @@ const buildTemplate = async (
   //         bookRoomButton.addEventListener("click", function (event) {
   //             event.preventDefault();
 
-  //             window.location.href = `https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&checkin=${checkInDate.value}&checkout=${checkOutDate.value}`;
+  //             window.location.href = `https://web-booking.ceyinfo.com/?hotelId=${hotelId}&checkin=${checkInDate.value}&checkout=${checkOutDate.value}`;
   //         });
   //     });
   // </script>
@@ -407,12 +409,12 @@ const buildTemplate = async (
         const checkInDate = document.getElementById("datepicker");
         const checkOutDate = document.getElementById("datepicker2");
         const hotelId = ${hotelId};
-
+        const orgId = ${organization_id};
         const bookRoomButton = document.getElementById("book-room");
 
         bookRoomButton.addEventListener("click", function (event) {
             event.preventDefault();
-            window.location.href = \`https://webbookings.ceyinfo.cloud/?hotelId=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
+            window.location.href = \`https://web-booking.ceyinfo.com/?org_id=\${orgId}&p_id=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
         });
     });
 </script>`;
@@ -550,25 +552,25 @@ const buildTemplateHotelRooms = async (
                             Amenities: ${room.roomamenities.join(", ")}
                         </p>
                        </div>
-                       <a href="https://webbookings.ceyinfo.cloud?hotelId=${hotelId}" class="line-button">book now</a>
+                       <a href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}" class="line-button">book now</a>
                        </div>
                 </div>
             </div>`;
     })
     .join("");
-  const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
+  const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
 
   const bookScript = `<script>
     document.addEventListener("DOMContentLoaded", function () {
         const checkInDate = document.getElementById("datepicker");
         const checkOutDate = document.getElementById("datepicker2");
         const hotelId = ${hotelId};
-
+        const orgId = ${organization_id};
         const bookRoomButton = document.getElementById("book-room");
 
-        bookRoomButton.addEventListener("click", function (event) {
+             bookRoomButton.addEventListener("click", function (event) {
             event.preventDefault();
-            window.location.href = \`https://webbookings.ceyinfo.cloud/?hotelId=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
+            window.location.href = \`https://web-booking.ceyinfo.com/?org_id=\${orgId}&p_id=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
         });
     });
 </script>`;
@@ -613,12 +615,12 @@ const buildTemplateAboutUs = async (
         const checkInDate = document.getElementById("datepicker");
         const checkOutDate = document.getElementById("datepicker2");
         const hotelId = ${hotelId};
-
+        const orgId = ${organization_id};
         const bookRoomButton = document.getElementById("book-room");
 
-        bookRoomButton.addEventListener("click", function (event) {
+               bookRoomButton.addEventListener("click", function (event) {
             event.preventDefault();
-            window.location.href = \`https://webbookings.ceyinfo.cloud/?hotelId=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
+            window.location.href = \`https://web-booking.ceyinfo.com/?org_id=\${orgId}&p_id=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
         });
     });
 </script>`;
@@ -666,12 +668,13 @@ const buildTemplateContactUs = async (
         const checkInDate = document.getElementById("datepicker");
         const checkOutDate = document.getElementById("datepicker2");
         const hotelId = ${hotelId};
+        const orgId = ${organization_id};
 
         const bookRoomButton = document.getElementById("book-room");
 
-        bookRoomButton.addEventListener("click", function (event) {
+                bookRoomButton.addEventListener("click", function (event) {
             event.preventDefault();
-            window.location.href = \`https://webbookings.ceyinfo.cloud/?hotelId=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
+            window.location.href = \`https://web-booking.ceyinfo.com/?org_id=\${orgId}&p_id=\${hotelId}&checkin=\${checkInDate.value}&checkout=\${checkOutDate.value}\`;
         });
     });
 </script>`;

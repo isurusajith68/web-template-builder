@@ -536,7 +536,7 @@
                                         <div class="d-flex justify-content-between">
                                             <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
                                             <a class="btn btn-sm btn-dark rounded py-2 px-4"
-                                                :href="`https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&roomno=${room.roomno}`">Book
+                                                :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`">Book
                                                 Now</a>
                                         </div>
                                     </div>
@@ -578,9 +578,9 @@
                                         @keyup.enter="updateSubContainerDescription"></textarea>
                                 </div>
 
-                                <a :href="`https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}`"
+                                <a :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`"
                                     class="btn btn-primary py-md-3 px-md-5 me-3">Our Rooms</a>
-                                <a :href="`https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}`"
+                                <a :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`"
                                     class="btn btn-light py-md-3 px-md-5 btnroom">Book A Room</a>
                             </div>
                         </div>

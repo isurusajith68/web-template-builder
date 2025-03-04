@@ -182,7 +182,7 @@ const ensureDirectoryExistence = (dir) => {
 const ensureDirectoryExistence2 = async (dir, templateId, hotelId) => {
   if (!fssync.existsSync(dir)) {
     try {
-      const targetDir = `/var/www/template${templateId}/user${hotelId}`;
+      const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}`;
       const sourceDir = path.resolve(
         __dirname,
         `build/template/temp${templateId}`
@@ -205,13 +205,13 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const { templateId } = req.query;
     const hotelId = req.propertyId;
-
+    const organization_id = req.organization_id;
     const uploadDir = path.join(
-      `/var/www/template${templateId}/user${hotelId}/img`
+      `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`
     );
     const imageForTemplateDir = path.join(`/var/www/vue-temp${templateId}/img`);
 
-    ensureDirectoryExistence2(uploadDir, templateId, hotelId);
+    ensureDirectoryExistence2(uploadDir, templateId, hotelId, organization_id);
     ensureDirectoryExistence(imageForTemplateDir);
 
     cb(null, uploadDir);
@@ -232,6 +232,7 @@ const upload = multer({ storage });
 router.post("/upload-single", upload.single("image"), async (req, res) => {
   const pool = req.tenantPool;
   const propertyId = req.propertyId;
+  const organization_id = req.organization_id;
   try {
     const { file } = req;
     const filePath = `img/${file.filename}`;
@@ -265,7 +266,7 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
       if (previousFiles) {
         const oldPaths = [
           path.join(
-            `/var/www/template${templateId}/user${propertyId}`,
+            `/var/www/template${templateId}/organization${organization_id}/property${propertyId}`,
             previousFiles
           ),
           path.join(`/var/www/vue-temp${templateId}`, previousFiles),
@@ -281,7 +282,7 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
     }
 
     const response = { [imageType]: filePath };
-    const result = await updateDatabase(propertyId, templateId, response);
+    const result = await updateDatabase(propertyId, templateId, response, pool);
 
     res.json(result);
   } catch (error) {
@@ -290,7 +291,7 @@ router.post("/upload-single", upload.single("image"), async (req, res) => {
   }
 });
 
-const updateDatabase = async (propertyId, templateId, response) => {
+const updateDatabase = async (propertyId, templateId, response, pool) => {
   try {
     const existingResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
@@ -304,12 +305,12 @@ const updateDatabase = async (propertyId, templateId, response) => {
 
     await pool.query(
       "UPDATE webtemplatedata SET details = $1 WHERE hotelId = $2 AND templateId = $3",
-      [JSON.stringify(newResult), hotelId, templateId]
+      [JSON.stringify(newResult), propertyId, templateId]
     );
 
     const updatedResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [propertyId, templateId]
     );
 
     return updatedResult.rows[0];
@@ -321,12 +322,13 @@ const updateDatabase = async (propertyId, templateId, response) => {
 router.post("/upload-images", upload.array("images", 5), async (req, res) => {
   try {
     const files = req.files;
-    const propertyId = req.query.hotelId;
+    const propertyId = req.propertyId;
     const templateId = req.query.templateId;
     const imageType = req.query.imageType;
-
+    const organization_id = req.organization_id;
+    const pool = req.tenantPool;
     const uploadDir = path.join(
-      `/var/www/template${templateId}/user${propertyId}/img`
+      `/var/www/template${templateId}/organization${organization_id}/property${propertyId}/img`
     );
     const imageForTemplateDir = path.join(`/var/www/vue-temp${templateId}/img`);
 
@@ -345,7 +347,10 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
       if (Array.isArray(previousFiles)) {
         previousFiles.forEach((file) => {
           const oldPaths = [
-            path.join(`/var/www/template${templateId}/user${propertyId}`, file),
+            path.join(
+              `/var/www/template${templateId}/organization${organization_id}/property${propertyId}/img`,
+              file
+            ),
             path.join(`/var/www/vue-temp${templateId}`, file),
           ];
           oldPaths.forEach((oldPath) => {
@@ -368,7 +373,7 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
       console.log("File copied to:", secondaryFilePath);
     }
 
-    const result = await updateDatabase(propertyId, templateId, {
+    const result = await updateDatabase(propertyId, templateId, pool, {
       [imageType]: galleryFirstFiveImages,
     });
 
@@ -385,12 +390,14 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
 router.get("/build-template", async (req, res) => {
   const { templateId } = req.query;
   const hotelId = req.propertyId;
+  const pool = req.tenantPool;
+  const organization_id = req.organization_id;
   if (!hotelId || !templateId) {
     return res.status(400).send("hotelId and templateId are required");
   }
 
   try {
-    const targetDir = `/var/www/template${templateId}/user${hotelId}`;
+    const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}`;
 
     await fs.mkdir(targetDir, { recursive: true });
 
@@ -401,9 +408,13 @@ router.get("/build-template", async (req, res) => {
     console.error("Error copying template:", error);
   }
   try {
-    const sourceDir = path.resolve(__dirname, "/var/images/hotel" + hotelId);
-    const targetDir = `/var/www/template${templateId}/user${hotelId}/img`;
-
+    const sourceDir = path.resolve(
+      __dirname,
+      "/var/images/organization" + organization_id + "/property" + hotelId
+    );
+    const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`;
+    console.log("sourceDir", sourceDir);
+    console.log("targetDir", targetDir);
     await fs.mkdir(targetDir, { recursive: true });
     await fs.cp(sourceDir, targetDir, { recursive: true });
   } catch (error) {
@@ -506,7 +517,7 @@ router.get("/build-template", async (req, res) => {
       }
     }
 
-    const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
+    const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
 
     const data = {
       "#hotelURL": hotelURL,
@@ -545,12 +556,31 @@ router.get("/build-template", async (req, res) => {
       "#aboutHeaderImage": result.rows[0].details.aboutHeaderImage,
     };
 
-    buildTemplate(data, hotelId, templateId);
-    buildTemplateGallery(data, hotelId, templateId, result);
-    buildTemplateReservation(data, hotelId, templateId);
-    buildTemplateAbout(data, hotelId, templateId);
-    buildTemplateContactUs(data, hotelId, templateId);
-    generateNginxConfig(hotelId, templateId);
+    await buildTemplate(data, hotelId, templateId, organization_id, pool);
+    await buildTemplateGallery(
+      data,
+      hotelId,
+      templateId,
+      result,
+      organization_id,
+      pool
+    );
+    await buildTemplateReservation(
+      data,
+      hotelId,
+      templateId,
+      organization_id,
+      pool
+    );
+    await buildTemplateAbout(data, hotelId, templateId, organization_id, pool);
+    await buildTemplateContactUs(
+      data,
+      hotelId,
+      templateId,
+      organization_id,
+      pool
+    );
+    await generateNginxConfig(hotelId, templateId, organization_id, pool);
 
     res.json({
       message: "Template built successfully",
@@ -560,7 +590,13 @@ router.get("/build-template", async (req, res) => {
   }
 });
 
-const buildTemplate = async (data, hotelId, templateId) => {
+const buildTemplate = async (
+  data,
+  hotelId,
+  templateId,
+  organization_id,
+  pool
+) => {
   const templatePath = `./template/temp${templateId}/index.html`;
   const template = await fs.readFile(templatePath, "utf8");
 
@@ -569,13 +605,20 @@ const buildTemplate = async (data, hotelId, templateId) => {
     (placeholder) => data[placeholder] || ""
   );
 
-  const outputPath = `/var/www/template${templateId}/user${hotelId}/index.html`;
+  const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/index.html`;
   await fs.writeFile(outputPath, result, "utf8");
 
   console.log("Template built successfully");
 };
 
-const buildTemplateGallery = async (data, hotelId, templateId, result) => {
+const buildTemplateGallery = async (
+  data,
+  hotelId,
+  templateId,
+  result,
+  organization_id,
+  pool
+) => {
   const templatePath = `./template/temp${templateId}/gallery.html`;
   const template = await fs.readFile(templatePath, "utf8");
 
@@ -730,10 +773,16 @@ const buildTemplateGallery = async (data, hotelId, templateId, result) => {
     (placeholder) => data2[placeholder] || ""
   );
 
-  const outputPath = `/var/www/template${templateId}/user${hotelId}/gallery.html`;
+  const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/gallery.html`;
   await fs.writeFile(outputPath, result2, "utf8");
 };
-const buildTemplateReservation = async (data, hotelId, templateId) => {
+const buildTemplateReservation = async (
+  data,
+  hotelId,
+  templateId,
+  organization_id,
+  pool
+) => {
   const templatePath = `./template/temp${templateId}/reservation.html`;
   const template = await fs.readFile(templatePath, "utf8");
 
@@ -742,13 +791,19 @@ const buildTemplateReservation = async (data, hotelId, templateId) => {
     (placeholder) => data[placeholder] || ""
   );
 
-  const outputPath = `/var/www/template${templateId}/user${hotelId}/reservation.html`;
+  const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/reservation.html`;
   await fs.writeFile(outputPath, result, "utf8");
 
   console.log("Template built successfully");
 };
 
-const buildTemplateAbout = async (data, hotelId, templateId) => {
+const buildTemplateAbout = async (
+  data,
+  hotelId,
+  templateId,
+  organization_id,
+  pool
+) => {
   const templatePath = `./template/temp${templateId}/about.html`;
   const template = await fs.readFile(templatePath, "utf8");
 
@@ -757,13 +812,19 @@ const buildTemplateAbout = async (data, hotelId, templateId) => {
     (placeholder) => data[placeholder] || ""
   );
 
-  const outputPath = `/var/www/template${templateId}/user${hotelId}/about.html`;
+  const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/about.html`;
   await fs.writeFile(outputPath, result, "utf8");
 
   console.log("Template built successfully");
 };
 
-const buildTemplateContactUs = async (data, hotelId, templateId) => {
+const buildTemplateContactUs = async (
+  data,
+  hotelId,
+  templateId,
+  organization_id,
+  pool
+) => {
   const templatePath = `./template/temp${templateId}/contact.html`;
   const template = await fs.readFile(templatePath, "utf8");
 
@@ -772,7 +833,7 @@ const buildTemplateContactUs = async (data, hotelId, templateId) => {
     (placeholder) => data[placeholder] || ""
   );
 
-  const outputPath = `/var/www/template${templateId}/user${hotelId}/contact.html`;
+  const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/contact.html`;
   await fs.writeFile(outputPath, result, "utf8");
 
   console.log("Template built successfully");
@@ -782,9 +843,14 @@ const buildTemplateContactUs = async (data, hotelId, templateId) => {
 
 const { exec } = require("child_process");
 
-const generateNginxConfig = async (hotelId, templateId) => {
+const generateNginxConfig = async (
+  hotelId,
+  templateId,
+  organization_id,
+  pool
+) => {
   const getSiteName = await pool.query(
-    "SELECT url FROM hotelinfo WHERE id = $1",
+    "SELECT url FROM operation_property WHERE id = $1",
     [hotelId]
   );
   const domain = getSiteName.rows[0].url
@@ -792,7 +858,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
     .replace(/\/$/, "");
 
   const nginxFileExist = fssync.existsSync(
-    `/etc/nginx/sites-available/template${templateId}-user${hotelId}`
+    `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-property${hotelId}`
   );
 
   if (nginxFileExist) {
@@ -803,7 +869,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
   server {
     listen 80;
     server_name ${domain};
-    root /var/www/template${templateId}/user${hotelId};
+    root /var/www/template${templateId}/organization${organization_id}/property${hotelId};
     index index.html;
     location / {
       try_files $uri $uri/ /index.html;
@@ -811,7 +877,7 @@ const generateNginxConfig = async (hotelId, templateId) => {
   }
   `;
 
-  const configPath = `/etc/nginx/sites-available/template${templateId}-user${hotelId}`;
+  const configPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-property${hotelId}`;
 
   fssync.writeFileSync(configPath, nginxConfig);
 
@@ -829,15 +895,21 @@ const generateNginxConfig = async (hotelId, templateId) => {
           return;
         }
         console.log("nginx file successfully created");
-        addPublishDetails(hotelId, templateId, domain);
-        addSslCertificate(hotelId, templateId, domain);
+        addPublishDetails(hotelId, templateId, domain, organization_id, pool);
+        addSslCertificate(hotelId, templateId, domain, organization_id, pool);
       });
     }
   );
 };
 
 // // add ssl certificate
-const addPublishDetails = async (hotelId, templateId, domain) => {
+const addPublishDetails = async (
+  hotelId,
+  templateId,
+  domain,
+  organization_id,
+  pool
+) => {
   const publishDetails = {
     hotelId,
     templateId,
@@ -851,8 +923,8 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
 
     if (!addedAlredy.rows.length > 0) {
       const data = await pool.query(
-        "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
-        [hotelId, templateId, domain]
+        "INSERT INTO webtemplates (hotelid, templateid, website,organization_id) VALUES ($1, $2, $3)",
+        [hotelId, templateId, domain, organization_id]
       );
       console.log("Publish details added successfully");
     }
@@ -861,7 +933,13 @@ const addPublishDetails = async (hotelId, templateId, domain) => {
   }
 };
 
-const addSslCertificate = (hotelId, templateId, domain) => {
+const addSslCertificate = (
+  hotelId,
+  templateId,
+  domain,
+  organization_id,
+  pool
+) => {
   exec(
     `sudo certbot certificates --domain ${domain}`,
     (checkError, checkStdout, checkStderr) => {

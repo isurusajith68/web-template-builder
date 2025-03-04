@@ -2,6 +2,7 @@ const gallery = Vue.createApp({
   data() {
     return {
       hotelId: null,
+      orgId: null,
       templateId: 1,
       title: "Site Name",
       email: "Site email",
@@ -55,7 +56,7 @@ const gallery = Vue.createApp({
     async removeImageFromServer(imageName) {
       try {
         const response = await fetch(
-          "http://localhost:4000/temp1/remove-image",
+          "https://webtemplateapi.ceyinfo.com/temp1/remove-image",
           {
             method: "DELETE",
             headers: {
@@ -105,7 +106,7 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             body: formData,
@@ -155,7 +156,7 @@ const gallery = Vue.createApp({
       this.isLoading = "Saving...";
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             headers: {
@@ -198,9 +199,12 @@ const gallery = Vue.createApp({
     },
     async hotelInfo() {
       try {
-        const response = await fetch(`http://localhost:4000/temp1/hotel-info`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
+          {
+            credentials: "include",
+          }
+        );
         if (!response.ok) {
           const err = await response.json();
 
@@ -216,10 +220,13 @@ const gallery = Vue.createApp({
           console.log("Hotel info fetched successfully:", result);
 
           if (result) {
+            console.log("result", result.data.name);
             this.title = result.data.name;
             this.email = result.data.email;
             this.phoneNumber = result.data.mobile;
             this.address = result.data.address1;
+            this.hotelId = result.data.id;
+            this.orgId = result.data.orgId;
           }
         }
       } catch (error) {
@@ -231,7 +238,7 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }

@@ -5,6 +5,7 @@ const path = require("path");
 const fssync = require("fs");
 const temp1 = express.Router();
 const { exec } = require("child_process");
+
 temp1.get("/site-details", async (req, res) => {
   const pool = req.tenantPool;
   const propertyId = req.propertyId;
@@ -48,8 +49,13 @@ temp1.get("/hotel-info", async (req, res) => {
       });
     }
 
+    const data = {
+      ...result.rows[0],
+      orgId: req.organization_id,
+    };
+
     res.send({
-      data: result.rows[0],
+      data: data,
       message: "Hotel information loaded successfully",
     });
   } catch (error) {
@@ -244,7 +250,7 @@ temp1.get("/build-template", async (req, res) => {
       }
     }
 
-    const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
+    const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
 
     const data = {
       "#hotelURL": hotelURL,
@@ -741,9 +747,7 @@ const buildTemplate = async (
             <p class="text-body mb-3">Recommended for 2 adults</p>
             <div class="d-flex justify-content-between">
               <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
-              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&room=${
-          room.roomno
-        }">Book Now</a>
+              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
             </div>
           </div>
         </div>
@@ -751,6 +755,7 @@ const buildTemplate = async (
     `;
       })
       .join("");
+    const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
 
     const data2 = {
       ...data,
@@ -888,13 +893,15 @@ const buildTemplateBooking = async (
     let params = "";
 
     const hotelId = ${hotelId};
+    const orgId = ${organization_id};
 
     const checkin = document.getElementById("checkin")?.value || "";
     const checkout = document.getElementById("checkout")?.value || "";
    
 
-    params += \`hotelId=\${encodeURIComponent(hotelId)}\`;
-   
+    params += \`&orgId=\${encodeURIComponent(orgId)}\`;
+    params += \`p_id=\${encodeURIComponent(hotelId)}\`;
+    
     if (checkin) params += \`&checkin=\${encodeURIComponent(checkin)}\`;
     if (checkout) params += \`&checkout=\${encodeURIComponent(checkout)}\`;
 
@@ -902,7 +909,7 @@ const buildTemplateBooking = async (
   }
 
   document.getElementById("bookingLink").addEventListener("click", function () {
-    const baseUrl = "https://webbookings.ceyinfo.cloud";
+    const baseUrl = "https://web-booking.ceyinfo.com";
     const dynamicParams = otherParms();
     const finalUrl = \`\${baseUrl}?\${dynamicParams}\`;
     window.location.href = finalUrl;
@@ -1127,9 +1134,7 @@ const buildTemplateHotelRooms = async (
             <p class="text-body mb-3">Recommended for 2 adults</p>
             <div class="d-flex justify-content-between">
               <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
-              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&room=${
-          room.roomno
-        }"
+              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}"
               >Book Now</a>
             </div>
           </div>

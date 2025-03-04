@@ -2,6 +2,7 @@ const app = Vue.createApp({
   data() {
     return {
       hotelId: null,
+      orgId: null,
       templateId: 2,
       title: "Click to edit site name",
       carouselImages: [
@@ -570,13 +571,16 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...";
 
       try {
-        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/rooms-info`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
+        const response = await fetch(
+          `https://webtemplateapi.ceyinfo.com/temp1/rooms-info`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
           const errorText = await response.json();
@@ -618,24 +622,34 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/hotel-info`, {
-          credentials: "include",
-        });
-
+        const response = await fetch(
+          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
+          {
+            credentials: "include",
+          }
+        );
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error fetching hotel info:", errorText);
+          const err = await response.json();
+
+          console.error("Error fetching hotel info:", err);
+          console.log(err);
+          this.isLoading = null;
+          this.isError = err.message;
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
         } else {
           const result = await response.json();
-          // console.log("Hotel info ", result);
+          console.log("Hotel info fetched successfully:", result);
 
           if (result) {
+            console.log("result", result.data.name);
             this.title = result.data.name;
             this.email = result.data.email;
             this.phoneNumber = result.data.mobile;
-            this.address =
-              result.data.address1 +
-              (result.data.address2 ? ",<br>" + result.data.address2 : "");
+            this.address = result.data.address1;
+            this.hotelId = result.data.id;
+            this.orgId = result.data.orgId;
           }
         }
       } catch (error) {

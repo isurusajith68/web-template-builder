@@ -188,8 +188,7 @@ app.get("/build-template", async (req, res) => {
       message: "hotelId and templateId are required",
     });
   }
-
-});//ss
+}); //ss
 //   try {
 //     const targetDir = `/var/www/template${templateId}/user${hotelId}`;
 
@@ -244,7 +243,7 @@ app.get("/build-template", async (req, res) => {
 //       }
 //     }
 
-//     const hotelURL = `https://webbookings.ceyinfo.cloud?hotelId=${hotelId}`;
+//     const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
 
 //     const data = {
 //       "#hotelURL": hotelURL,
@@ -536,7 +535,7 @@ app.get("/build-template", async (req, res) => {
 
 //     const result = await pool.query(
 //       `
-//       SELECT 
+//       SELECT
 //     htrm.hotelid,
 //     htrm.roomviewid,
 //     htrm.roomtypeid,
@@ -546,30 +545,30 @@ app.get("/build-template", async (req, res) => {
 //     hrp.fbprice,
 //     ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
 //     ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
-// FROM 
+// FROM
 //     hotelrooms htrm
-// JOIN 
+// JOIN
 //     hotelroomview hrv ON htrm.roomviewid = hrv.id
-// JOIN 
+// JOIN
 //     hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
-// JOIN 
-//     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
+// JOIN
+//     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid
 //     AND htrm.roomtypeid = hrp.roomtypeid
-// LEFT JOIN 
+// LEFT JOIN
 //     roomamenitydetails ram ON htrm.id = ram.roomid
-// LEFT JOIN 
+// LEFT JOIN
 //     roomamenities amn ON ram.amenityid = amn.id
-// LEFT JOIN 
+// LEFT JOIN
 //     roomimages ri ON htrm.id = ri.roomid
-// WHERE 
+// WHERE
 //     htrm.hotelid = $1
-// GROUP BY 
-//     htrm.hotelid, 
-//     htrm.roomviewid, 
-//     htrm.roomtypeid, 
+// GROUP BY
+//     htrm.hotelid,
+//     htrm.roomviewid,
+//     htrm.roomtypeid,
 //     htrm.roomno,
 //     hrv.label,
-//     hrt.label, 
+//     hrt.label,
 //     hrp.fbprice;
 //   `,
 //       [hotelId]
@@ -600,7 +599,7 @@ app.get("/build-template", async (req, res) => {
 
 //     const rooms = await pool.query(
 //       `
-//       SELECT 
+//       SELECT
 //     htrm.hotelid,
 //     htrm.roomviewid,
 //     htrm.roomtypeid,
@@ -611,31 +610,31 @@ app.get("/build-template", async (req, res) => {
 //     hrp.fbprice,
 //     ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
 //     ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
-// FROM 
+// FROM
 //     hotelrooms htrm
-// JOIN 
+// JOIN
 //     hotelroomview hrv ON htrm.roomviewid = hrv.id
-// JOIN 
+// JOIN
 //     hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
-// JOIN 
-//     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
+// JOIN
+//     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid
 //     AND htrm.roomtypeid = hrp.roomtypeid
-// LEFT JOIN 
+// LEFT JOIN
 //     roomamenitydetails ram ON htrm.id = ram.roomid
-// LEFT JOIN 
+// LEFT JOIN
 //     roomamenities amn ON ram.amenityid = amn.id
-// LEFT JOIN 
+// LEFT JOIN
 //     roomimages ri ON htrm.id = ri.roomid
-// WHERE 
+// WHERE
 //     htrm.hotelid = $1
-// GROUP BY 
-//     htrm.hotelid, 
-//     htrm.roomviewid, 
-//     htrm.roomtypeid, 
+// GROUP BY
+//     htrm.hotelid,
+//     htrm.roomviewid,
+//     htrm.roomtypeid,
 //     htrm.roomno,
-//     htrm.noofbed, 
+//     htrm.noofbed,
 //     hrv.label,
-//     hrt.label, 
+//     hrt.label,
 //     hrp.fbprice;
 // `,
 //       [hotelId]
@@ -701,7 +700,7 @@ app.get("/build-template", async (req, res) => {
 //             <p class="text-body mb-3">Recommended for 2 adults</p>
 //             <div class="d-flex justify-content-between">
 //               <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
-//               <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&room=${
+//               <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com/?hotelId=${hotelId}&room=${
 //           room.roomno
 //         }">Book Now</a>
 //             </div>
@@ -827,10 +826,9 @@ app.get("/build-template", async (req, res) => {
 
 //     const checkin = document.getElementById("checkin")?.value || "";
 //     const checkout = document.getElementById("checkout")?.value || "";
-   
 
 //     params += \`hotelId=\${encodeURIComponent(hotelId)}\`;
-   
+
 //     if (checkin) params += \`&checkin=\${encodeURIComponent(checkin)}\`;
 //     if (checkout) params += \`&checkout=\${encodeURIComponent(checkout)}\`;
 
@@ -838,7 +836,7 @@ app.get("/build-template", async (req, res) => {
 //   }
 
 //   document.getElementById("bookingLink").addEventListener("click", function () {
-//     const baseUrl = "https://webbookings.ceyinfo.cloud";
+//     const baseUrl = "https://web-booking.ceyinfo.com";
 //     const dynamicParams = otherParms();
 //     const finalUrl = \`\${baseUrl}?\${dynamicParams}\`;
 //     window.location.href = finalUrl;
@@ -949,7 +947,7 @@ app.get("/build-template", async (req, res) => {
 //   try {
 //     const rooms = await pool.query(
 //       `
-//       SELECT 
+//       SELECT
 //     htrm.hotelid,
 //     htrm.roomviewid,
 //     htrm.roomtypeid,
@@ -960,31 +958,31 @@ app.get("/build-template", async (req, res) => {
 //     hrp.fbprice,
 //     ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
 //     ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
-// FROM 
+// FROM
 //     hotelrooms htrm
-// JOIN 
+// JOIN
 //     hotelroomview hrv ON htrm.roomviewid = hrv.id
-// JOIN 
+// JOIN
 //     hotelroomtypes hrt ON htrm.roomtypeid = hrt.id
-// JOIN 
-//     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid 
+// JOIN
+//     hotelroomprices hrp ON htrm.roomviewid = hrp.roomviewid
 //     AND htrm.roomtypeid = hrp.roomtypeid
-// LEFT JOIN 
+// LEFT JOIN
 //     roomamenitydetails ram ON htrm.id = ram.roomid
-// LEFT JOIN 
+// LEFT JOIN
 //     roomamenities amn ON ram.amenityid = amn.id
-// LEFT JOIN 
+// LEFT JOIN
 //     roomimages ri ON htrm.id = ri.roomid
-// WHERE 
+// WHERE
 //     htrm.hotelid = $1
-// GROUP BY 
-//     htrm.hotelid, 
-//     htrm.roomviewid, 
-//     htrm.roomtypeid, 
+// GROUP BY
+//     htrm.hotelid,
+//     htrm.roomviewid,
+//     htrm.roomtypeid,
 //     htrm.roomno,
-//     htrm.noofbed, 
+//     htrm.noofbed,
 //     hrv.label,
-//     hrt.label, 
+//     hrt.label,
 //     hrp.fbprice;
 // `,
 //       [hotelId]
@@ -1049,7 +1047,7 @@ app.get("/build-template", async (req, res) => {
 //             <p class="text-body mb-3">Recommended for 2 adults</p>
 //             <div class="d-flex justify-content-between">
 //               <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
-//               <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://webbookings.ceyinfo.cloud/?hotelId=${hotelId}&room=${
+//               <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com/?hotelId=${hotelId}&room=${
 //           room.roomno
 //         }"
 //               >Book Now</a>

@@ -2,6 +2,7 @@ const app = Vue.createApp({
   data() {
     return {
       hotelId: null,
+      orgId: null,
       templateId: 1,
       title: "Site Name",
       email: "Site email",
@@ -54,7 +55,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -161,7 +162,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          "http://localhost:4000/temp1/save-site-details",
+          "https://webtemplateapi.ceyinfo.com/temp1/save-site-details",
           {
             method: "POST",
             headers: {
@@ -209,24 +210,33 @@ const app = Vue.createApp({
     async hotelInfo() {
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/hotel-info?hotelId=${this.hotelId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
           {
             credentials: "include",
           }
         );
-
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error fetching hotel info:", errorText);
+          const err = await response.json();
+
+          console.error("Error fetching hotel info:", err);
+          console.log(err);
+          this.isLoading = null;
+          this.isError = err.message;
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
         } else {
           const result = await response.json();
           console.log("Hotel info fetched successfully:", result);
 
           if (result) {
+            console.log("result", result.data.name);
             this.title = result.data.name;
             this.email = result.data.email;
             this.phoneNumber = result.data.mobile;
             this.address = result.data.address1;
+            this.hotelId = result.data.id;
+            this.orgId = result.data.orgId;
           }
         }
       } catch (error) {

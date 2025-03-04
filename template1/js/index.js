@@ -2,6 +2,7 @@ const app = Vue.createApp({
   data() {
     return {
       hotelId: null,
+      orgId: null,
       templateId: 1,
       title: "Site Name",
       email: "Site email",
@@ -290,10 +291,12 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/hotel-info`, {
-          credentials: "include",
-        });
-        console.log(response);
+        const response = await fetch(
+          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
+          {
+            credentials: "include",
+          }
+        );
         if (!response.ok) {
           const err = await response.json();
 
@@ -314,6 +317,8 @@ const app = Vue.createApp({
             this.email = result.data.email;
             this.phoneNumber = result.data.mobile;
             this.address = result.data.address1;
+            this.hotelId = result.data.id;
+            this.orgId = result.data.orgId;
           }
         }
       } catch (error) {
@@ -325,9 +330,12 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...";
 
       try {
-        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/rooms-info`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `https://webtemplateapi.ceyinfo.com/temp1/rooms-info`,
+          {
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
           const errorText = await response.json();
