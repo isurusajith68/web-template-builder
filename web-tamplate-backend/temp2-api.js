@@ -318,9 +318,7 @@ const buildTemplate = async (
       return `<div class="single_rooms">
                 <div class="room_thumb  ">
                    <img src="${
-                     room.imagenames
-                       ? "img/" + room.imagenames[0]
-                       : "img/rooms/1.png"
+                     room.imagenames ? room.imagenames[0] : "img/rooms/1.png"
                    }" alt="" style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center" style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
                          <div class="room_heading_inner">
@@ -479,7 +477,7 @@ const buildTemplateHotelRooms = async (
   const offersHtml2 = offersHtml.map(
     (offer) => `
       <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;">
-        <img src="img/${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
+        <img src="${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
         </div>
       `
   );
@@ -536,9 +534,7 @@ const buildTemplateHotelRooms = async (
       return `<div class="single_rooms">
                 <div class="room_thumb  ">
                   <img src="${
-                    room.imagenames
-                      ? "img/" + room.imagenames[0]
-                      : "img/rooms/1.png"
+                    room.imagenames ? room.imagenames[0] : "img/rooms/1.png"
                   }" alt="" style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center" style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
                          <div class="room_heading_inner">

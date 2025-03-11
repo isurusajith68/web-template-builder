@@ -241,7 +241,7 @@
 
                 <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;"
                     v-for="offer in offers" :key="offer.id">
-                    <img :src="'img/' + offer.offerimage" alt="Offer Image" class="img-fluid"
+                    <img :src="offer.offerimage" alt="Offer Image" class="img-fluid"
                         style="max-width: 700px;min-width: 700px; height: auto; object-fit: cover;">
                 </div>
 

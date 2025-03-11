@@ -28,6 +28,7 @@ app.use(
       "https://temp1.ceyinfo.com",
       "https://temp2.ceyinfo.com",
       "https://temp3.ceyinfo.com",
+      "https://.ceyinfo.com",
     ],
     credentials: true,
   })

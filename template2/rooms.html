@@ -135,7 +135,7 @@
         <div class="rooms_here">
             <div class="single_rooms" v-for="(room, index) in roomsDetails" :key="index">
                 <div class="room_thumb">
-                    <img :src="room.imagenames ? 'img/' + room.imagenames[0] : 'img/rooms/1.png'" alt=""
+                    <img :src="room.imagenames ? room.imagenames[0] : 'img/rooms/1.png'" alt=""
                         style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center"
                         style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
@@ -149,7 +149,8 @@
                                 Amenities: {{ room.roomamenities.join(', ') }}
                             </p>
                         </div>
-                        <a :href="`https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`" class="line-button">book
+                        <a :href="`https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`"
+                            class="line-button">book
                             now</a>
                     </div>
                 </div>
@@ -180,7 +181,7 @@
             </div>
             <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;"
                 v-for="offer in offers" :key="offer.id">
-                <img :src="'img/' + offer.offerimage" alt="Offer Image" class="img-fluid"
+                <img :src="offer.offerimage" alt="Offer Image" class="img-fluid"
                     style="max-width: 700px;min-width: 700px; height: auto; object-fit: cover;">
             </div>
 

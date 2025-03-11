@@ -204,19 +204,20 @@ temp1.get("/build-template", async (req, res) => {
     console.error("Error copying template:", error);
   }
 
-  try {
-    const sourceDir = path.resolve(
-      __dirname,
-      "/var/images/organization" + organization_id + "/property" + hotelId
-    );
-    const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`;
-    console.log("sourceDir", sourceDir);
-    console.log("targetDir", targetDir);
-    await fs.mkdir(targetDir, { recursive: true });
-    await fs.cp(sourceDir, targetDir, { recursive: true });
-  } catch (error) {
-    console.error("Error copying hotel images:", error);
-  }
+  // try {
+  //   const sourceDir = path.resolve(
+  //     __dirname,
+  //     "/var/images/organization" + organization_id + "/property" + hotelId
+  //   );
+  //   const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`;
+  //   console.log("sourceDir", sourceDir);
+  //   console.log("targetDir", targetDir);
+  //   await fs.mkdir(targetDir, { recursive: true });
+
+  //   await fs.cp(sourceDir, targetDir, { recursive: true });
+  // } catch (error) {
+  //   console.error("Error copying hotel images:", error);
+  // }
 
   try {
     const result = await pool.query(
@@ -696,7 +697,7 @@ const buildTemplate = async (
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
-            <img class="img-fluid w-100" style="height: 250px;" src="img/${
+            <img class="img-fluid w-100" style="height: 250px;" src="${
               room.imagenames[0]
             }" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
@@ -936,7 +937,7 @@ const buildTemplateBooking = async (
   console.log("Template built successfully");
 };
 
-buildTemplateAttraction = async (
+const buildTemplateAttraction = async (
   result,
   hotelId,
   templateId,
@@ -1083,7 +1084,7 @@ const buildTemplateHotelRooms = async (
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
-            <img class="img-fluid w-100" style="height: 250px;"  src="img/${
+            <img class="img-fluid w-100" style="height: 250px;"  src="${
               room.imagenames[0]
             }" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
@@ -1229,7 +1230,7 @@ const buildTemplateSpecialOffers = async (
     const offersHtml2 = offersHtml.map(
       (offer) => `
       <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;">
-        <img src="img/${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
+        <img src="${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
         </div>
       `
     );
@@ -1259,83 +1260,76 @@ const generateNginxConfig = async (
   pool,
   organization_id
 ) => {
-  console.log(
-    hotelId,
-    templateId,
-    pool,
-    organization_id,
-    "generateNginxConfig"
-  );
-  const getSiteName = await pool.query(
-    "SELECT url FROM org_34.operation_property WHERE id = $1",
-    [hotelId]
-  );
-  // console.log(getSiteName);
+  try {
+    const { rows } = await pool.query(
+      "SELECT url FROM operation_property WHERE id = $1",
+      [hotelId]
+    );
 
-  if (getSiteName.rows[0].url === null) {
-    return console.log("website name not found");
-  }
-
-  const nginxFileExist = fssync.existsSync(
-    `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`
-  );
-
-  if (nginxFileExist) {
-    return console.log("nginx file exist");
-  }
-
-  if (!getSiteName.rows[0]) {
-    return console.log("website name not found");
-  }
-
-  // http and https remove
-
-  const domain = getSiteName.rows[0].url
-    .replace(/https?:\/\//, "")
-    .replace(/\/$/, "");
-
-  const nginxConfig = `
-  server {
-    listen 80;
-    server_name ${domain};
-    root /var/www/template${templateId}/organization${organization_id}/property${hotelId};
-    index index.html;
-    location / {
-      try_files $uri $uri/ /index.html;
+    if (!rows.length || !rows[0].url) {
+      console.log("Website domain not found.");
+      return;
     }
-  }
-  `;
 
-  const configPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`;
+    const domain = rows[0].url.replace(/https?:\/\//, "").replace(/\/$/, "");
+    const configPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`;
 
-  fssync.writeFileSync(configPath, nginxConfig);
-
-  exec(
-    `echo 'Calgary$8' | sudo ln -s ${configPath} /etc/nginx/sites-enabled/`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-
-      exec(
-        "echo 'Calgary$8' | sudo -S systemctl restart nginx",
-        (error, stdout, stderr) => {
-          if (error) {
-            console.error(`exec error: ${error}`);
-            return;
-          }
-          console.log("nginx file successfully created");
-
-          addPublishDetails(hotelId, templateId, domain, pool, organization_id);
-
-          addSslCertificate(hotelId, templateId, domain, pool, organization_id);
-        }
+    if (fs.existsSync(configPath)) {
+      console.log("Nginx config already exists. Skipping creation.");
+      await addPublishDetails(
+        hotelId,
+        templateId,
+        domain,
+        pool,
+        organization_id
       );
+      await addSslCertificate(hotelId, templateId, domain);
+      return;
     }
-  );
+
+    const nginxConfig = `
+    server {
+      listen 80;
+      server_name ${domain};
+      root /var/www/template${templateId}/organization${organization_id}/property${hotelId};
+      index index.html;
+      location / {
+        try_files $uri $uri/ /index.html;
+      }
+    }
+    `;
+
+    fs.writeFileSync(configPath, nginxConfig);
+    await exec(`sudo ln -sf ${configPath} /etc/nginx/sites-enabled/`);
+    await exec("sudo systemctl restart nginx");
+    console.log("Nginx restarted successfully.");
+
+    await addPublishDetails(hotelId, templateId, domain, pool, organization_id);
+    await addSslCertificate(hotelId, templateId, domain);
+  } catch (error) {
+    console.error("Error generating Nginx config:", error);
+  }
 };
 
+const addSslCertificate = async (hotelId, templateId, domain) => {
+  try {
+    const { stdout } = await exec(
+      `sudo certbot certificates --domain ${domain}`
+    );
+    if (stdout.includes(`Certificate Name: ${domain}`)) {
+      console.log("SSL certificate already exists.");
+      return;
+    }
+
+    await exec(`sudo certbot --nginx -d ${domain}`);
+    console.log("SSL certificate installed successfully.");
+
+    await exec("sudo systemctl restart nginx");
+    console.log("Nginx restarted with SSL.");
+  } catch (error) {
+    console.error("Error handling SSL certificate:", error);
+  }
+};
 const addPublishDetails = async (
   hotelId,
   templateId,
@@ -1367,62 +1361,6 @@ const addPublishDetails = async (
   } catch (error) {
     console.log(error);
   }
-};
-
-const addSslCertificate = (
-  hotelId,
-  templateId,
-  domain,
-  pool,
-  organization_id
-) => {
-  exec(
-    `echo 'Calgary$8' | sudo -S certbot certificates --domain ${domain}`,
-    (checkError, checkStdout, checkStderr) => {
-      if (checkError) {
-        console.error(`Error checking certificate: ${checkError}`);
-        console.error(`stderr: ${checkStderr}`);
-        return;
-      }
-
-      const certificateExists = checkStdout.includes(
-        `Certificate Name: ${domain}`
-      );
-
-      const certbotCommand = certificateExists
-        ? `echo 'Calgary$8' | sudo -S certbot --nginx -d ${domain} --reinstall`
-        : `echo 'Calgary$8' | sudo -S certbot --nginx -d ${domain}`;
-
-      console.log(`Running Certbot command: ${certbotCommand}`);
-
-      exec(certbotCommand, (certError, certStdout, certStderr) => {
-        if (certError) {
-          console.error(`Error handling SSL certificate: ${certError}`);
-          console.error(`stderr: ${certStderr}`);
-          return;
-        }
-
-        console.log(certStdout);
-
-        exec(
-          "echo 'Calgary$8' | sudo -S systemctl restart nginx",
-          (nginxError, nginxStdout, nginxStderr) => {
-            if (nginxError) {
-              console.error(`Error restarting Nginx: ${nginxError}`);
-              console.error(`stderr: ${nginxStderr}`);
-              return;
-            }
-
-            console.log(
-              `SSL certificate ${
-                certificateExists ? "reinstalled" : "installed"
-              } successfully for ${domain}`
-            );
-          }
-        );
-      });
-    }
-  );
 };
 
 module.exports = temp1;

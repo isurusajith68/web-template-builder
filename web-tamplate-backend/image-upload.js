@@ -18,8 +18,8 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const hotelid = req.body.propertyId || "unknown";
-    const organization_id = req.body.organization_id || "unknown";
+    const hotelid = req.propertyId || "unknown";
+    const organization_id = req.organization_id || "unknown";
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const filename = `${hotelid}_${organization_id}_${
       file.fieldname
@@ -37,8 +37,9 @@ imageUpload.post(
   async (req, res) => {
     try {
       const files = req.files;
-      const propertyId = req.body.propertyId || "unknown";
-      const organization_id = req.body.organization_id || "unknown";
+      console.log(req.propertyId, req.organization_id);
+      const propertyId = req.propertyId || "unknown";
+      const organization_id = req.organization_id || "unknown";
 
       if (!files || files.length === 0) {
         return res.status(400).send({
@@ -67,5 +68,10 @@ imageUpload.post(
     }
   }
 );
+
+//test route
+imageUpload.get("/test", (req, res) => {
+  res.send("test api");
+});
 
 module.exports = imageUpload;
