@@ -179,7 +179,12 @@ const ensureDirectoryExistence = (dir) => {
     fssync.mkdirSync(dir, { recursive: true });
   }
 };
-const ensureDirectoryExistence2 = async (dir, templateId, hotelId) => {
+const ensureDirectoryExistence2 = async (
+  dir,
+  templateId,
+  hotelId,
+  organization_id
+) => {
   if (!fssync.existsSync(dir)) {
     try {
       const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}`;

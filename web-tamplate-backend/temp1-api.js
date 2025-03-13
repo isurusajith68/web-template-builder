@@ -1253,7 +1253,6 @@ const buildTemplateSpecialOffers = async (
     console.error("Error building template:", error);
   }
 };
-
 const generateNginxConfig = async (
   hotelId,
   templateId,
@@ -1274,7 +1273,7 @@ const generateNginxConfig = async (
     const domain = rows[0].url.replace(/https?:\/\//, "").replace(/\/$/, "");
     const configPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`;
 
-    if (fs.existsSync(configPath)) {
+    if (fssync.existsSync(configPath)) {
       console.log("Nginx config already exists. Skipping creation.");
       await addPublishDetails(
         hotelId,
@@ -1299,7 +1298,7 @@ const generateNginxConfig = async (
     }
     `;
 
-    fs.writeFileSync(configPath, nginxConfig);
+    fssync.writeFileSync(configPath, nginxConfig);
     await exec(`sudo ln -sf ${configPath} /etc/nginx/sites-enabled/`);
     await exec("sudo systemctl restart nginx");
     console.log("Nginx restarted successfully.");
@@ -1310,10 +1309,11 @@ const generateNginxConfig = async (
     console.error("Error generating Nginx config:", error);
   }
 };
-
+const util = require("util");
+const exec2 = util.promisify(require("child_process").exec);
 const addSslCertificate = async (hotelId, templateId, domain) => {
   try {
-    const { stdout } = await exec(
+    const { stdout } = await exec2(
       `sudo certbot certificates --domain ${domain}`
     );
     if (stdout.includes(`Certificate Name: ${domain}`)) {
@@ -1321,10 +1321,10 @@ const addSslCertificate = async (hotelId, templateId, domain) => {
       return;
     }
 
-    await exec(`sudo certbot --nginx -d ${domain}`);
+    await exec2(`sudo certbot --nginx -d ${domain}`);
     console.log("SSL certificate installed successfully.");
 
-    await exec("sudo systemctl restart nginx");
+    await exec2("sudo systemctl restart nginx");
     console.log("Nginx restarted with SSL.");
   } catch (error) {
     console.error("Error handling SSL certificate:", error);

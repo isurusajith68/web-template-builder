@@ -5,7 +5,8 @@ const fs = require("fs/promises");
 const path = require("path");
 const fssync = require("fs");
 const multer = require("multer");
-
+const util = require("util");
+const exec = util.promisify(require("child_process").exec);
 router.get("/test", (req, res) => {
   res.send("test api temp 2");
 });
@@ -136,19 +137,19 @@ router.get("/build-template", async (req, res) => {
     console.error("Error copying template:", error);
   }
 
-  try {
-    //copy hotel image folder
-    const sourceDir = path.resolve(
-      __dirname,
-      "/var/images/organization" + organization_id + "/property" + hotelId
-    );
-    const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`;
+  // try {
+  //   //copy hotel image folder
+  //   const sourceDir = path.resolve(
+  //     __dirname,
+  //     "/var/images/organization" + organization_id + "/property" + hotelId
+  //   );
+  //   const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`;
 
-    await fs.mkdir(targetDir, { recursive: true });
-    await fs.cp(sourceDir, targetDir, { recursive: true });
-  } catch (error) {
-    console.error("Error copying hotel images:", error);
-  }
+  //   await fs.mkdir(targetDir, { recursive: true });
+  //   await fs.cp(sourceDir, targetDir, { recursive: true });
+  // } catch (error) {
+  //   console.error("Error copying hotel images:", error);
+  // }
 
   try {
     const result = await pool.query(
@@ -699,67 +700,81 @@ const buildTemplateContactUs = async (
 };
 
 //  // generate nginx config file for the built template
-
-const { exec } = require("child_process");
-
 const generateNginxConfig = async (
   hotelId,
   templateId,
   organization_id,
   pool
 ) => {
-  const getSiteName = await pool.query(
-    "SELECT url FROM operation_property WHERE id = $1",
-    [hotelId]
-  );
-  const domain = getSiteName.rows[0].url
-    .replace(/https?:\/\//, "")
-    .replace(/\/$/, "");
+  try {
+    const { rows } = await pool.query(
+      "SELECT url FROM operation_property WHERE id = $1",
+      [hotelId]
+    );
 
-  const nginxFileExist = fssync.existsSync(
-    `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-property${hotelId}.conf`
-  );
-
-  if (nginxFileExist) {
-    return console.log("nginx file exist");
-  }
-
-  const nginxConfig = `
-  server {
-    listen 80;
-    server_name ${domain};
-    root /var/www/template${templateId}/organization${organization_id}/property${hotelId};
-    index index.html;
-    location / {
-      try_files $uri $uri/ /index.html;
+    if (!rows.length || !rows[0].url) {
+      console.log("Website domain not found.");
+      return;
     }
-  }
-  `;
 
-  const configPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-property${hotelId}.conf`;
+    const domain = rows[0].url?.replace(/https?:\/\//, "").replace(/\/$/, "");
+    const configPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`;
 
-  fssync.writeFileSync(configPath, nginxConfig);
+    if (fssync.existsSync(configPath)) {
+      console.log("Nginx config already exists. Skipping creation.");
+      await addPublishDetails(
+        hotelId,
+        templateId,
+        domain,
+        pool,
+        organization_id
+      );
+      await addSslCertificate(hotelId, templateId, domain);
+      return;
+    }
 
-  exec(
-    `sudo ln -s ${configPath} /etc/nginx/sites-enabled/`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
+    const nginxConfig = `
+    server {
+      listen 80;
+      server_name ${domain};
+      root /var/www/template${templateId}/organization${organization_id}/property${hotelId};
+      index index.html;
+      location / {
+        try_files $uri $uri/ /index.html;
       }
-      console.log("nginx fireeeee");
-      exec("sudo systemctl restart nginx", (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          return;
-        }
-        console.log("nginx file successfully created");
-        addPublishDetails(hotelId, templateId, domain, pool, organization_id);
-
-        addSslCertificate(hotelId, templateId, domain, pool, organization_id);
-      });
     }
-  );
+    `;
+
+    fssync.writeFileSync(configPath, nginxConfig);
+    await exec(`sudo ln -sf ${configPath} /etc/nginx/sites-enabled/`);
+    await exec("sudo systemctl restart nginx");
+    console.log("Nginx restarted successfully.");
+
+    await addPublishDetails(hotelId, templateId, domain, pool, organization_id);
+    await addSslCertificate(hotelId, templateId, domain);
+  } catch (error) {
+    console.error("Error generating Nginx config:", error);
+  }
+};
+const exec2 = util.promisify(require("child_process").exec);
+const addSslCertificate = async (hotelId, templateId, domain) => {
+  try {
+    const { stdout } = await exec2(
+      `sudo certbot certificates --domain ${domain}`
+    );
+    if (stdout.includes(`Certificate Name: ${domain}`)) {
+      console.log("SSL certificate already exists.");
+      return;
+    }
+
+    await exec2(`sudo certbot --nginx -d ${domain}`);
+    console.log("SSL certificate installed successfully.");
+
+    await exec2("sudo systemctl restart nginx");
+    console.log("Nginx restarted with SSL.");
+  } catch (error) {
+    console.error("Error handling SSL certificate:", error);
+  }
 };
 const addPublishDetails = async (
   hotelId,
@@ -792,61 +807,6 @@ const addPublishDetails = async (
   } catch (error) {
     console.log(error);
   }
-};
-
-// // add ssl certificate
-
-const addSslCertificate = (
-  hotelId,
-  templateId,
-  domain,
-  pool,
-  organization_id
-) => {
-  exec(
-    `sudo certbot certificates --domain ${domain}`,
-    (checkError, checkStdout, checkStderr) => {
-      if (checkError) {
-        console.error(`Error checking certificate: ${checkError}`);
-        return;
-      }
-
-      const certificateExists = checkStdout.includes(
-        `Certificate Name: ${domain}`
-      );
-
-      const certbotCommand = certificateExists
-        ? `sudo certbot --nginx -d ${domain} --reinstall`
-        : `sudo certbot --nginx -d ${domain}`;
-
-      console.log(`Running Certbot command: ${certbotCommand}`);
-
-      exec(certbotCommand, (certError, certStdout, certStderr) => {
-        if (certError) {
-          console.error(`Error handling SSL certificate: ${certError}`);
-          return;
-        }
-
-        console.log(certStdout);
-
-        exec(
-          "sudo systemctl restart nginx",
-          (nginxError, nginxStdout, nginxStderr) => {
-            if (nginxError) {
-              console.error(`Error restarting Nginx: ${nginxError}`);
-              return;
-            }
-
-            console.log(
-              `SSL certificate ${
-                certificateExists ? "reinstalled" : "installed"
-              } successfully for ${domain}`
-            );
-          }
-        );
-      });
-    }
-  );
 };
 
 module.exports = router;
