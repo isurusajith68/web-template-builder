@@ -25,6 +25,9 @@ temp1.get("/site-details", async (req, res) => {
     );
     if (result.rows.length === 0) {
       console.log("No site details found");
+      return res.status(404).json({
+        message: "No site details found please save site details",
+      });
     }
 
     res.status(200).json(result.rows[0]);
