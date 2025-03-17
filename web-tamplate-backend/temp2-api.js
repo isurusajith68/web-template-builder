@@ -268,11 +268,11 @@ const buildTemplate = async (
   JOIN
       operation_roombeds orb ON htrm.id = orb.room_id
   JOIN 
-      core_data.core__roomcomfort cr ON hrt.roomcomfort_id = cr.id
+      core_data.core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
   JOIN
-      core_data.core__view hrv ON htrm.view_id = hrv.id
+      core_data.core_view hrv ON htrm.view_id = hrv.id
   LEFT JOIN
-      core_data.core__roomtypes crt ON hrt.roomtype_id = crt.id
+      core_data.core_roomtypes crt ON hrt.roomtype_id = crt.id
   JOIN 
       operation_roomprices hrp ON htrm.id = hrp.room_id
   LEFT JOIN
@@ -469,7 +469,7 @@ const buildTemplateHotelRooms = async (
   const template = await fs.readFile(templatePath, "utf8");
 
   const offer = await pool.query(
-    "SELECT * FROM operation_hoteloffers WHERE hotelid = $1",
+    "SELECT * FROM operation_hoteloffers WHERE property_id = $1",
     [hotelId]
   );
 
@@ -503,11 +503,11 @@ const buildTemplateHotelRooms = async (
   JOIN
       operation_roombeds orb ON htrm.id = orb.room_id
   JOIN 
-      core_data.core__roomcomfort cr ON hrt.roomcomfort_id = cr.id
+      core_data.core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
   JOIN
-      core_data.core__view hrv ON htrm.view_id = hrv.id
+      core_data.core_view hrv ON htrm.view_id = hrv.id
   LEFT JOIN
-      core_data.core__roomtypes crt ON hrt.roomtype_id = crt.id
+      core_data.core_roomtypes crt ON hrt.roomtype_id = crt.id
   JOIN 
       operation_roomprices hrp ON htrm.id = hrp.room_id
   LEFT JOIN
