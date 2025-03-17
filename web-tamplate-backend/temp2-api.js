@@ -13,8 +13,8 @@ router.get("/test", (req, res) => {
 
 router.post("/save-site-details", async (req, res) => {
   const pool = req.tenantPool;
-  const propertyId = req.propertyId;
-  console.log(req.propertyId);
+  const propertyId = req.property_id;
+  console.log(req.property_id);
   const {
     templateId,
     title,
@@ -116,7 +116,7 @@ router.post("/save-site-details", async (req, res) => {
 
 router.get("/build-template", async (req, res) => {
   const pool = req.tenantPool;
-  const hotelId = req.propertyId;
+  const hotelId = req.property_id;
   const organization_id = req.organization_id;
   const { templateId } = req.query;
   if (!hotelId || !templateId) {
@@ -268,11 +268,11 @@ const buildTemplate = async (
   JOIN
       operation_roombeds orb ON htrm.id = orb.room_id
   JOIN 
-      core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
+      core_data.core__roomcomfort cr ON hrt.roomcomfort_id = cr.id
   JOIN
-      core_view hrv ON htrm.view_id = hrv.id
+      core_data.core__view hrv ON htrm.view_id = hrv.id
   LEFT JOIN
-      core_roomtypes crt ON hrt.roomtype_id = crt.id
+      core_data.core__roomtypes crt ON hrt.roomtype_id = crt.id
   JOIN 
       operation_roomprices hrp ON htrm.id = hrp.room_id
   LEFT JOIN
@@ -503,11 +503,11 @@ const buildTemplateHotelRooms = async (
   JOIN
       operation_roombeds orb ON htrm.id = orb.room_id
   JOIN 
-      core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
+      core_data.core__roomcomfort cr ON hrt.roomcomfort_id = cr.id
   JOIN
-      core_view hrv ON htrm.view_id = hrv.id
+      core_data.core__view hrv ON htrm.view_id = hrv.id
   LEFT JOIN
-      core_roomtypes crt ON hrt.roomtype_id = crt.id
+      core_data.core__roomtypes crt ON hrt.roomtype_id = crt.id
   JOIN 
       operation_roomprices hrp ON htrm.id = hrp.room_id
   LEFT JOIN

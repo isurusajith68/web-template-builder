@@ -11,7 +11,7 @@ router.get("/temp3", (req, res) => {
 
 router.post("/save-site-details", async (req, res) => {
   const pool = req.tenantPool;
-  const propertyId = req.propertyId;
+  const propertyId = req.property_id;
   const {
     templateId,
     title,
@@ -209,7 +209,7 @@ const ensureDirectoryExistence2 = async (
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const { templateId } = req.query;
-    const hotelId = req.propertyId;
+    const hotelId = req.property_id;
     const organization_id = req.organization_id;
     const uploadDir = path.join(
       `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`
@@ -236,7 +236,7 @@ const upload = multer({ storage });
 
 router.post("/upload-single", upload.single("image"), async (req, res) => {
   const pool = req.tenantPool;
-  const propertyId = req.propertyId;
+  const propertyId = req.property_id;
   const organization_id = req.organization_id;
   try {
     const { file } = req;
@@ -327,11 +327,16 @@ const updateDatabase = async (propertyId, templateId, response, pool) => {
 router.post("/upload-images", upload.array("images", 5), async (req, res) => {
   try {
     const files = req.files;
-    const propertyId = req.propertyId;
+    const propertyId = req.property_id;
     const templateId = req.query.templateId;
     const imageType = req.query.imageType;
     const organization_id = req.organization_id;
     const pool = req.tenantPool;
+
+    if (pool === undefined) {
+      return res.status(500).json({ error: "Failed to upload images" });
+    }
+
     const uploadDir = path.join(
       `/var/www/template${templateId}/organization${organization_id}/property${propertyId}/img`
     );
@@ -378,9 +383,17 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
       console.log("File copied to:", secondaryFilePath);
     }
 
-    const result = await updateDatabase(propertyId, templateId, pool, {
-      [imageType]: galleryFirstFiveImages,
-    });
+    let response = { [imageType]: galleryFirstFiveImages };
+
+    const result = await updateDatabase(
+      propertyId,
+      templateId,
+      response,
+      pool,
+      {
+        [imageType]: galleryFirstFiveImages,
+      }
+    );
 
     res.status(200).json({
       message: "Images uploaded and database updated successfully",
@@ -394,7 +407,7 @@ router.post("/upload-images", upload.array("images", 5), async (req, res) => {
 
 router.get("/build-template", async (req, res) => {
   const { templateId } = req.query;
-  const hotelId = req.propertyId;
+  const hotelId = req.property_id;
   const pool = req.tenantPool;
   const organization_id = req.organization_id;
   if (!hotelId || !templateId) {

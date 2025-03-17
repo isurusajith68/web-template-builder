@@ -18,7 +18,7 @@ const requireAuth = (req, res, next) => {
         console.log(decodedToken);
         req.tenant = decodedToken.schemaname;
         req.user = decodedToken.userId;
-        req.propertyId = decodedToken.property_id;
+        req.property_id = decodedToken.property_id;
         req.organization_id = decodedToken.organization_id;
         req.eid = decodedToken.employee_id;
         next();

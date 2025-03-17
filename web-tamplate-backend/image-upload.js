@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    const hotelid = req.propertyId || "unknown";
+    const hotelid = req.property_id || "unknown";
     const organization_id = req.organization_id || "unknown";
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const filename = `${hotelid}_${organization_id}_${
@@ -37,8 +37,8 @@ imageUpload.post(
   async (req, res) => {
     try {
       const files = req.files;
-      console.log(req.propertyId, req.organization_id);
-      const propertyId = req.propertyId || "unknown";
+      console.log(req.property_id, req.organization_id);
+      const propertyId = req.property_id || "unknown";
       const organization_id = req.organization_id || "unknown";
 
       if (!files || files.length === 0) {

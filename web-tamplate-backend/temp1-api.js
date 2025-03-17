@@ -8,7 +8,7 @@ const { exec } = require("child_process");
 
 temp1.get("/site-details", async (req, res) => {
   const pool = req.tenantPool;
-  const propertyId = req.propertyId;
+  const propertyId = req.property_id;
 
   const { templateId } = req.query;
 
@@ -39,7 +39,7 @@ temp1.get("/site-details", async (req, res) => {
 temp1.get("/hotel-info", async (req, res) => {
   try {
     const pool = req.tenantPool;
-    const propertyId = req.propertyId;
+    const propertyId = req.property_id;
 
     const result = await pool.query(
       "SELECT * FROM operation_property WHERE id = $1",
@@ -68,7 +68,7 @@ temp1.get("/hotel-info", async (req, res) => {
 
 temp1.post("/save-site-details", async (req, res) => {
   const pool = req.tenantPool;
-  const propertyId = req.propertyId;
+  const propertyId = req.property_id;
 
   const {
     templateId,
@@ -186,7 +186,7 @@ temp1.post("/save-site-details", async (req, res) => {
 
 temp1.get("/build-template", async (req, res) => {
   const pool = req.tenantPool;
-  const hotelId = req.propertyId;
+  const hotelId = req.property_id;
   const organization_id = req.organization_id;
   const { templateId } = req.query;
   if (!hotelId || !templateId) {
@@ -369,7 +369,7 @@ temp1.get("/build-template", async (req, res) => {
 temp1.get("/hotel-offers", async (req, res) => {
   try {
     const pool = req.tenantPool;
-    const hotelId = req.propertyId;
+    const hotelId = req.property_id;
 
     const result = await pool.query(
       "SELECT * FROM operation_hoteloffers WHERE hotelid = $1",
@@ -426,7 +426,7 @@ const ensureDirectoryExistence2 = async (
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const hotelId = req.propertyId;
+    const hotelId = req.property_id;
     const { templateId } = req.query;
     const organization_id = req.organization_id;
 
@@ -457,7 +457,7 @@ const upload = multer({ storage: storage });
 temp1.post("/upload-images", upload.array("images", 10), async (req, res) => {
   try {
     const pool = req.tenantPool;
-    const hotelId = req.propertyId;
+    const hotelId = req.property_id;
     const { templateId } = req.query;
 
     const dbGetResult = await pool.query(
@@ -510,7 +510,7 @@ temp1.post("/upload-images", upload.array("images", 10), async (req, res) => {
 
 temp1.delete("/remove-image", async (req, res) => {
   const pool = req.tenantPool;
-  const hotelId = req.propertyId;
+  const hotelId = req.property_id;
   const organization_id = req.organization_id;
   try {
     const { templateId, imageName } = req.body;
@@ -569,7 +569,7 @@ temp1.delete("/remove-image", async (req, res) => {
 
 temp1.get("/rooms-info", async (req, res) => {
   const pool = req.tenantPool;
-  const hotelId = req.propertyId;
+  const hotelId = req.property_id;
   console.log("hotelId", hotelId);
   try {
     const result = await pool.query(
@@ -592,11 +592,11 @@ temp1.get("/rooms-info", async (req, res) => {
   JOIN
       operation_roombeds orb ON htrm.id = orb.room_id
   JOIN 
-      core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
+      core_data.core__roomcomfort cr ON hrt.roomcomfort_id = cr.id
   JOIN
-      core_view hrv ON htrm.view_id = hrv.id
+      core_data.core__view hrv ON htrm.view_id = hrv.id
   LEFT JOIN
-      core_roomtypes crt ON hrt.roomtype_id = crt.id
+      core_data.core__roomtypes crt ON hrt.roomtype_id = crt.id
   JOIN 
       operation_roomprices hrp ON htrm.id = hrp.room_id
   LEFT JOIN
@@ -666,11 +666,11 @@ const buildTemplate = async (
   JOIN
       operation_roombeds orb ON htrm.id = orb.room_id
   JOIN 
-      core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
+      core_data.core__roomcomfort cr ON hrt.roomcomfort_id = cr.id
   JOIN
-      core_view hrv ON htrm.view_id = hrv.id
+      core_data.core__view hrv ON htrm.view_id = hrv.id
   LEFT JOIN
-      core_roomtypes crt ON hrt.roomtype_id = crt.id
+      core_data.core__roomtypes crt ON hrt.roomtype_id = crt.id
   JOIN 
       operation_roomprices hrp ON htrm.id = hrp.room_id
   LEFT JOIN
@@ -1054,11 +1054,11 @@ const buildTemplateHotelRooms = async (
     JOIN
         operation_roombeds orb ON htrm.id = orb.room_id
     JOIN 
-        core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
+        core_data.core__roomcomfort cr ON hrt.roomcomfort_id = cr.id
     JOIN
-        core_view hrv ON htrm.view_id = hrv.id
+        core_data.core__view hrv ON htrm.view_id = hrv.id
     LEFT JOIN
-        core_roomtypes crt ON hrt.roomtype_id = crt.id
+        core_data.core__roomtypes crt ON hrt.roomtype_id = crt.id
     JOIN 
         operation_roomprices hrp ON htrm.id = hrp.room_id
     LEFT JOIN
