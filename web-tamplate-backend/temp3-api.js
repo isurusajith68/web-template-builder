@@ -941,8 +941,8 @@ const addPublishDetails = async (
 
     if (!addedAlredy.rows.length > 0) {
       const data = await pool.query(
-        "INSERT INTO webtemplates (hotelid, templateid, website,organization_id) VALUES ($1, $2, $3)",
-        [hotelId, templateId, domain, organization_id]
+        "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
+        [hotelId, templateId, domain]
       );
       console.log("Publish details added successfully");
     }

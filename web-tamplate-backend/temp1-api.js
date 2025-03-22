@@ -526,9 +526,9 @@ temp1.delete("/remove-image", async (req, res) => {
       `/var/www/vue-temp${templateId}/${imageName}`
     );
     const filePath = path.join(
-      `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img/${imageName}`
+      `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/${imageName}`
     );
-
+    console.log(filePath, filePathTemp);
     if (fssync.existsSync(filePath) && fssync.existsSync(filePathTemp)) {
       fssync.unlinkSync(filePath);
       fssync.unlinkSync(filePathTemp);
@@ -1339,7 +1339,7 @@ const addPublishDetails = async (
   domain,
   pool,
   organization_id
-) => {
+) => {<MJDJDBHLXKX></MJDJDBHLXKX>
   const publishDetails = {
     hotelId,
     templateId,
@@ -1354,8 +1354,8 @@ const addPublishDetails = async (
     if (!addedAlredy.rows.length > 0) {
       // console.log("Publish details already added");
       const data = await pool.query(
-        "INSERT INTO webtemplates (hotelid, templateid, website, organizationid) VALUES ($1, $2, $3, $4)",
-        [hotelId, templateId, domain, organization_id]
+        "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
+        [hotelId, templateId, domain]
       );
       console.log("Publish details added successfully");
     } else {
@@ -1365,5 +1365,57 @@ const addPublishDetails = async (
     console.log(error);
   }
 };
+
+temp1.delete("/remove-site", async (req, res) => {
+  const pool = req.tenantPool;
+  const hotelId = req.property_id;
+  const organization_id = req.organization_id;
+  const templateId = req.template_id;
+  try {
+    await pool.query(
+      "DELETE FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
+      [hotelId, templateId]
+    );
+    await pool.query(
+      "DELETE FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
+      [hotelId, templateId]
+    );
+    await pool.query(
+      "DELETE FROM operation_property WHERE id = $1 AND organizationid = $2",
+      [hotelId, organization_id]
+    );
+
+    const nginxConfigPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`;
+    if (fssync.existsSync(nginxConfigPath)) {
+      fssync.unlinkSync(nginxConfigPath);
+      await exec("sudo systemctl restart nginx");
+    }
+
+    const sourceDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}`;
+
+    if (fssync.existsSync(sourceDir)) {
+      fssync.rmdirSync(sourceDir, { recursive: true });
+    }
+
+    await exec(
+      `sudo rm -rf /var/www/template${templateId}/organization${organization_id}/property${hotelId}`
+    );
+
+    //REMOVE SSL CERTIFICATE live - archive - renewl
+
+    const domain = req.body.domain;
+    await exec(`sudo certbot delete --cert-name ${domain}`);
+  
+
+  
+  
+    console.log("Site deleted successfully");
+
+    return res.status(200).json({ message: "site deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 module.exports = temp1;
