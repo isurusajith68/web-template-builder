@@ -360,6 +360,7 @@ const app = Vue.createApp({
               templateId: this.templateId,
               imageName: imageName,
             }),
+            credentials: "include",
           }
         );
 

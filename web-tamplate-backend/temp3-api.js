@@ -516,7 +516,7 @@ router.get("/build-template", async (req, res) => {
     //     "img/images-1731339192583-185997996.jpg"
     //   ]
     // }
-    const tempIds = [1, 3];
+    const tempIds = [1, 2];
     for (const tempId of tempIds) {
       try {
         const alreadyPublish = await pool.query(
@@ -877,10 +877,6 @@ const generateNginxConfig = async (
 
     const domain = rows[0].url?.replace(/https?:\/\//, "").replace(/\/$/, "");
     const configPath = `/etc/nginx/sites-available/${domain}.conf`;
-
-    if (nginxFileExist) {
-      return console.log("nginx file exist");
-    }
 
     if (fssync.existsSync(configPath)) {
       console.log("Nginx config already exists. Skipping creation.");
