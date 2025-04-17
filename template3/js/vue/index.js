@@ -953,10 +953,10 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
+          const errorText = await response.json();
           console.error("Error publishing changes:", errorText);
           this.isLoading = null;
-          this.isError = "Error publishing changes";
+          this.isError = errorText.message;
           setTimeout(() => {
             this.isError = null;
           }, 5000);

@@ -516,11 +516,9 @@ router.get("/build-template", async (req, res) => {
     //     "img/images-1731339192583-185997996.jpg"
     //   ]
     // }
-
-    const tempIds = [1, 2];
+    const tempIds = [1, 3];
     for (const tempId of tempIds) {
       try {
-        console.log("Checking if template is already published");
         const alreadyPublish = await pool.query(
           "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateId = $2",
           [hotelId, tempId]
@@ -536,7 +534,6 @@ router.get("/build-template", async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
       }
     }
-
     const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
 
     const data = {
