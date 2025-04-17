@@ -160,43 +160,41 @@
                     <h6 class="section-title text-center text-primary text-uppercase">Our Rooms</h6>
                     <h1 class="mb-5">Explore Our <span class="text-primary text-uppercase">Rooms</span></h1>
                 </div>
-
-
                 <div class="row g-4">
                     <div class="col-lg-4 col-md-6 wow fadeInUp" v-for="(room, index) in roomsDetails" :key="index"
                         :data-wow-delay="`${0.1 * index}s`">
                         <div class="room-item shadow rounded overflow-hidden">
                             <div class="position-relative">
                                 <img class="img-fluid w-100" style="height: 250px;"
-                                    :src="room?.imagenames ? room?.imagenames[0] : 'img/room4.jpg'" alt="Room image"
+                                    :src="room.imagename ? room.imagename : 'img/room4.jpg'" alt="Room image"
                                     onerror="this.src='img/room4.jpg'">
                                 <small
                                     class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                                    Rs {{ room.fbprice }} / Night
+                                    Rs {{ room.fbprice }} / Fb price
                                 </small>
                             </div>
                             <div class="p-4 mt-2">
                                 <div class="d-flex justify-content-between mb-3">
-                                    <h6 class="mb-0"><b>{{ room.roomtype }} / {{room.roomview}}</b></h6>
+                                    <h6 class="mb-0"><b>{{ room.custom_name }} / {{room.roomview}}</b></h6>
                                     <div class="ps-2">
                                         <small v-for="star in 5" :key="star" class="fa fa-star text-primary"></small>
                                     </div>
                                 </div>
                                 <div class="d-flex mb-3">
                                     <small class="border-end me-3 pe-3">
-                                        <i class="fa fa-h-square text-primary me-2"></i>Room No: {{ room.roomno }}
+                                        <i class="fa fa-h-square text-primary me-2"></i>Room No: {{
+                                        room.room_number
+                                        }}
                                     </small>
-                                    <small class=" me-3 pe-3">
-                                        <i class="fa fa-bed text-primary me-2"></i>No Of Beds: {{ room.noofbed }}
+        
+                                </div>
+                                <div v-if="room.amenities && room.amenities.length > 0" class="d-flex flex-wrap gap-2 mb-3">
+                                    <small v-for="(amenity, i) in room.amenities" :key="i">
+                                        <span class="badge bg-secondary text-light px-3 py-2">{{ amenity }}</span>
                                     </small>
                                 </div>
-                                <div v-if="room.roomamenities && room.roomamenities.length > 0" class="d-flex mb-3">
-                                    <small v-for="(amenity, i) in room.roomamenities" :key="i" class="me-3">
-                                        <i class="fa" :class="getAmenityIcon(amenity) + ' text-primary me-2'"></i>
-                                        {{ amenity }}
-                                    </small>
-                                </div>
-                                <p class="text-body mb-3">Recommended for 2 adults</p>
+        
+                                <p class="text-body mb-3">Recommended for {{ room.maxadultcount }} adults</p>
                                 <div class="d-flex justify-content-between">
                                     <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
                                     <a class="btn btn-sm btn-dark rounded py-2 px-4"
@@ -206,144 +204,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="room-item shadow rounded overflow-hidden">
-                            <div class="position-relative">
-                                <img class="img-fluid" src="img/room4.jpg" alt="">
-                                <small
-                                    class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$36/Night</small>
-                            </div>
-                            <div class="p-4 mt-2">
-                                <div class="d-flex  justify-content-between mb-3">
-                                    <h6 class="mb-0"><b></B>Deluxe Double</b></h6>
-                                    <div class="ps-2">
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                    </div>
-                                </div>
-                                <div class="d-flex mb-3">
-                                    <small class="border-end me-3 pe-3"><i class="fa fa-bed text-primary me-2"></i>Beds
-                                        1</small>
-                                    <small class="border-end me-3 pe-3"><i
-                                            class="fa fa-bath text-primary me-2"></i>A/C</small>
-                                    <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                                </div>
-                                <p class="text-body mb-3">Recommend for 2 adults</p>
-                                <div class="d-flex justify-content-between">
-                                    <a class="btn btn-sm btn-primary rounded py-2 px-4" href="">View Detail</a>
-                                    <a class="btn btn-sm btn-dark rounded py-2 px-4" href="booking.html">Book Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="room-item shadow rounded overflow-hidden">
-                            <div class="position-relative">
-                                <img class="img-fluid" src="img/room1.jpg" alt="">
-                                <small
-                                    class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$39/Night</small>
-                            </div>
-                            <div class="p-4 mt-2">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <h6 class="mb-0">Deluxe Double</h6>
-                                    <div class="ps-2">
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                    </div>
-                                </div>
-                                <div class="d-flex mb-3">
-                                    <small class="border-end me-3 pe-3"><i class="fa fa-bed text-primary me-2"></i>1
-                                        Bed</small>
-                                    <small class="border-end me-3 pe-3"><i
-                                            class="fa fa-bath text-primary me-2"></i>A/C</small>
-                                    <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                                </div>
-                                <p class="text-body mb-3">Recommend for 2 adults & 1 child A small child may share the
-                                    bed with parents</p>
-                                <div class="d-flex justify-content-between">
-                                    <a class="btn btn-sm btn-primary rounded py-2 px-4" href="">View Detail</a>
-                                    <a class="btn btn-sm btn-dark rounded py-2 px-4" href="booking.html">Book Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.6s">
-                        <div class="room-item shadow rounded overflow-hidden">
-                            <div class="position-relative">
-                                <img class="img-fluid" src="img/room5.jpg" alt="">
-                                <small
-                                    class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$47/Night</small>
-                            </div>
-                            <div class="p-4 mt-2">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <h6 class="mb-0">Deluxe Family Room</h6>
-                                    <div class="ps-2">
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                    </div>
-                                </div>
-                                <div class="d-flex mb-3">
-                                    <small class="border-end me-3 pe-3"><i class="fa fa-bed text-primary me-2"></i>1
-                                        Bed</small>
-                                    <small class="border-end me-3 pe-3"><i
-                                            class="fa fa-bath text-primary me-2"></i>A/C</small>
-                                    <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                                </div>
-                                <p class="text-body mb-3">Recommend for 2 adults & 2 children / 3 adults A small child
-                                    may share the bed with parents.</p>
-                                <div class="d-flex justify-content-between">
-                                    <a class="btn btn-sm btn-primary rounded py-2 px-4" href="">View Detail</a>
-                                    <a class="btn btn-sm btn-dark rounded py-2 px-4" href="booking.html">Book Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.6s">
-                        <div class="room-item shadow rounded overflow-hidden">
-                            <div class="position-relative">
-                                <img class="img-fluid" src="img/Capture.jpg" alt="">
-                                <small
-                                    class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$205/Night</small>
-                            </div>
-                            <div class="p-4 mt-2">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <h6 class="mb-0">Vacation Home</h6>
-                                    <div class="ps-2">
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                        <small class="fa fa-star text-primary"></small>
-                                    </div>
-                                </div>
-                                <div class="d-flex mb-3">
-                                    <small class="border-end me-3 pe-3"><i class="fa fa-bed text-primary me-2"></i>1
-                                        Bed</small>
-                                    <small class="border-end me-3 pe-3"><i
-                                            class="fa fa-bath text-primary me-2"></i>Kitchen</small>
-                                    <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                                </div>
-                                <p class="text-body mb-3"></p>
-                                <div class="d-flex justify-content-between">
-                                    <a class="btn btn-sm btn-primary rounded py-2 px-4" href="">View Detail</a>
-                                    <a class="btn btn-sm btn-dark rounded py-2 px-4" href="booking.html">Book Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-
-
-
+        
                 </div>
             </div>
         </div>
