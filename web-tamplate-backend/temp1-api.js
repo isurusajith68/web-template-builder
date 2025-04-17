@@ -724,10 +724,10 @@ const buildTemplate = async (
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
             <img class="img-fluid w-100" style="height: 250px;" src="${
-              room.imagename
+              room.imagename ? room.imagename : "./img/room-1.jpg"
             }" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                Rs {{ room.fbprice }} / Fb price
+                 Rs ${room.fbprice} / Fb price
             </small>
           </div>
           <div class="p-4 mt-2">
@@ -750,23 +750,29 @@ const buildTemplate = async (
              
             </div>
 
-            ${
-              room.roomamenities === null || room.roomamenities.length === 0
-                ? ""
-                : `<div class="d-flex mb-3">
-                    ${room.roomamenities
+             ${
+               room.amenities === null || room.amenities.length === 0
+                 ? ""
+                 : `<div class="d-flex flex-wrap gap-2 mb-3">
+                    ${room.amenities
                       .map(
                         (amenity) => `
-                          <small class="me-3">
-                             <span class="badge bg-secondary text-light px-3 py-2">
-                             ${amenity}
-                            </span>
+                          <small>
+                          ${
+                            amenity === null
+                              ? ""
+                              : `<span   class="badge bg-dark text-light "  
+                                       style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">
+                                  ${amenity}
+                                </span>
+`
+                          }
                           </small>
                         `
                       )
                       .join("")}
                   </div>`
-            }
+             }
             <p class="text-body mb-3">Recommended for 2 adults</p>
             <div class="d-flex justify-content-between">
               <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
@@ -1088,17 +1094,17 @@ const buildTemplateHotelRooms = async (
 
     console.log("Rooms ss:", rooms.rows);
 
-    const roomsHtml = limitedRooms
+    const roomsHtml = rooms.rows
       .map((room) => {
         return `
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
             <img class="img-fluid w-100" style="height: 250px;" src="${
-              room.imagename
+              room.imagename ? room.imagename : "./img/room-1.jpg"
             }" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                Rs {{ room.fbprice }} / Fb price
+                Rs ${room.fbprice} / Fb price
             </small>
           </div>
           <div class="p-4 mt-2">
@@ -1122,16 +1128,22 @@ const buildTemplateHotelRooms = async (
             </div>
 
             ${
-              room.roomamenities === null || room.roomamenities.length === 0
+              room.amenities === null || room.amenities.length === 0
                 ? ""
-                : `<div class="d-flex mb-3">
-                    ${room.roomamenities
+                : `<div class="d-flex flex-wrap gap-2 mb-3">
+                    ${room.amenities
                       .map(
                         (amenity) => `
-                          <small class="me-3">
-                             <span class="badge bg-secondary text-light px-3 py-2">
-                             ${amenity}
-                            </span>
+                          <small>
+                          ${
+                            amenity === null
+                              ? ""
+                              : `<span   class="badge bg-dark text-light "  
+                                       style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">
+                                  ${amenity}
+                                </span>
+`
+                          }
                           </small>
                         `
                       )
@@ -1276,7 +1288,7 @@ const generateNginxConfig = async (
     }
 
     const domain = rows[0].url.replace(/https?:\/\//, "").replace(/\/$/, "");
-    const configPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`;
+    const configPath = `/etc/nginx/sites-available/${domain}.conf`;
 
     if (fssync.existsSync(configPath)) {
       console.log("Nginx config already exists. Skipping creation.");
@@ -1383,7 +1395,7 @@ temp1.delete("/remove-site", async (req, res) => {
       [hotelId, templateId]
     );
 
-    const nginxConfigPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`;
+    const nginxConfigPath = `/etc/nginx/sites-available/${req.body.domain}.conf`;
     if (fssync.existsSync(nginxConfigPath)) {
       fssync.unlinkSync(nginxConfigPath);
       await exec("sudo systemctl restart nginx");

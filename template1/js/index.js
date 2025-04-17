@@ -138,12 +138,8 @@ const app = Vue.createApp({
 
         if (!response.ok) {
           const err = await response.json();
-          console.error(err);
-          this.isLoading = null;
-          this.isError = err.message;
-          setTimeout(() => {
-            this.isError = null;
-          }, 5000);
+
+          this.saveDetails();
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);
@@ -176,11 +172,6 @@ const app = Vue.createApp({
           }, 5000);
         }
       } catch (error) {
-        // this.isLoading = null;
-        // this.isError = "Error fetching site details";
-        // setTimeout(() => {
-        //   this.isError = null;
-        // }, 5000);
         console.log("Error fetching site details:", error);
       }
     },
