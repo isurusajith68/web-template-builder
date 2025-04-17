@@ -249,47 +249,35 @@ const buildTemplate = async (
   const template = await fs.readFile(templatePath, "utf8");
 
   const rooms = await pool.query(
-    `
-     SELECT 
-      htrm.property_id,
-      htrm.view_id,
-      htrm.roomclass_id,
-      htrm.roomno_text,
-      hrv.roomview AS roomview,
-      crt.room_type AS roomtype,
-      SUM(orb.count) as noofbed,
-      hrp.fbprice,
-      COALESCE(ARRAY_AGG(DISTINCT amn.amenity_label) FILTER (WHERE amn.amenity_label IS NOT NULL), '{}') AS roomamenities,
-      COALESCE(ARRAY_AGG(DISTINCT ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL), '{}') AS imagenames
-  FROM 
-      operation_rooms htrm
-  JOIN 
-      operation_roomreclass hrt ON htrm.roomclass_id = hrt.id
-  JOIN
-      operation_roombeds orb ON htrm.id = orb.room_id
-  JOIN 
-      core_data.core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
-  JOIN
-      core_data.core_view hrv ON htrm.view_id = hrv.id
-  LEFT JOIN
-      core_data.core_roomtypes crt ON hrt.roomtype_id = crt.id
-  JOIN 
-      operation_roomprices hrp ON htrm.id = hrp.room_id
-  LEFT JOIN
-      operation_roomamenities amn ON amn.room_id = htrm.id  -- FIXED JOIN
-  LEFT JOIN 
-      operation_roomimages ri ON htrm.id = ri.room_id
-  WHERE 
-      htrm.property_id = $1
+    `SELECT 
+      op.view_id, 
+      op.roomclass_id, 
+      cv.roomview, 
+      orc.custom_name, 
+      orc.maxadultcount,
+      orc.maxchildcount,
+      orci.imagename,
+      orp.fbprice,
+      op.roomno_text AS room_number,
+      ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+  FROM operation_rooms op
+  JOIN core_data.core_view cv ON op.view_id = cv.id
+  JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
+  JOIN operation_roomprices orp ON orp.room_id = op.id
+  LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
+  LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+  WHERE op.property_id = $1
   GROUP BY 
-      htrm.property_id, 
-      htrm.view_id, 
-      htrm.roomclass_id, 
-      htrm.roomno_text,
-      hrv.roomview,
-      crt.room_type,
-      hrp.fbprice;
-      `,
+      op.view_id, 
+      op.roomclass_id, 
+      cv.roomview, 
+      orc.custom_name, 
+      orc.maxadultcount,
+      orc.maxchildcount,
+      orci.imagename,
+      orp.fbprice,
+      op.roomno_text
+  ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
     [hotelId]
   );
   {
@@ -319,18 +307,34 @@ const buildTemplate = async (
       return `<div class="single_rooms">
                 <div class="room_thumb  ">
                    <img src="${
-                     room.imagenames ? room.imagenames[0] : "img/rooms/1.png"
+                     room.imagename ? room.imagename : "img/rooms/1.png"
                    }" alt="" style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center" style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
-                         <div class="room_heading_inner">
+                         <div class="room_heading_inner" style="margin-bottom: 20px;">
                         <span>From Rs ${room.fbprice}</span>
-                        <h3>${room.roomtype}</h3>
+                        <h3>${room.custom_name}</h3>
                         <p style="color: white; font-weight: 600;">${
                           room.roomview
-                        } View, ${room.noofbed} Beds
+                        } View, 
                         </p>
                         <p style="color: white;font-weight: 600;">
-                            Amenities: ${room.roomamenities.join(", ")}
+                            Amenities:  ${room.amenities
+                              .map(
+                                (amenity) => `
+                          <small>
+                          ${
+                            amenity === null
+                              ? ""
+                              : `<span   class="badge bg-dark text-light "  
+                                       style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">
+                                  ${amenity}
+                                </span>
+`
+                          }
+                          </small>
+                        `
+                              )
+                              .join("")}
                         </p>
                        </div>
                        <a href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}" class="line-button">book now</a>
@@ -484,47 +488,35 @@ const buildTemplateHotelRooms = async (
   );
 
   const rooms = await pool.query(
-    `
-       SELECT 
-      htrm.property_id,
-      htrm.view_id,
-      htrm.roomclass_id,
-      htrm.roomno_text,
-      hrv.roomview AS roomview,
-      crt.room_type AS roomtype,
-      SUM(orb.count) as noofbed,
-      hrp.fbprice,
-      COALESCE(ARRAY_AGG(DISTINCT amn.amenity_label) FILTER (WHERE amn.amenity_label IS NOT NULL), '{}') AS roomamenities,
-      COALESCE(ARRAY_AGG(DISTINCT ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL), '{}') AS imagenames
-  FROM 
-      operation_rooms htrm
-  JOIN 
-      operation_roomreclass hrt ON htrm.roomclass_id = hrt.id
-  JOIN
-      operation_roombeds orb ON htrm.id = orb.room_id
-  JOIN 
-      core_data.core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
-  JOIN
-      core_data.core_view hrv ON htrm.view_id = hrv.id
-  LEFT JOIN
-      core_data.core_roomtypes crt ON hrt.roomtype_id = crt.id
-  JOIN 
-      operation_roomprices hrp ON htrm.id = hrp.room_id
-  LEFT JOIN
-      operation_roomamenities amn ON amn.room_id = htrm.id  -- FIXED JOIN
-  LEFT JOIN 
-      operation_roomimages ri ON htrm.id = ri.room_id
-  WHERE 
-      htrm.property_id = $1
+    `SELECT 
+      op.view_id, 
+      op.roomclass_id, 
+      cv.roomview, 
+      orc.custom_name, 
+      orc.maxadultcount,
+      orc.maxchildcount,
+      orci.imagename,
+      orp.fbprice,
+      op.roomno_text AS room_number,
+      ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+  FROM operation_rooms op
+  JOIN core_data.core_view cv ON op.view_id = cv.id
+  JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
+  JOIN operation_roomprices orp ON orp.room_id = op.id
+  LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
+  LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+  WHERE op.property_id = $1
   GROUP BY 
-      htrm.property_id, 
-      htrm.view_id, 
-      htrm.roomclass_id, 
-      htrm.roomno_text,
-      hrv.roomview,
-      crt.room_type,
-      hrp.fbprice;
-      `,
+      op.view_id, 
+      op.roomclass_id, 
+      cv.roomview, 
+      orc.custom_name, 
+      orc.maxadultcount,
+      orc.maxchildcount,
+      orci.imagename,
+      orp.fbprice,
+      op.roomno_text
+  ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
     [hotelId]
   );
   {
@@ -534,19 +526,35 @@ const buildTemplateHotelRooms = async (
     .map((room) => {
       return `<div class="single_rooms">
                 <div class="room_thumb  ">
-                  <img src="${
-                    room.imagenames ? room.imagenames[0] : "img/rooms/1.png"
-                  }" alt="" style="min-height: 400px; max-height: 400px; ">
+                   <img src="${
+                     room.imagename ? room.imagename : "img/rooms/1.png"
+                   }" alt="" style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center" style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
-                         <div class="room_heading_inner">
+                         <div class="room_heading_inner" style="margin-bottom: 20px;">
                         <span>From Rs ${room.fbprice}</span>
-                        <h3>${room.roomtype}</h3>
+                        <h3>${room.custom_name}</h3>
                         <p style="color: white; font-weight: 600;">${
                           room.roomview
-                        } View, ${room.noofbed} Beds
+                        } View, 
                         </p>
                         <p style="color: white;font-weight: 600;">
-                            Amenities: ${room.roomamenities.join(", ")}
+                            Amenities:  ${room.amenities
+                              .map(
+                                (amenity) => `
+                          <small>
+                          ${
+                            amenity === null
+                              ? ""
+                              : `<span   class="badge bg-dark text-light "  
+                                       style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">
+                                  ${amenity}
+                                </span>
+`
+                          }
+                          </small>
+                        `
+                              )
+                              .join("")}
                         </p>
                        </div>
                        <a href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}" class="line-button">book now</a>
@@ -718,7 +726,7 @@ const generateNginxConfig = async (
     }
 
     const domain = rows[0].url?.replace(/https?:\/\//, "").replace(/\/$/, "");
-    const configPath = `/etc/nginx/sites-available/template${templateId}-organization${organization_id}-user${hotelId}.conf`;
+    const configPath = `/etc/nginx/sites-available/${domain}.conf`;
 
     if (fssync.existsSync(configPath)) {
       console.log("Nginx config already exists. Skipping creation.");

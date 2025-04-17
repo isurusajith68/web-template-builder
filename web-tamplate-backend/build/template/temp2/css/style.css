@@ -1147,9 +1147,25 @@ h3 {
     padding-top: 0;
   }
 }
+
+.features_room .rooms_here {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+
+@media (max-width: 767px) {
+  .features_room .rooms_here {
+    width: 98%;
+  }
+}
+
 .features_room .rooms_here .single_rooms {
   position: relative;
-  width: 50%;
+  width: 48%;
   float: left;
 }
 @media (max-width: 767px) {

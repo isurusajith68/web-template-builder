@@ -746,13 +746,7 @@ const app = Vue.createApp({
         );
 
         if (!response.ok) {
-          const errorText = await response.json();
-          console.error("Error loading site details:", errorText.message);
-          this.isLoading = null;
-          this.isError = `${errorText?.message}`;
-          setTimeout(() => {
-            this.isError = null;
-          }, 5000);
+          this.saveChanges();
         } else {
           const siteDetails = await response.json();
           console.log("Site details loaded successfully:", siteDetails);

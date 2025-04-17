@@ -311,21 +311,26 @@
                 flex-wrap: wrap; margin: 0 auto; width: 85%;">
             <div class="single_rooms" v-for="(room, index) in roomsDetails" :key="index" style="width:45%; ">
                 <div class="room_thumb">
-                    <img :src="room.imagenames ?  room.imagenames[0] : 'img/rooms/1.png'" alt=""
+                    <img :src="room.imagename ?  room.imagename : 'img/rooms/1.png'" alt=""
                         style="min-height: 400px; max-height: 400px; ">
-                    <div class="room_heading d-flex justify-content-between align-items-center"
+                    <div class="room_heading d-flex justify-content-between align-items-center "
                         style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
-                        <div class="room_heading_inner">
+                        <div class="room_heading_inner" style="margin-bottom: 20px;">
                             <span>From Rs {{ room.fbprice }}</span>
-                            <h3>{{ room.roomtype }}</h3>
-                            <p style="color: white; font-weight: 600;">{{ room.roomview }} View, {{ room.noofbed }} Beds
+                            <h3>{{ room.custom_name }}</h3>
+                            <p style="color: white; font-weight: 600;">{{ room.roomview }} View
                             </p>
-                            <p style="color: white;font-weight: 600;"
-                                v-if="room.roomamenities && room.roomamenities[0]">
-                                Amenities: {{ room.roomamenities.join(', ') }}
+                            <p style="color: white;font-weight: 600; " v-if="room.amenities && room.amenities[0]">
+                                <span style="font-weight: 600;">Amenities:</span>
+                                <small v-for="(amenity, i) in room.amenities" :key="i">
+                                    <span class="badge bg-dark text-light "
+                                        style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">{{
+                                        amenity }}</span>
+                                </small>
                             </p>
                         </div>
-                        <a :href="`https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`" class="line-button">book
+                        <a :href="`https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`"
+                            class="line-button">book
                             now</a>
                     </div>
                 </div>

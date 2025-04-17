@@ -458,11 +458,7 @@ const app = Vue.createApp({
 
         if (!response.ok) {
           const errorText = await response.text();
-          this.isLoading = null;
-          this.isError = "Error loading site details";
-          setTimeout(() => {
-            this.isError = null;
-          }, 5000);
+          this.saveChanges();
         } else {
           const siteDetails = await response.json();
           // console.log("Site details", siteDetails);
