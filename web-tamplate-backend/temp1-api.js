@@ -632,7 +632,7 @@ temp1.get("/rooms-info", async (req, res) => {
   FROM operation_rooms op
   JOIN core_data.core_view cv ON op.view_id = cv.id
   JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-  JOIN operation_roomprices orp ON orp.room_id = op.id
+  JOIN operation_roomprices orp ON orp.id = op.id
   LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
   LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
   WHERE op.property_id = $1
@@ -696,7 +696,7 @@ const buildTemplate = async (
   FROM operation_rooms op
   JOIN core_data.core_view cv ON op.view_id = cv.id
   JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-  JOIN operation_roomprices orp ON orp.room_id = op.id
+  JOIN operation_roomprices orp ON orp.id = op.id
   LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
   LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
   WHERE op.property_id = $1
@@ -1074,7 +1074,7 @@ const buildTemplateHotelRooms = async (
   FROM operation_rooms op
   JOIN core_data.core_view cv ON op.view_id = cv.id
   JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-  JOIN operation_roomprices orp ON orp.room_id = op.id
+  JOIN operation_roomprices orp ON orp.id = op.id
   LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
   LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
   WHERE op.property_id = $1
