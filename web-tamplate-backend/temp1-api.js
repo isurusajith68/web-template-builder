@@ -619,34 +619,38 @@ temp1.get("/rooms-info", async (req, res) => {
 
     const result = await pool.query(
       `SELECT 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text AS room_number,
-      ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
-  FROM operation_rooms op
-  JOIN core_data.core_view cv ON op.view_id = cv.id
-  JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-  JOIN operation_roomprices orp ON orp.id = op.id
-  LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
-  LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-  WHERE op.property_id = $1
-  GROUP BY 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text
-  ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice,
+    op.roomno_text AS room_number,
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+FROM operation_rooms op
+JOIN core_data.core_view cv ON op.view_id = cv.id
+JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+LEFT JOIN (
+    SELECT room_class_id, MIN(imagename) AS imagename
+    FROM operation_roomclass_images
+    GROUP BY room_class_id
+) img ON img.room_class_id = orc.id
+LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+WHERE op.property_id = $1
+GROUP BY 
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice,
+    op.roomno_text
+ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
       [hotelId]
     );
 
@@ -1061,34 +1065,38 @@ const buildTemplateHotelRooms = async (
   try {
     const rooms = await pool.query(
       `SELECT 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text AS room_number,
-      ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
-  FROM operation_rooms op
-  JOIN core_data.core_view cv ON op.view_id = cv.id
-  JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-  JOIN operation_roomprices orp ON orp.id = op.id
-  LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
-  LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-  WHERE op.property_id = $1
-  GROUP BY 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text
-  ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice,
+    op.roomno_text AS room_number,
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+FROM operation_rooms op
+JOIN core_data.core_view cv ON op.view_id = cv.id
+JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+LEFT JOIN (
+    SELECT room_class_id, MIN(imagename) AS imagename
+    FROM operation_roomclass_images
+    GROUP BY room_class_id
+) img ON img.room_class_id = orc.id
+LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+WHERE op.property_id = $1
+GROUP BY 
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice,
+    op.roomno_text
+ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
       [hotelId]
     );
 
