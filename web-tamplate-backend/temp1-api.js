@@ -618,39 +618,39 @@ temp1.get("/rooms-info", async (req, res) => {
     //   );
 
     const result = await pool.query(
-//       `SELECT 
-//     op.view_id, 
-//     op.roomclass_id, 
-//     cv.roomview, 
-//     orc.custom_name, 
-//     orc.maxadultcount,
-//     orc.maxchildcount,
-//     img.imagename,
-//     orp.fbprice,
-//     op.roomno_text AS room_number,
-//     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
-// FROM operation_rooms op
-// JOIN core_data.core_view cv ON op.view_id = cv.id
-// JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-// JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
-// LEFT JOIN (
-//     SELECT room_class_id, MIN(imagename) AS imagename
-//     FROM operation_roomclass_images
-//     GROUP BY room_class_id
-// ) img ON img.room_class_id = orc.id
-// LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-// WHERE op.property_id = $1
-// GROUP BY 
-//     op.view_id, 
-//     op.roomclass_id, 
-//     cv.roomview, 
-//     orc.custom_name, 
-//     orc.maxadultcount,
-//     orc.maxchildcount,
-//     img.imagename,
-//     orp.fbprice,
-//     op.roomno_text
-// ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
+      `SELECT 
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice,
+    ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+FROM org_16.operation_rooms op
+JOIN core_data.core_view cv ON op.view_id = cv.id
+JOIN org_16.operation_roomreclass orc ON op.roomclass_id = orc.id
+JOIN org_16.operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+LEFT JOIN (
+    SELECT room_class_id, MIN(imagename) AS imagename
+    FROM org_16.operation_roomclass_images
+    GROUP BY room_class_id
+) img ON img.room_class_id = orc.id
+LEFT JOIN org_16.operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+WHERE op.property_id = 2
+GROUP BY 
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice
+ORDER BY op.view_id, op.roomclass_id;
+`,
       [hotelId]
     );
 
@@ -687,34 +687,38 @@ const buildTemplate = async (
 
     const rooms = await pool.query(
       `SELECT 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text AS room_number,
-      ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
-  FROM operation_rooms op
-  JOIN core_data.core_view cv ON op.view_id = cv.id
-  JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-  JOIN operation_roomprices orp ON orp.id = op.id
-  LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
-  LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-  WHERE op.property_id = $1
-  GROUP BY 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text
-  ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice,
+    ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+FROM org_16.operation_rooms op
+JOIN core_data.core_view cv ON op.view_id = cv.id
+JOIN org_16.operation_roomreclass orc ON op.roomclass_id = orc.id
+JOIN org_16.operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+LEFT JOIN (
+    SELECT room_class_id, MIN(imagename) AS imagename
+    FROM org_16.operation_roomclass_images
+    GROUP BY room_class_id
+) img ON img.room_class_id = orc.id
+LEFT JOIN org_16.operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+WHERE op.property_id = 2
+GROUP BY 
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice
+ORDER BY op.view_id, op.roomclass_id;
+`,
       [hotelId]
     );
 
@@ -748,7 +752,7 @@ const buildTemplate = async (
             <div class="d-flex mb-3">
               <small class="border-end me-3 pe-3">
                 <i class="fa fa-h-square text-primary me-2"></i>Room No: ${
-                  room.room_number
+                  room.room_numbers ? room.room_numbers.join(", ") : ""
                 }
               </small>
              
