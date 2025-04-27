@@ -640,7 +640,7 @@ const app = Vue.createApp({
           console.log("Hotel info fetched successfully:", result);
 
           if (result) {
-            console.log("result", result.data.name);
+            console.log("result", result.data.orgId);
             this.title = result.data.name;
             this.email = result.data.email;
             this.phoneNumber = result.data.mobile;

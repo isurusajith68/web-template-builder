@@ -572,51 +572,6 @@ temp1.get("/rooms-info", async (req, res) => {
   const hotelId = req.property_id;
   console.log("hotelId", hotelId);
   try {
-    //   const result = await pool.query(
-    //     `
-    //       SELECT
-    //     htrm.property_id,
-    //     htrm.view_id,
-    //     htrm.roomclass_id,
-    //     htrm.roomno_text,
-    //     hrv.roomview AS roomview,
-    //     crt.room_type AS roomtype,
-    //     SUM(orb.count) as noofbed,
-    //     hrp.fbprice,
-    //     COALESCE(ARRAY_AGG(DISTINCT amn.amenity_label) FILTER (WHERE amn.amenity_label IS NOT NULL), '{}') AS roomamenities,
-    //     COALESCE(ARRAY_AGG(DISTINCT ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL), '{}') AS imagenames
-    // FROM
-    //     operation_rooms htrm
-    // JOIN
-    //     operation_roomreclass hrt ON htrm.roomclass_id = hrt.id
-    // JOIN
-    //     operation_roombeds orb ON htrm.id = orb.room_id
-    // JOIN
-    //     core_data.core_roomcomfort cr ON hrt.roomcomfort_id = cr.id
-    // JOIN
-    //     core_data.core_view hrv ON htrm.view_id = hrv.id
-    // LEFT JOIN
-    //     core_data.core_roomtypes crt ON hrt.roomtype_id = crt.id
-    // JOIN
-    //     operation_roomprices hrp ON htrm.id = hrp.room_id
-    // LEFT JOIN
-    //     operation_roomamenities amn ON amn.room_id = htrm.id  -- FIXED JOIN
-    // LEFT JOIN
-    //     operation_roomimages ri ON htrm.id = ri.room_id
-    // WHERE
-    //     htrm.property_id = $1
-    // GROUP BY
-    //     htrm.property_id,
-    //     htrm.view_id,
-    //     htrm.roomclass_id,
-    //     htrm.roomno_text,
-    //     hrv.roomview,
-    //     crt.room_type,
-    //     hrp.fbprice;
-    // `,
-    //     [hotelId]
-    //   );
-
     const result = await pool.query(
       `SELECT 
     op.view_id, 
@@ -629,17 +584,20 @@ temp1.get("/rooms-info", async (req, res) => {
     orp.fbprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
-FROM org_16.operation_rooms op
+FROM operation_rooms op
 JOIN core_data.core_view cv ON op.view_id = cv.id
-JOIN org_16.operation_roomreclass orc ON op.roomclass_id = orc.id
-JOIN org_16.operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
 LEFT JOIN (
     SELECT room_class_id, MIN(imagename) AS imagename
-    FROM org_16.operation_roomclass_images
+    FROM operation_roomclass_images
     GROUP BY room_class_id
 ) img ON img.room_class_id = orc.id
-LEFT JOIN org_16.operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-WHERE op.property_id = 2
+LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+WHERE 
+    op.property_id = $1
+    AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
 GROUP BY 
     op.view_id, 
     op.roomclass_id, 
@@ -697,17 +655,20 @@ const buildTemplate = async (
     orp.fbprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
-FROM org_16.operation_rooms op
+FROM operation_rooms op
 JOIN core_data.core_view cv ON op.view_id = cv.id
-JOIN org_16.operation_roomreclass orc ON op.roomclass_id = orc.id
-JOIN org_16.operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
 LEFT JOIN (
     SELECT room_class_id, MIN(imagename) AS imagename
-    FROM org_16.operation_roomclass_images
+    FROM operation_roomclass_images
     GROUP BY room_class_id
 ) img ON img.room_class_id = orc.id
-LEFT JOIN org_16.operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-WHERE op.property_id = 2
+LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+WHERE 
+    op.property_id = $1
+    AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
 GROUP BY 
     op.view_id, 
     op.roomclass_id, 

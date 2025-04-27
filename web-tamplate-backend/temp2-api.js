@@ -250,34 +250,40 @@ const buildTemplate = async (
 
   const rooms = await pool.query(
     `SELECT 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text AS room_number,
-      ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
-  FROM operation_rooms op
-  JOIN core_data.core_view cv ON op.view_id = cv.id
-  JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-  JOIN operation_roomprices orp ON orp.room_id = op.id
-  LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
-  LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-  WHERE op.property_id = $1
-  GROUP BY 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text
-  ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice,
+    ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+FROM operation_rooms op
+JOIN core_data.core_view cv ON op.view_id = cv.id
+JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
+LEFT JOIN (
+    SELECT room_class_id, MIN(imagename) AS imagename
+    FROM operation_roomclass_images
+    GROUP BY room_class_id
+) img ON img.room_class_id = orc.id
+LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+WHERE 
+    op.property_id = $1
+    AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
+GROUP BY 
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice
+ORDER BY op.view_id, op.roomclass_id;`,
     [hotelId]
   );
   {
@@ -317,6 +323,21 @@ const buildTemplate = async (
                           room.roomview
                         } View, 
                         </p>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            
+                                <span style="font-weight: 600;">Room Number:</span>
+                             
+                                <template>
+                                    ${room.room_numbers
+                                      .map(
+                                        (number) => `
+                                        <span class="badge bg-dark text-light" style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">${number}</span>
+                                    `
+                                      )
+                                      .join("")}
+                                    
+                                </template>
+                            </div>
                         <p style="color: white;font-weight: 600;">
                             Amenities:  ${room.amenities
                               .map(
@@ -489,34 +510,40 @@ const buildTemplateHotelRooms = async (
 
   const rooms = await pool.query(
     `SELECT 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text AS room_number,
-      ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
-  FROM operation_rooms op
-  JOIN core_data.core_view cv ON op.view_id = cv.id
-  JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-  JOIN operation_roomprices orp ON orp.room_id = op.id
-  LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
-  LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-  WHERE op.property_id = $1
-  GROUP BY 
-      op.view_id, 
-      op.roomclass_id, 
-      cv.roomview, 
-      orc.custom_name, 
-      orc.maxadultcount,
-      orc.maxchildcount,
-      orci.imagename,
-      orp.fbprice,
-      op.roomno_text
-  ORDER BY op.view_id, op.roomclass_id, op.roomno_text;`,
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice,
+    ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+FROM operation_rooms op
+JOIN core_data.core_view cv ON op.view_id = cv.id
+JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
+JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
+LEFT JOIN (
+    SELECT room_class_id, MIN(imagename) AS imagename
+    FROM operation_roomclass_images
+    GROUP BY room_class_id
+) img ON img.room_class_id = orc.id
+LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+WHERE 
+    op.property_id = $1
+    AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
+GROUP BY 
+    op.view_id, 
+    op.roomclass_id, 
+    cv.roomview, 
+    orc.custom_name, 
+    orc.maxadultcount,
+    orc.maxchildcount,
+    img.imagename,
+    orp.fbprice
+ORDER BY op.view_id, op.roomclass_id;`,
     [hotelId]
   );
   {
@@ -536,7 +563,21 @@ const buildTemplateHotelRooms = async (
                         <p style="color: white; font-weight: 600;">${
                           room.roomview
                         } View, 
-                        </p>
+                        </p><div style="display: flex; gap: 10px; margin-top: 10px;">
+            
+                                <span style="font-weight: 600;">Room Number:</span>
+                             
+                                <template>
+                                    ${room.room_numbers
+                                      .map(
+                                        (number) => `
+                                        <span class="badge bg-dark text-light" style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">${number}</span>
+                                    `
+                                      )
+                                      .join("")}
+                                    
+                                </template>
+                            </div>
                         <p style="color: white;font-weight: 600;">
                             Amenities:  ${room.amenities
                               .map(

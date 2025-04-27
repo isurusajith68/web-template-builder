@@ -318,18 +318,29 @@
                         <div class="room_heading_inner" style="margin-bottom: 20px;">
                             <span>From Rs {{ room.fbprice }}</span>
                             <h3>{{ room.custom_name }}</h3>
-                            <p style="color: white; font-weight: 600;">{{ room.roomview }} View
+                            <p style="color: white; font-weight: 600;">{{ room.roomview }}
                             </p>
+
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+
+                                <span style="font-weight: 600;">Room Number:</span>
+                                <template v-for="(roomNo, index) in room.room_numbers" :key="index">
+                                    <small class="border-end  text-light" style="font-weight: 600; color: #007bff;">
+                                        {{ roomNo }} |
+                                    </small>
+                                </template>
+                            </div>
+
                             <p style="color: white;font-weight: 600; " v-if="room.amenities && room.amenities[0]">
                                 <span style="font-weight: 600;">Amenities:</span>
                                 <small v-for="(amenity, i) in room.amenities" :key="i">
                                     <span class="badge bg-dark text-light "
-                                        style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">{{
+                                        style="border-radius: 12px; font-size: 0.8rem; margin: 1px; display: inline-block;">{{
                                         amenity }}</span>
                                 </small>
                             </p>
                         </div>
-                        <a :href="`https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`"
+                        <a :href="`https://web-booking.ceyinfo.com?org_id=${orgId}&p_id=${hotelId}`"
                             class="line-button">book
                             now</a>
                     </div>

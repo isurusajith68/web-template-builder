@@ -514,22 +514,33 @@
                                                     class="fa fa-star text-primary"></small>
                                             </div>
                                         </div>
-                                        <div class="d-flex mb-3">
-                                            <small class="border-end me-3 pe-3">
-                                                <i class="fa fa-h-square text-primary me-2"></i>Room No: {{
-                                                room.room_number
-                                                }}
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fa fa-h-square text-primary me-2"></i>
+                                
+                                    <div class="d-flex flex-wrap align-items-center">
+                                        <span class="me-2">Room No:</span>
+                                
+                                        <template v-for="(roomNo, index) in Array.isArray(room.room_numbers) 
+                                      ? room.room_numbers 
+                                      : (typeof room.room_numbers === 'string' 
+                                        ? room.room_numbers.split(',') 
+                                        : ['N/A'])" :key="index">
+                                
+                                            <small class="border-end me-2 pe-2">
+                                                {{ roomNo.trim ? roomNo.trim() : roomNo }}
                                             </small>
-
-                                        </div>
-                                    <div v-if="room.amenities && room.amenities.length > 0" class="d-flex flex-wrap gap-2 mb-3">
-                                        <small v-for="(amenity, i) in room.amenities" :key="i" >
-                                            <span
-                                                class="badge bg-dark text-light " 
-                                      style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;"
-                                            >{{ amenity }}</span>
-                                        </small>
+                                        </template>
                                     </div>
+                                </div>
+
+                                        <div v-if="room.amenities && room.amenities.length > 0"
+                                            class="d-flex flex-wrap gap-2 mb-3">
+                                            <small v-for="(amenity, i) in room.amenities" :key="i">
+                                                <span class="badge bg-dark text-light "
+                                                    style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">{{
+                                                    amenity }}</span>
+                                            </small>
+                                        </div>
 
                                         <p class="text-body mb-3">Recommended for {{ room.maxadultcount }} adults</p>
                                         <div class="d-flex justify-content-between">
