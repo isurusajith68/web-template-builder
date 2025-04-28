@@ -24,6 +24,7 @@ app.use(
     origin: [
       "http://localhost:5500",
       "http://localhost:3000",
+      "http://localhost:3010",
       "http://127.0.0.1:5500",
       "https://temp1.ceyinfo.com",
       "https://temp2.ceyinfo.com",

@@ -897,7 +897,7 @@ const buildTemplateBooking = async (
     const checkout = document.getElementById("checkout")?.value || "";
    
 
-    params += \`&orgId=\${encodeURIComponent(orgId)}\`;
+    params += \`&org_id=\${encodeURIComponent(orgId)}\`;
     params += \`p_id=\${encodeURIComponent(hotelId)}\`;
     
     if (checkin) params += \`&checkin=\${encodeURIComponent(checkin)}\`;
@@ -1355,39 +1355,39 @@ const addPublishDetails = async (
   }
 };
 
-temp1.delete("/remove-site", async (req, res) => {
+temp1.post("/remove-site", async (req, res) => {
   const pool = req.tenantPool;
   const hotelId = req.property_id;
   const organization_id = req.organization_id;
-  const templateId = req.template_id;
+  const { temp } = req.body;
+  console.log(temp);
   try {
     await pool.query(
       "DELETE FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [hotelId, temp.templateid]
     );
     await pool.query(
       "DELETE FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
-      [hotelId, templateId]
+      [hotelId, temp.templateid]
     );
 
-    const nginxConfigPath = `/etc/nginx/sites-available/${req.body.domain}.conf`;
+    const nginxConfigPath = `/etc/nginx/sites-available/${temp.website}.conf`;
     if (fssync.existsSync(nginxConfigPath)) {
       fssync.unlinkSync(nginxConfigPath);
       await exec("sudo systemctl restart nginx");
     }
 
-    const sourceDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}`;
+    const sourceDir = `/var/www/template${temp.templateid}/organization${organization_id}/property${hotelId}`;
 
     if (fssync.existsSync(sourceDir)) {
       fssync.rmdirSync(sourceDir, { recursive: true });
     }
 
     await exec(
-      `sudo rm -rf /var/www/template${templateId}/organization${organization_id}/property${hotelId}`
+      `sudo rm -rf /var/www/template${temp.templateid}/organization${organization_id}/property${hotelId}`
     );
 
-    const domain = req.body.domain;
-    await exec(`sudo certbot delete --cert-name ${domain}`);
+    await exec(`sudo certbot delete --cert-name ${temp.website}`);
 
     console.log("Site deleted successfully");
 
