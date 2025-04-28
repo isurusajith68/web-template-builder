@@ -897,7 +897,7 @@ const buildTemplateBooking = async (
     const checkout = document.getElementById("checkout")?.value || "";
    
 
-    params += \`&org_id=\${encodeURIComponent(orgId)}\`;
+    params += \`&org_id=\${encodeURIComponent(orgId)}&\`;
     params += \`p_id=\${encodeURIComponent(hotelId)}\`;
     
     if (checkin) params += \`&checkin=\${encodeURIComponent(checkin)}\`;
