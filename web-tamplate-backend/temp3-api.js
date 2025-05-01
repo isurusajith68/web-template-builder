@@ -452,70 +452,7 @@ router.get("/build-template", async (req, res) => {
         message: "Site details not found",
       });
     }
-    // {
-    //   "email": "abc@gmail.com",
-    //   "title": "isuruy",
-    //   "address": "Gammana 05, kuda kathnoruwa",
-    //   "hotelId": 24,
-    //   "heroImage": "img/image-1731338746864-929412658.jpg",
-    //   "menuImage1": "img/image-1731338571963-176109156.jpg",
-    //   "menuImage2": "img/gallery_2.jpeg",
-    //   "menuImage3": "img/gallery_3.jpeg",
-    //   "menuTitle1": "Crab with Curry Sources",
-    //   "menuTitle2": "Tuna Roast Beef",
-    //   "menuTitle3": "Egg with Mushroom",
-    //   "templateId": 3,
-    //   "headerTitle": "Click to edit header title",
-    //   "phoneNumber": "07755518779",
-    //   "bookTableImage": "img/image-1731338498978-565349995.jpg",
-    //   "contactUsTitle": "Contat us title",
-    //   "heroDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc necLorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc necLorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc necLorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc necLorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec\n",
-    //   "homeHeaderImage": "img/image-1731338491233-965155354.jpg",
-    //   "aboutHeaderImage": "img/image-1731338782701-10283989.jpg",
-    //   "aboutHeaderTitle": "About Us new",
-    //   "menuDescription1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc necsshiajo\n",
-    //   "menuDescription2": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec",
-    //   "menuDescription3": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec",
-    //   "footerDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec",
-    //   "galleryDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc necssss\n",
-    //   "galleryHeaderImage": "img/image-1731338608604-703330581.jpg",
-    //   "galleryHeaderTitle": "Click to edit",
-    //   "contactUsDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec contact us description\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec contact us descriptionLorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec contact us description\n",
-    //   "contactUsHeaderImage": "img/image-1731339353585-121740868.jpg",
-    //   "contactUsHeaderTitle": "Contact Us ddd",
-    //   "bookATableDescription": "This is book a table description\n",
-    //   "galleryFirstFiveImages": [
-    //     "img/images-1731339122304-467027385.jpg",
-    //     "img/images-1731339122307-729696304.jpg",
-    //     "img/images-1731339122310-939992218.jpg",
-    //     "img/images-1731339122311-492087271.jpg",
-    //     "img/images-1731339122315-690968423.jpg"
-    //   ],
-    //   "galleryThirdFiveImages": [
-    //     "img/images-1731339219138-681430910.jpg",
-    //     "img/images-1731339219142-371785506.jpg",
-    //     "img/images-1731339219146-650417130.jpg",
-    //     "img/images-1731339219159-361409026.jpg"
-    //   ],
-    //   "menuHearderDescription": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis ab debitis sit",
-    //   "reservationDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc nec this is reservation description\n",
-    //   "reservationHeaderImage": "img/image-1731339320897-904938309.jpg",
-    //   "reservationHeaderTitle": "Click t",
-    //   "galleryFourthFiveImages": [
-    //     "img/images-1731339299460-70531072.jpg",
-    //     "img/images-1731339299462-271140789.jpg",
-    //     "img/images-1731339299463-461957589.jpg",
-    //     "img/images-1731339299463-784211038.jpg",
-    //     "img/images-1731339299465-573846122.jpg"
-    //   ],
-    //   "gallerySecondFiveImages": [
-    //     "img/images-1731339192574-544789219.jpg",
-    //     "img/images-1731339192574-725984036.jpg",
-    //     "img/images-1731339192576-126323351.jpg",
-    //     "img/images-1731339192578-286807634.jpg",
-    //     "img/images-1731339192583-185997996.jpg"
-    //   ]
-    // }
+
     const tempIds = [1, 2];
     for (const tempId of tempIds) {
       try {

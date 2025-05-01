@@ -207,21 +207,6 @@ temp1.get("/build-template", async (req, res) => {
     console.error("Error copying template:", error);
   }
 
-  // try {
-  //   const sourceDir = path.resolve(
-  //     __dirname,
-  //     "/var/images/organization" + organization_id + "/property" + hotelId
-  //   );
-  //   const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`;
-  //   console.log("sourceDir", sourceDir);
-  //   console.log("targetDir", targetDir);
-  //   await fs.mkdir(targetDir, { recursive: true });
-
-  //   await fs.cp(sourceDir, targetDir, { recursive: true });
-  // } catch (error) {
-  //   console.error("Error copying hotel images:", error);
-  // }
-
   try {
     const result = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
@@ -1360,7 +1345,6 @@ temp1.post("/remove-site", async (req, res) => {
   const hotelId = req.property_id;
   const organization_id = req.organization_id;
   const { temp } = req.body;
-  console.log(temp);
   try {
     await pool.query(
       "DELETE FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
