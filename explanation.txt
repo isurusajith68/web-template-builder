@@ -1,0 +1,95 @@
+I'll explain how this web template system works based on the code in temp1-api.js and the project structure.
+
+## Overall Architecture
+
+This is a hotel website template system that allows hotels to create and customize websites using predefined templates. It consists of:
+
+1. **Backend API** (Node.js/Express): Handles template generation, data storage, and website deployment
+2. **Template Files**: Pre-designed HTML templates (template1, template2, template3)
+3. **Database**: Stores hotel information, room details, and website configurations
+
+## Key Components
+
+### 1. Template Management
+
+The system manages three different website templates (temp1, temp2, temp3), each with its own design. When a hotel chooses a template, the backend:
+
+- Copies the template files to a dedicated folder for that hotel
+- Injects the hotel's specific data (name, rooms, images, etc.)
+- Generates a complete, customized website
+
+### 2. Data Storage
+
+Hotel data is stored in a PostgreSQL database with these main tables:
+- `webtemplatedata`: Stores website configuration for each hotel/template combination
+- `operation_property`: Stores basic hotel information
+- `operation_rooms`, `operation_roomreclass`: Store room information
+- `operation_hoteloffers`: Stores special offers
+
+### 3. Content Management
+
+The system allows hotel administrators to:
+- Upload images (via `/upload-images`)
+- Configure site details (via `/save-site-details`)
+- Manage hotel rooms, which are automatically displayed on the website
+- Create special offers
+
+### 4. Website Deployment
+
+When a hotel finalizes their website, the system:
+1. Builds the website by filling template placeholders with actual data
+2. Sets up an Nginx server configuration for the hotel's domain
+3. Configures SSL certificates using Certbot
+4. Makes the website publicly accessible
+
+## Key Functions
+
+### Template Building
+
+The `buildTemplate` function and related functions (like `buildTemplateAboutUs`, `buildTemplateHotelRooms`, etc.) handle:
+1. Reading the HTML template files
+2. Fetching hotel-specific data from the database
+3. Replacing placeholders (like `#siteTitle`, `#siteEmail`, etc.) with actual content
+4. Generating dynamic content (like room listings)
+5. Writing the final HTML files to the hotel's website directory
+
+### Image Management
+
+The system handles image uploads with these features:
+- Images are stored in dedicated directories for each hotel
+- Images can be displayed in galleries, carousels, and room listings
+- A reference to each image is stored in the database
+
+### Dynamic Room Listings
+
+Room information is fetched from the database and dynamically rendered in the template. The code:
+1. Fetches room data with a complex SQL query that joins multiple tables
+2. Maps each room to HTML with details like price, amenities, and images
+3. Injects this HTML into the template
+
+### Nginx and SSL Configuration
+
+For each hotel website, the system:
+1. Creates an Nginx server block configuration
+2. Sets up domain routing
+3. Obtains and configures SSL certificates using Certbot
+4. Restarts Nginx to apply changes
+
+## Error Handling
+
+The code includes error handling to manage issues with:
+- Missing hotel information
+- Database query failures
+- File system operations
+- Missing required parameters
+
+## Example Flow
+
+1. Hotel admin saves site details (title, email, etc.)
+2. Admin uploads images for the website
+3. Admin clicks "Build Template"
+4. System generates all HTML pages with the hotel's data
+5. System configures the web server
+6. Website becomes publicly accessible at the hotel's domain
+
+This templating system provides a quick way for hotels to create professional websites without needing web development expertise.
