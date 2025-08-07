@@ -343,7 +343,7 @@ app.get("/rooms-info", async (req, res) => {
         htrm.noofbed,
         hrv.roomview,
         hrt.roomtype,
-        hrp.fbprice,
+        hrp.roprice,
         ARRAY_AGG(amn.name) AS roomamenities
       FROM 
         hotelrooms htrm
@@ -368,7 +368,7 @@ app.get("/rooms-info", async (req, res) => {
         htrm.noofbed, 
         hrv.roomview, 
         hrt.roomtype, 
-        hrp.fbprice
+        hrp.roprice
       `,
       [hotelId]
     );
@@ -602,7 +602,7 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
         htrm.noofbed, 
         hrv.roomview,
         hrt.roomtype,
-        hrp.fbprice,
+        hrp.roprice,
         ARRAY_AGG(amn.name) AS roomamenities
       FROM 
         hotelrooms htrm
@@ -627,7 +627,7 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
         htrm.noofbed, 
         hrv.roomview, 
         hrt.roomtype, 
-        hrp.fbprice
+        hrp.roprice
       `,
       [hotelId]
     );
@@ -642,7 +642,7 @@ const buildTemplateHotelRooms = async (result, hotelId, templateId) => {
           <div class="position-relative">
             <img class="img-fluid" src="img/room4.jpg" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-               Rs ${room.fbprice} / Night
+               Rs ${room.roprice} / Night
             </small>
           </div>
           <div class="p-4 mt-2">

@@ -566,7 +566,7 @@ temp1.get("/rooms-info", async (req, res) => {
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice,
+    orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
 FROM operation_rooms op
@@ -591,7 +591,7 @@ GROUP BY
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice
+    orp.roprice
 ORDER BY op.view_id, op.roomclass_id;
 `,
       [hotelId]
@@ -637,7 +637,7 @@ const buildTemplate = async (
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice,
+    orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
 FROM operation_rooms op
@@ -662,7 +662,7 @@ GROUP BY
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice
+    orp.roprice
 ORDER BY op.view_id, op.roomclass_id;
 `,
       [hotelId]
@@ -681,7 +681,7 @@ ORDER BY op.view_id, op.roomclass_id;
               room.imagename ? room.imagename : "./img/room-1.jpg"
             }" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                 Rs ${room.fbprice} / Fb price
+                 Rs ${room.roprice} / lowest price
             </small>
           </div>
           <div class="p-4 mt-2">
@@ -1022,7 +1022,7 @@ const buildTemplateHotelRooms = async (
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice,
+    orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
 FROM operation_rooms op
@@ -1047,7 +1047,7 @@ GROUP BY
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice
+    orp.roprice
 ORDER BY op.view_id, op.roomclass_id;`,
       [hotelId]
     );
@@ -1064,7 +1064,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
               room.imagename ? room.imagename : "./img/room-1.jpg"
             }" alt="">
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                Rs ${room.fbprice} / Fb price
+                Rs ${room.roprice} / lowest price
             </small>
           </div>
           <div class="p-4 mt-2">

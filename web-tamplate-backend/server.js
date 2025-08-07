@@ -548,7 +548,7 @@ app.get("/build-template", async (req, res) => {
 //     htrm.roomno,
 //     hrv.label AS roomview,
 //     hrt.label AS roomtype,
-//     hrp.fbprice,
+//     hrp.roprice,
 //     ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
 //     ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
 // FROM
@@ -575,7 +575,7 @@ app.get("/build-template", async (req, res) => {
 //     htrm.roomno,
 //     hrv.label,
 //     hrt.label,
-//     hrp.fbprice;
+//     hrp.roprice;
 //   `,
 //       [hotelId]
 //     );
@@ -613,7 +613,7 @@ app.get("/build-template", async (req, res) => {
 //     htrm.noofbed,
 //     hrv.label AS roomview,
 //     hrt.label AS roomtype,
-//     hrp.fbprice,
+//     hrp.roprice,
 //     ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
 //     ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
 // FROM
@@ -641,7 +641,7 @@ app.get("/build-template", async (req, res) => {
 //     htrm.noofbed,
 //     hrv.label,
 //     hrt.label,
-//     hrp.fbprice;
+//     hrp.roprice;
 // `,
 //       [hotelId]
 //     );
@@ -659,7 +659,7 @@ app.get("/build-template", async (req, res) => {
 //               room.imagenames[0]
 //             }" alt="">
 //             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-//                Rs ${room.fbprice} / Night
+//                Rs ${room.roprice} / Night
 //             </small>
 //           </div>
 //           <div class="p-4 mt-2">
@@ -961,7 +961,7 @@ app.get("/build-template", async (req, res) => {
 //     htrm.noofbed,
 //     hrv.label AS roomview,
 //     hrt.label AS roomtype,
-//     hrp.fbprice,
+//     hrp.roprice,
 //     ARRAY_AGG(amn.label) FILTER (WHERE amn.label IS NOT NULL) AS roomamenities,
 //     ARRAY_AGG(ri.imagename) FILTER (WHERE ri.imagename IS NOT NULL) AS imagenames
 // FROM
@@ -989,7 +989,7 @@ app.get("/build-template", async (req, res) => {
 //     htrm.noofbed,
 //     hrv.label,
 //     hrt.label,
-//     hrp.fbprice;
+//     hrp.roprice;
 // `,
 //       [hotelId]
 //     );
@@ -1006,7 +1006,7 @@ app.get("/build-template", async (req, res) => {
 //               room.imagenames[0]
 //             }" alt="">
 //             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-//                Rs ${room.fbprice} / Night
+//                Rs ${room.roprice} / Night
 //             </small>
 //           </div>
 //           <div class="p-4 mt-2">

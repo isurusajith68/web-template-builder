@@ -257,7 +257,7 @@ const buildTemplate = async (
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice,
+    orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
 FROM operation_rooms op
@@ -282,7 +282,7 @@ GROUP BY
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice
+    orp.roprice
 ORDER BY op.view_id, op.roomclass_id;`,
     [hotelId]
   );
@@ -292,7 +292,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
                     <img src="img/rooms/1.png" alt="">
                     <div class="room_heading d-flex justify-content-between align-items-center">
                         <div class="room_heading_inner">
-                            <span>From Rs {{ room.fbprice }}</span>
+                            <span>From Rs {{ room.roprice }}</span>
                             <h3>{{ room.roomtype }}</h3>
                             <p style="color: white; font-weight: 600;">{{ room.roomview }} View, {{ room.noofbed }} Beds
                             </p>
@@ -317,7 +317,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
                    }" alt="" style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center" style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
                          <div class="room_heading_inner" style="margin-bottom: 20px;">
-                        <span>From Rs ${room.fbprice}</span>
+                        <span>From Rs ${room.roprice}</span>
                         <h3>${room.custom_name}</h3>
                         <p style="color: white; font-weight: 600;">${
                           room.roomview
@@ -517,7 +517,7 @@ const buildTemplateHotelRooms = async (
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice,
+    orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
 FROM operation_rooms op
@@ -542,7 +542,7 @@ GROUP BY
     orc.maxadultcount,
     orc.maxchildcount,
     img.imagename,
-    orp.fbprice
+    orp.roprice
 ORDER BY op.view_id, op.roomclass_id;`,
     [hotelId]
   );
@@ -558,7 +558,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
                    }" alt="" style="min-height: 400px; max-height: 400px; ">
                     <div class="room_heading d-flex justify-content-between align-items-center" style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
                          <div class="room_heading_inner" style="margin-bottom: 20px;">
-                        <span>From Rs ${room.fbprice}</span>
+                        <span>From Rs ${room.roprice}</span>
                         <h3>${room.custom_name}</h3>
                         <p style="color: white; font-weight: 600;">${
                           room.roomview
