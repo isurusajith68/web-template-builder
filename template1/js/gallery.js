@@ -32,20 +32,234 @@ const gallery = Vue.createApp({
       isLoading: null,
       isError: null,
       isSuccess: null,
+
+      // Image cropping properties
+      cropper: null,
+      selectedFiles: [],
+      croppedImages: [],
+      currentCropIndex: 0,
+      cropModalInstance: null,
+      isCropping: false,
     };
   },
 
   methods: {
     handleFileChange(event) {
-      console.log(event.target.files);
-      const files = event.target.files;
-      const formData = new FormData();
+      const files = Array.from(event.target.files);
 
-      for (let i = 0; i < files.length; i++) {
-        formData.append("images", files[i]);
+      if (files.length === 0) return;
+
+      // Validate files
+      const validFiles = files.filter((file) => {
+        if (!file.type.startsWith("image/")) {
+          alert(`${file.name} is not an image file`);
+          return false;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          // 5MB limit
+          alert(`${file.name} is too large. Maximum size is 5MB`);
+          return false;
+        }
+        return true;
+      });
+
+      if (validFiles.length === 0) return;
+
+      this.selectedFiles = validFiles;
+      this.croppedImages = [];
+      this.currentCropIndex = 0;
+      this.openCropModal();
+    },
+
+    openCropModal() {
+      if (this.selectedFiles.length === 0) return;
+
+      this.cropModalInstance = new bootstrap.Modal(
+        document.getElementById("imageCropModal")
+      );
+      this.cropModalInstance.show();
+
+      // Initialize cropper after modal is shown
+      document.getElementById("imageCropModal").addEventListener(
+        "shown.bs.modal",
+        () => {
+          this.initializeCropper();
+        },
+        { once: true }
+      );
+    },
+
+    initializeCropper() {
+      if (this.currentCropIndex >= this.selectedFiles.length) return;
+
+      const file = this.selectedFiles[this.currentCropIndex];
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const cropImage = this.$refs.cropImage;
+        cropImage.src = e.target.result;
+
+        if (this.cropper) {
+          this.cropper.destroy();
+        }
+
+        this.cropper = new Cropper(cropImage, {
+          aspectRatio: 1, // Square aspect ratio for gallery images
+          viewMode: 1,
+          dragMode: "move",
+          autoCropArea: 0.8,
+          restore: false,
+          guides: true,
+          center: true,
+          highlight: false,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          toggleDragModeOnDblclick: false,
+          minCropBoxWidth: 100,
+          minCropBoxHeight: 100,
+        });
+      };
+
+      reader.readAsDataURL(file);
+    },
+
+    cropAndNext() {
+      if (!this.cropper) {
+        console.error("Cropper not initialized");
+        return;
       }
 
+      this.isCropping = true;
+
+      // Get cropped canvas
+      const canvas = this.cropper.getCroppedCanvas({
+        width: 800,
+        height: 800,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: "high",
+      });
+
+      if (!canvas) {
+        console.error("Failed to get cropped canvas");
+        this.isCropping = false;
+        return;
+      }
+
+      // Convert to blob
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            console.error("Failed to create blob from canvas");
+            this.isCropping = false;
+            return;
+          }
+
+          // Create a new file with the cropped data
+          const originalFile = this.selectedFiles[this.currentCropIndex];
+          const croppedFile = new File([blob], `cropped_${originalFile.name}`, {
+            type: "image/jpeg",
+            lastModified: Date.now(),
+          });
+
+          this.croppedImages.push(croppedFile);
+          this.currentCropIndex++;
+
+          if (this.currentCropIndex < this.selectedFiles.length) {
+            // More images to crop
+            this.initializeCropper();
+          } else {
+            // All images cropped, upload them
+            this.uploadCroppedImages();
+          }
+
+          this.isCropping = false;
+        },
+        "image/jpeg",
+        0.8
+      );
+    },
+
+    uploadCroppedImages() {
+      const formData = new FormData();
+
+      this.croppedImages.forEach((file, index) => {
+        formData.append("images", file);
+      });
+
+      this.closeCropModal();
       this.uploadImages(formData);
+
+      // Reset for next upload
+      this.selectedFiles = [];
+      this.croppedImages = [];
+      this.currentCropIndex = 0;
+
+      // Clear the file input
+      const fileInput = document.getElementById("files");
+      if (fileInput) {
+        fileInput.value = "";
+      }
+    },
+
+    closeCropModal() {
+      if (this.cropper) {
+        this.cropper.destroy();
+        this.cropper = null;
+      }
+
+      if (this.cropModalInstance) {
+        this.cropModalInstance.hide();
+      }
+
+      this.selectedFiles = [];
+      this.croppedImages = [];
+      this.currentCropIndex = 0;
+      this.isCropping = false;
+    },
+
+    triggerFileInput() {
+      const fileInput = document.getElementById("files");
+      if (fileInput) {
+        fileInput.click();
+      }
+    },
+
+    onDragOver(event) {
+      event.preventDefault();
+      const uploadArea = event.target.closest(".upload-area");
+      if (uploadArea) {
+        uploadArea.style.borderColor = "#007bff";
+        uploadArea.style.backgroundColor = "#f8f9ff";
+      }
+    },
+
+    onDragLeave(event) {
+      event.preventDefault();
+      const uploadArea = event.target.closest(".upload-area");
+      if (uploadArea) {
+        uploadArea.style.borderColor = "#dee2e6";
+        uploadArea.style.backgroundColor = "transparent";
+      }
+    },
+
+    onDrop(event) {
+      event.preventDefault();
+      const uploadArea = event.target.closest(".upload-area");
+      if (uploadArea) {
+        uploadArea.style.borderColor = "#dee2e6";
+        uploadArea.style.backgroundColor = "transparent";
+      }
+
+      const files = Array.from(event.dataTransfer.files);
+      if (files.length > 0) {
+        // Create a mock event object for handleFileChange
+        const mockEvent = {
+          target: {
+            files: files,
+          },
+        };
+        this.handleFileChange(mockEvent);
+      }
     },
 
     removeRealImage(imageIndex) {
@@ -303,6 +517,21 @@ const gallery = Vue.createApp({
   mounted() {
     this.loadSiteDetails();
     this.hotelInfo();
+
+    // Handle modal cleanup on hide
+    const modal = document.getElementById("imageCropModal");
+    if (modal) {
+      modal.addEventListener("hidden.bs.modal", () => {
+        this.closeCropModal();
+      });
+    }
+  },
+
+  beforeUnmount() {
+    // Clean up cropper instance
+    if (this.cropper) {
+      this.cropper.destroy();
+    }
   },
 });
 

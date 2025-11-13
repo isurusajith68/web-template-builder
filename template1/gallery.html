@@ -34,6 +34,11 @@
     <link href="css/style.css" rel="stylesheet">
     <script src="https://unpkg.com/vue@3.0.2"></script>
 
+    <!-- Cropper.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <!-- Cropper.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
 
     <style>
         body {
@@ -97,6 +102,108 @@
         /* Make the other images and content slightly darker during hover */
         .gallery-container:hover .image-item:not(:hover) {
             opacity: 0.8;
+        }
+
+        /* Responsive gallery styles */
+        @media (max-width: 768px) {
+            .gallery-container {
+                width: 95%;
+                margin-top: 15px;
+            }
+
+            .gallery-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .image-item {
+                width: 100% !important;
+            }
+
+            .image-item img {
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .gallery-container {
+                width: 98%;
+                gap: 15px;
+            }
+
+            .image-item img {
+                height: 200px;
+            }
+        }
+
+        /* Crop Modal Styles */
+        .crop-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .cropper-container {
+            max-width: 100% !important;
+            max-height: 400px !important;
+        }
+
+        .modal-lg {
+            max-width: 900px;
+        }
+
+        #imageCropModal .modal-body {
+            padding: 1.5rem;
+        }
+
+        #imageCropModal .alert-info {
+            background-color: #e7f3ff;
+            border-color: #b3d9ff;
+            color: #0c5460;
+        }
+
+        .cropper-point {
+            background-color: #007bff !important;
+        }
+
+        .cropper-line {
+            background-color: #007bff !important;
+        }
+
+        .cropper-view-box {
+            outline-color: #007bff !important;
+        }
+
+        @media (max-width: 768px) {
+            .modal-lg {
+                max-width: 95%;
+                margin: 10px auto;
+            }
+
+            .crop-container {
+                padding: 10px;
+            }
+
+            #imageCropModal .modal-body {
+                padding: 1rem;
+            }
+        }
+
+        /* Upload Area Styles */
+        .upload-area {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #007bff !important;
+            background-color: #f8f9ff !important;
+        }
+
+        .upload-area.dragover {
+            border-color: #28a745 !important;
+            background-color: #f8fff9 !important;
         }
     </style>
 
@@ -232,11 +339,44 @@
         <!-- Booking Start -->
 
         <!-- Booking End -->
-        <div>
-            <label>
-                Upload multiple images:
-                <input type="file" id="files" name="files[]" multiple @change="handleFileChange" />
-            </label>
+        <div class="container mt-4 mb-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title mb-3">
+                                <i class="fas fa-cloud-upload-alt text-primary"></i>
+                                Upload Gallery Images
+                            </h5>
+                            <p class="text-muted mb-3">
+                                Select multiple images to upload to your gallery. Each image will be cropped for optimal
+                                display.
+                            </p>
+
+                            <div class="upload-area border border-2 border-dashed rounded p-4 mb-3"
+                                style="border-color: #dee2e6 !important; transition: all 0.3s ease;"
+                                @click="triggerFileInput" @dragover.prevent="onDragOver"
+                                @dragleave.prevent="onDragLeave" @drop.prevent="onDrop">
+                                <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                                <p class="mb-2">
+                                    <strong>Click to browse</strong> or drag and drop images here
+                                </p>
+                                <small class="text-muted">
+                                    Supports: JPG, PNG, GIF (Max 5MB per image)
+                                </small>
+
+                                <input type="file" id="files" name="files[]" multiple accept="image/*"
+                                    @change="handleFileChange" style="display: none;" />
+                            </div>
+
+                            <div v-if="selectedFiles.length > 0 && !isLoading" class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                {{ selectedFiles.length }} image(s) selected. Click crop to process them.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div v-if="!userUseRealImages" class="gallery-container">
@@ -287,6 +427,57 @@
 
         <!-- Newsletter end -->
 
+        <!-- Image Crop Modal Start -->
+        <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imageCropModalLabel">Crop Images</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info mb-3">
+                            <strong>Instructions:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Use mouse or touch to move and resize the crop area</li>
+                                <li>Images will be optimized for gallery display</li>
+                                <li>Recommended aspect ratio: Square (1:1) for best results</li>
+                            </ul>
+                        </div>
+                        <div class="crop-container" style="max-height: 400px; overflow: hidden;">
+                            <img ref="cropImage" style="max-width: 100%; display: block;">
+                        </div>
+                        <div class="mt-3" v-if="currentCropIndex < selectedFiles.length - 1">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar"
+                                    :style="{width: ((currentCropIndex + 1) / selectedFiles.length) * 100 + '%'}"
+                                    :aria-valuenow="currentCropIndex + 1" aria-valuemin="0"
+                                    :aria-valuemax="selectedFiles.length">
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                Image {{ currentCropIndex + 1 }} of {{ selectedFiles.length }}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" @click="cropAndNext" :disabled="isCropping">
+                            <span v-if="isCropping">
+                                <i class="fa fa-spinner fa-spin"></i> Processing...
+                            </span>
+                            <span v-else>
+                                {{ currentCropIndex < selectedFiles.length - 1 ? 'Crop & Next' : 'Crop & Upload' }}
+                                    </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Image Crop Modal End -->
 
         <!-- Footer Start -->
         <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"

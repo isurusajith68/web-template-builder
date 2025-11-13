@@ -269,6 +269,7 @@ temp1.get("/build-template", async (req, res) => {
       "#subContainerImage": result.rows[0].details.subContainerImage,
       "#footerDescription": result.rows[0].details.footerDescription,
       "#headerC": "#header-carousel",
+      "#navbarCollapse": "#navbarCollapse",
     };
 
     const getSiteName = await pool.query(
@@ -822,6 +823,7 @@ const buildTemplateGallery = async (
     "#galleryImages": galleryHtml,
     "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
     "#footerDescription": result.rows[0].details.footerDescription,
+    "#navbarCollapse": "#navbarCollapse",
   };
 
   const templatePath = `./template/temp${templateId}/gallery.html`;
@@ -967,6 +969,7 @@ const buildTemplateAttraction = async (
       "#attractionList": attractionListHtml,
       "#footerDescription": result.rows[0].details.footerDescription,
       "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
+      "#navbarCollapse": "#navbarCollapse",
     };
 
     const result1 = template.replace(
@@ -1130,6 +1133,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
       "#rooms": roomsHtml,
       "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
       "#footerDescription": result.rows[0].details.footerDescription,
+      "#navbarCollapse": "#navbarCollapse",
     };
 
     const templatePath = `./template/temp${templateId}/room.html`;

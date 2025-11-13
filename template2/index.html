@@ -30,6 +30,393 @@
 
     <script src="https://unpkg.com/vue@3.0.2"></script>
 
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+
+    <!-- Responsive Rooms CSS -->
+    <style>
+        /* Base styles for rooms container */
+        .responsive-rooms-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: wrap;
+            margin: 0 auto;
+            width: 90%;
+            padding: 0 15px;
+        }
+
+        .responsive-room-item {
+            width: 45%;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .responsive-room-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 8px;
+        }
+
+        .responsive-room-overlay {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            width: 100%;
+            border-radius: 0 0 8px 8px;
+            padding: 20px;
+        }
+
+        .responsive-room-content {
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .room-price {
+            color: #f9a826;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .room-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin: 5px 0;
+        }
+
+        .room-view {
+            color: white;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        .room-numbers-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .room-label {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .room-number {
+            color: #007bff;
+            font-weight: 600;
+            border-right: 1px solid #007bff;
+            padding-right: 5px;
+            margin-right: 5px;
+        }
+
+        .amenities-container {
+            margin-top: 10px;
+        }
+
+        .amenities-label {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .amenities-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .amenity-badge {
+            background: #333;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            margin: 1px;
+            display: inline-block;
+        }
+
+        .responsive-book-btn {
+            align-self: flex-end;
+            white-space: nowrap;
+        }
+
+        /* Tablet styles */
+        @media (max-width: 1024px) {
+            .responsive-rooms-container {
+                width: 95%;
+                gap: 15px;
+            }
+
+            .responsive-room-item {
+                width: 48%;
+            }
+
+            .responsive-room-image {
+                height: 350px;
+            }
+
+            .responsive-room-overlay {
+                height: 180px;
+                padding: 15px;
+            }
+
+            .room-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Small tablet styles */
+        @media (max-width: 768px) {
+            .responsive-rooms-container {
+                width: 100%;
+                gap: 20px;
+                padding: 0 10px;
+            }
+
+            .responsive-room-item {
+                width: 100%;
+                max-width: 500px;
+            }
+
+            .responsive-room-image {
+                height: 300px;
+            }
+
+            .responsive-room-overlay {
+                height: 160px;
+                padding: 15px;
+            }
+
+            .room-numbers-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .amenities-label {
+                margin-bottom: 3px;
+            }
+
+            .responsive-book-btn {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+        }
+
+        /* Mobile styles */
+        @media (max-width: 576px) {
+            .responsive-rooms-container {
+                padding: 0 5px;
+                gap: 15px;
+            }
+
+            .responsive-room-image {
+                height: 250px;
+            }
+
+            .responsive-room-overlay {
+                height: 140px;
+                padding: 10px;
+            }
+
+            .room-price {
+                font-size: 1rem;
+            }
+
+            .room-title {
+                font-size: 1.1rem;
+                margin: 3px 0;
+            }
+
+            .room-view {
+                font-size: 0.9rem;
+            }
+
+            .room-label,
+            .amenities-label {
+                font-size: 0.8rem;
+            }
+
+            .amenity-badge {
+                font-size: 0.65rem;
+                padding: 1px 4px;
+            }
+
+            .responsive-book-btn {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
+
+        /* Extra small mobile styles */
+        @media (max-width: 480px) {
+            .responsive-room-image {
+                height: 220px;
+            }
+
+            .responsive-room-overlay {
+                height: 120px;
+                padding: 8px;
+            }
+
+            .room-title {
+                font-size: 1rem;
+            }
+
+            .room-view {
+                font-size: 0.85rem;
+            }
+
+            .amenities-container {
+                margin-top: 5px;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 360px) {
+            .responsive-room-image {
+                height: 200px;
+            }
+
+            .responsive-room-overlay {
+                height: 110px;
+                padding: 6px;
+            }
+
+            .room-title {
+                font-size: 0.95rem;
+            }
+
+            .responsive-book-btn {
+                font-size: 0.75rem;
+                padding: 5px 10px;
+            }
+        }
+
+        /* Image Crop Modal Styles */
+        .crop-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .cropper-container {
+            max-width: 100% !important;
+            max-height: 400px !important;
+        }
+
+        .modal-lg {
+            max-width: 900px;
+        }
+
+        #imageCropModal .modal-body {
+            padding: 1.5rem;
+        }
+
+        #imageCropModal .alert-info {
+            background-color: #e7f3ff;
+            border-color: #b3d9ff;
+            color: #0c5460;
+        }
+
+        .cropper-point {
+            background-color: #007bff !important;
+        }
+
+        .cropper-line {
+            background-color: #007bff !important;
+        }
+
+        .cropper-view-box {
+            outline-color: #007bff !important;
+        }
+
+        @media (max-width: 768px) {
+            .modal-lg {
+                max-width: 95%;
+                margin: 10px auto;
+            }
+
+            .crop-container {
+                padding: 10px;
+            }
+
+            #imageCropModal .modal-body {
+                padding: 1rem;
+            }
+        }
+
+        /* Fix modal-backdrop fade show issues */
+        .modal-backdrop {
+            z-index: 1040 !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .modal-backdrop.fade {
+            opacity: 0;
+            transition: opacity 0.15s linear;
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.5 !important;
+        }
+
+        .modal-backdrop.fade.show {
+            opacity: 0.5 !important;
+        }
+
+        /* Ensure modal appears above backdrop */
+        .modal {
+            z-index: 1050 !important;
+        }
+
+        .modal.fade {
+            transition: opacity 0.15s linear;
+        }
+
+        .modal.fade .modal-dialog {
+            transition: transform 0.3s ease-out;
+            transform: translate(0, -50px);
+        }
+
+        .modal.show .modal-dialog {
+            transform: none;
+        }
+
+        /* Fix any conflicts with theme styles */
+        #imageCropModal {
+            z-index: 1055 !important;
+        }
+
+        #imageCropModal .modal-content {
+            position: relative;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0, 0, 0, .2);
+            border-radius: 0.3rem;
+            outline: 0;
+            z-index: 1056 !important;
+        }
+
+        /* Prevent body scroll when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+    </style>
+
 </head>
 
 <body id="app">
@@ -158,8 +545,9 @@
                                     Upload Image
                                     <i class="fa fa-upload"></i>
                                 </button>
-                                <input type="file" :ref="'fileInput' + index" @change="uploadImage($event, index)"
-                                    style="display: none;" />
+                                <input type="file" :ref="'fileInput' + index"
+                                    @change="uploadImageWithCrop($event, index)" style="display: none;"
+                                    accept="image/*" />
                             </div>
                         </div>
                     </div>
@@ -206,8 +594,9 @@
                             <div style="position: absolute; top: 50%; left: 60%;">
                                 <i @click="triggerAboutUsImageUpload(0)" class="fa fa-upload"
                                     style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
-                                <input type="file" :ref="'aboutImage' + 0" @change="uploadAboutUsImage($event, 0)"
-                                    style="display: none;" />
+                                <input type="file" :ref="'aboutImage' + 0"
+                                    @change="uploadAboutUsImageWithCrop($event, 0)" style="display: none;"
+                                    accept="image/*" />
                             </div>
                         </div>
                         <div style="position: relative;" class="img_2">
@@ -215,8 +604,9 @@
                             <div style="position: absolute; top: 50%; left: 60%;">
                                 <i @click="triggerAboutUsImageUpload(1)" class="fa fa-upload"
                                     style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
-                                <input type="file" :ref="'aboutImage' + 1" @change="uploadAboutUsImage($event, 1)"
-                                    style="display: none;" />
+                                <input type="file" :ref="'aboutImage' + 1"
+                                    @change="uploadAboutUsImageWithCrop($event, 1)" style="display: none;"
+                                    accept="image/*" />
                             </div>
                         </div>
                     </div>
@@ -245,8 +635,9 @@
                             <div style="position: absolute; top: 50%; left: 60%;">
                                 <i @click="triggerHotelFoodImageUpload(0)" class="fa fa-upload"
                                     style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
-                                <input type="file" :ref="'hotelFoodImage' + 0" @change="uploadHotelFoodImage($event, 0)"
-                                    style="display: none;" />
+                                <input type="file" :ref="'hotelFoodImage' + 0"
+                                    @change="uploadHotelFoodImageWithCrop($event, 0)" style="display: none;"
+                                    accept="image/*" />
                             </div>
 
                         </div>
@@ -255,8 +646,9 @@
                             <div style="position: absolute; top: 50%; left: 60%;">
                                 <i @click="triggerHotelFoodImageUpload(1)" class="fa fa-upload"
                                     style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
-                                <input type="file" :ref="'hotelFoodImage' + 1" @change="uploadHotelFoodImage($event, 1)"
-                                    style="display: none;" />
+                                <input type="file" :ref="'hotelFoodImage' + 1"
+                                    @change="uploadHotelFoodImageWithCrop($event, 1)" style="display: none;"
+                                    accept="image/*" />
                             </div>
 
                         </div>
@@ -304,49 +696,38 @@
                 </div>
             </div>
         </div>
-        <div class="rooms_here" style="display: flex; gap: 10px;
-                    justify-content: center;
-                    align-items: center;
-                    
-                flex-wrap: wrap; margin: 0 auto; width: 85%;">
-            <div class="single_rooms" v-for="(room, index) in roomsDetails" :key="index" style="width:45%; ">
+        <div class="rooms_here responsive-rooms-container">
+            <div class="single_rooms responsive-room-item" v-for="(room, index) in roomsDetails" :key="index">
                 <div class="room_thumb">
                     <img :src="room.imagename ?  room.imagename : 'img/rooms/1.png'" alt=""
-                        style="min-height: 400px; max-height: 400px; ">
-                    <div class="room_heading d-flex justify-content-between align-items-center "
-                        style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%); height: 200px; width: 100%;">
-                        <div class="room_heading_inner" style="margin-bottom: 20px;">
-                            <span>From Rs {{ room.roprice }}</span>
-                            <h3>{{ room.custom_name }}</h3>
-                            <p style="color: white; font-weight: 600;">{{ room.roomview }}
-                            </p>
+                        class="responsive-room-image">
+                    <div class="room_heading d-flex justify-content-between align-items-center responsive-room-overlay">
+                        <div class="room_heading_inner responsive-room-content">
+                            <span class="room-price">From Rs {{ room.roprice }}</span>
+                            <h3 class="room-title">{{ room.custom_name }}</h3>
+                            <p class="room-view">{{ room.roomview }}</p>
 
-                            <div style="display: flex; gap: 10px; margin-top: 10px;">
-
-                                <span style="font-weight: 600;">Room Number:</span>
+                            <div class="room-numbers-container">
+                                <span class="room-label">Room Number:</span>
                                 <template v-for="(roomNo, index) in room.room_numbers" :key="index">
-                                    <small class="border-end  text-light" style="font-weight: 600; color: #007bff;">
-                                        {{ roomNo }} |
-                                    </small>
+                                    <small class="room-number">{{ roomNo }} |</small>
                                 </template>
                             </div>
 
-                            <p style="color: white;font-weight: 600; " v-if="room.amenities && room.amenities[0]">
-                                <span style="font-weight: 600;">Amenities:</span>
-                                <small v-for="(amenity, i) in room.amenities" :key="i">
-                                    <span class="badge bg-dark text-light "
-                                        style="border-radius: 12px; font-size: 0.8rem; margin: 1px; display: inline-block;">{{
-                                        amenity }}</span>
-                                </small>
-                            </p>
+                            <div class="amenities-container" v-if="room.amenities && room.amenities[0]">
+                                <span class="amenities-label">Amenities:</span>
+                                <div class="amenities-badges">
+                                    <small v-for="(amenity, i) in room.amenities" :key="i">
+                                        <span class="amenity-badge">{{ amenity }}</span>
+                                    </small>
+                                </div>
+                            </div>
                         </div>
                         <a :href="`https://web-booking.ceyinfo.com?org_id=${orgId}&p_id=${hotelId}`"
-                            class="line-button">book
-                            now</a>
+                            class="line-button responsive-book-btn">book now</a>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <!-- features_room_end -->
@@ -378,6 +759,42 @@
         </div>
     </div>
     <!-- forQuery_end-->
+
+    <!-- Image Crop Modal Start -->
+    <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageCropModalLabel">Crop Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-3">
+                        <i class="fa fa-info-circle me-2"></i>
+                        <small>
+                            <span v-if="cropAspectRatio === 16/9">Cropping for wide banner (16:9 ratio)</span>
+                            <span v-else-if="cropAspectRatio === 1">Cropping for square image (1:1 ratio)</span>
+                            <span v-else>Cropping image</span>
+                            - Drag to move, use corners to resize the crop area.
+                        </small>
+                    </div>
+                    <div class="crop-container" style="max-height: 400px; overflow: hidden;">
+                        <img ref="cropImage" id="cropImage" style="max-width: 100%; display: block;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fa fa-times me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" @click="applyCrop">
+                        <i class="fa fa-crop me-1"></i>Apply Crop
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Image Crop Modal End -->
+
     <div style="background-color: #f9a826; padding: 10px; color: white; text-align: center; font-weight: 600;">
         <label style="background-color: #f9a826; padding: 10px; color: white; text-align: center; font-weight: 600;">
             Upload multiple images:
@@ -558,8 +975,7 @@
     <!-- JS here -->
     <script src="js/vendor/modernizr-3.5.0.min.js"></script>
     <script src="js/vendor/jquery-1.12.4.min.js"></script>
-    <script src="js/popper.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/isotope.pkgd.min.js"></script>
     <script src="js/ajax-form.js"></script>
@@ -583,6 +999,8 @@
     <script src="js/mail-script.js"></script>
 
     <script src="js/main.js"></script>
+    <!-- Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <script src="js/vue/index.js"></script>
     <!-- <script>
         $('#datepicker').datepicker({

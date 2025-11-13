@@ -116,6 +116,13 @@ const app = Vue.createApp({
       isLoading: null,
       isError: null,
       isSuccess: null,
+
+      cropper: null,
+      selectedFile: null,
+      cropModalInstance: null,
+      cropCallback: null,
+      cropAspectRatio: 16 / 9,
+      isCropping: false,
     };
   },
 
@@ -130,7 +137,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -200,7 +207,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          "http://localhost:4000/temp1/save-site-details",
+          "https://webtemplateapi.ceyinfo.com/temp1/save-site-details",
           {
             method: "POST",
             headers: {
@@ -244,7 +251,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/build-template?templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/build-template?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -282,12 +289,9 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(
-          `http://localhost:4000/temp1/hotel-info`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/hotel-info`, {
+          credentials: "include",
+        });
         if (!response.ok) {
           const err = await response.json();
 
@@ -321,12 +325,9 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...";
 
       try {
-        const response = await fetch(
-          `http://localhost:4000/temp1/rooms-info`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/rooms-info`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.json();
@@ -368,7 +369,7 @@ const app = Vue.createApp({
     async hotelOffers() {
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/hotel-offers`,
+          `https://webtemplateapi.ceyinfo.com/temp1/hotel-offers`,
           {
             credentials: "include",
           }
@@ -436,19 +437,144 @@ const app = Vue.createApp({
         console.error("File input ref not found.");
       }
     },
-    handleFileChange(event) {
-      const file = event.target.files[0];
-      if (file) {
-        console.log("Selected file:", file);
-        // this.subContainerImage = URL.createObjectURL(file);
 
-        //convert image to base64
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.subContainerImage = e.target.result;
-        };
-        reader.readAsDataURL(file);
+    validateImageFile(file) {
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file");
+        return false;
       }
+
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        alert("File size must be less than 5MB");
+        return false;
+      }
+
+      return true;
+    },
+
+    handleSubContainerFileSelect(event) {
+      const file = event.target.files[0];
+      if (file && this.validateImageFile(file)) {
+        this.selectedFile = file;
+
+        this.openCropModal(
+          file,
+          (croppedData) => {
+            this.subContainerImage = croppedData;
+          },
+          16 / 9
+        );
+      }
+    },
+
+    openCropModal(file, callback = null, aspectRatio = 16 / 9) {
+      this.cropCallback = callback;
+      this.cropAspectRatio = aspectRatio;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const cropImage = this.$refs.cropImage;
+        cropImage.src = e.target.result;
+
+        this.cropModalInstance = new bootstrap.Modal(
+          document.getElementById("imageCropModal")
+        );
+        this.cropModalInstance.show();
+
+        document.getElementById("imageCropModal").addEventListener(
+          "shown.bs.modal",
+          () => {
+            if (this.cropper) {
+              this.cropper.destroy();
+            }
+
+            this.cropper = new Cropper(cropImage, {
+              aspectRatio: aspectRatio,
+              viewMode: 1,
+              dragMode: "move",
+              autoCropArea: 0.8,
+              restore: false,
+              guides: true,
+              center: true,
+              highlight: false,
+              cropBoxMovable: true,
+              cropBoxResizable: true,
+              toggleDragModeOnDblclick: false,
+              minCropBoxWidth: 100,
+              minCropBoxHeight: 100,
+            });
+          },
+          { once: true }
+        );
+      };
+      reader.readAsDataURL(file);
+    },
+
+    applyCrop() {
+      if (!this.cropper) {
+        console.error("Cropper not initialized");
+        return;
+      }
+
+      let outputWidth, outputHeight;
+      if (this.cropAspectRatio === 16 / 9) {
+        outputWidth = 800;
+        outputHeight = 450;
+      } else if (this.cropAspectRatio === 1) {
+        outputWidth = 600;
+        outputHeight = 600;
+      } else {
+        outputWidth = 800;
+        outputHeight = Math.round(800 / this.cropAspectRatio);
+      }
+
+      const canvas = this.cropper.getCroppedCanvas({
+        width: outputWidth,
+        height: outputHeight,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: "high",
+      });
+
+      if (!canvas) {
+        console.error("Failed to get cropped canvas");
+        return;
+      }
+
+      const croppedImageData = canvas.toDataURL("image/jpeg", 0.8);
+
+      if (this.cropCallback && typeof this.cropCallback === "function") {
+        this.cropCallback(croppedImageData);
+      } else {
+        this.subContainerImage = croppedImageData;
+      }
+
+      this.closeCropModal();
+
+      console.log("Image cropped and applied successfully");
+    },
+
+    closeCropModal() {
+      if (this.cropper) {
+        this.cropper.destroy();
+        this.cropper = null;
+      }
+
+      if (this.cropModalInstance) {
+        this.cropModalInstance.hide();
+      }
+
+      // Reset file input
+      const fileInput = this.$refs["fileInputSubContainer"];
+      if (fileInput) {
+        fileInput.value = "";
+      }
+
+      this.selectedFile = null;
+    },
+
+    handleFileChange(event) {
+      this.handleSubContainerFileSelect(event);
     },
     editClickCarouselImage(index) {
       this.isEditingCarouselImages = true;
@@ -472,17 +598,17 @@ const app = Vue.createApp({
 
     handleFileUploadCarouselImage(event, index) {
       const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
+      if (file && this.validateImageFile(file)) {
+        this.selectedFile = file;
 
-        reader.onload = (e) => {
-          this.carouselImages[index].src = e.target.result;
-          console.log("Image uploaded successfully:", e.target.result);
-        };
-
-        reader.readAsDataURL(file);
-      } else {
-        console.log("No file selected.");
+        this.openCropModal(
+          file,
+          (croppedData) => {
+            this.carouselImages[index].src = croppedData;
+            console.log("Carousel image cropped and uploaded successfully");
+          },
+          16 / 9
+        );
       }
     },
 
@@ -547,17 +673,17 @@ const app = Vue.createApp({
     handleFileUpload(event, index) {
       console.log("index:", index);
       const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
+      if (file && this.validateImageFile(file)) {
+        this.selectedFile = file;
 
-        reader.onload = (e) => {
-          this.aboutUsImages[index].src = e.target.result;
-          console.log("Image uploaded successfully:", e.target.result);
-        };
-
-        reader.readAsDataURL(file);
-      } else {
-        console.log("No file selected.");
+        this.openCropModal(
+          file,
+          (croppedData) => {
+            this.aboutUsImages[index].src = croppedData;
+            console.log("About us image cropped and uploaded successfully");
+          },
+          1
+        );
       }
     },
 
@@ -631,6 +757,18 @@ const app = Vue.createApp({
     this.loadSiteDetails();
     this.hotelInfo();
     this.hotelOffers();
+
+    document
+      .getElementById("imageCropModal")
+      .addEventListener("hidden.bs.modal", () => {
+        this.closeCropModal();
+      });
+  },
+
+  beforeUnmount() {
+    if (this.cropper) {
+      this.cropper.destroy();
+    }
   },
 });
 app.mount("#app");
