@@ -197,11 +197,13 @@ const app = Vue.createApp({
     uploadAboutUsImage(event, index) {
       const file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.aboutUsImages[index].src = e.target.result;
-        };
-        reader.readAsDataURL(file);
+        this.openCropModal(file, 1, (croppedFile) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.aboutUsImages[index].src = e.target.result;
+          };
+          reader.readAsDataURL(croppedFile);
+        });
       }
     },
 
@@ -259,13 +261,15 @@ const app = Vue.createApp({
     async uploadImageRoomBradCam(event) {
       const file = event.target.files[0];
       if (file) {
-        try {
-          const imageDataUrl = await this.readFileAsync(file);
-          this.imageRoomBradCam = imageDataUrl;
-          await this.saveChanges();
-        } catch (error) {
-          console.error("Error reading file:", error);
-        }
+        this.openCropModal(file, 16 / 9, async (croppedFile) => {
+          try {
+            const imageDataUrl = await this.readFileAsync(croppedFile);
+            this.imageRoomBradCam = imageDataUrl;
+            await this.saveChanges();
+          } catch (error) {
+            console.error("Error reading file:", error);
+          }
+        });
       }
     },
     triggerFileInputAboutUsBradCam() {
@@ -274,13 +278,15 @@ const app = Vue.createApp({
     async uploadImageAboutUsBradCam(event) {
       const file = event.target.files[0];
       if (file) {
-        try {
-          const imageDataUrl = await this.readFileAsync(file);
-          this.imageAboutBradCam = imageDataUrl;
-          await this.saveChanges();
-        } catch (error) {
-          console.error("Error reading file:", error);
-        }
+        this.openCropModal(file, 16 / 9, async (croppedFile) => {
+          try {
+            const imageDataUrl = await this.readFileAsync(croppedFile);
+            this.imageAboutBradCam = imageDataUrl;
+            await this.saveChanges();
+          } catch (error) {
+            console.error("Error reading file:", error);
+          }
+        });
       }
     },
     triggerFileInputContactBradCam() {
@@ -289,13 +295,15 @@ const app = Vue.createApp({
     async uploadImageContactBradCam(event) {
       const file = event.target.files[0];
       if (file) {
-        try {
-          const imageDataUrl = await this.readFileAsync(file);
-          this.imageContactBradCam = imageDataUrl;
-          await this.saveChanges();
-        } catch (error) {
-          console.error("Error reading file:", error);
-        }
+        this.openCropModal(file, 16 / 9, async (croppedFile) => {
+          try {
+            const imageDataUrl = await this.readFileAsync(croppedFile);
+            this.imageContactBradCam = imageDataUrl;
+            await this.saveChanges();
+          } catch (error) {
+            console.error("Error reading file:", error);
+          }
+        });
       }
     },
     async mapSrc() {
