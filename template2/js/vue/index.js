@@ -94,6 +94,7 @@ const app = Vue.createApp({
 
       // Crop modal data
       cropperInstance: null,
+      cropModalInstance: null,
       cropImageSrc: "",
       cropAspectRatio: 1,
       currentCropCallback: null,
@@ -755,6 +756,11 @@ const app = Vue.createApp({
           console.log("About to show modal");
           // Show modal using Bootstrap 5 API with proper backdrop configuration
           const modalElement = document.getElementById("imageCropModal");
+          
+          if (!modalElement) {
+            console.error("Modal element not found");
+            return;
+          }
 
           // Ensure any existing backdrop is removed
           const existingBackdrop = document.querySelector(".modal-backdrop");
@@ -762,17 +768,16 @@ const app = Vue.createApp({
             existingBackdrop.remove();
           }
 
-          const modal = new bootstrap.Modal(modalElement, {
-            backdrop: true,
-            keyboard: true,
-            focus: true,
-          });
-          modal.show();
+          // Get or create modal instance
+          if (!this.cropModalInstance) {
+            this.cropModalInstance = new bootstrap.Modal(modalElement, {
+              backdrop: true,
+              keyboard: true,
+              focus: true,
+            });
 
-          // Initialize cropper after modal is shown
-          modalElement.addEventListener(
-            "shown.bs.modal",
-            () => {
+            // Initialize cropper after modal is shown (only set up once)
+            modalElement.addEventListener("shown.bs.modal", () => {
               console.log("Modal shown, initializing cropper");
 
               // Fix any backdrop issues that might occur
@@ -786,18 +791,15 @@ const app = Vue.createApp({
               }, 50);
 
               this.initializeCropper();
-            },
-            { once: true }
-          );
+            });
 
-          // Handle modal hide events to prevent backdrop issues
-          modalElement.addEventListener(
-            "hide.bs.modal",
-            () => {
+            // Handle modal hide events to prevent backdrop issues
+            modalElement.addEventListener("hide.bs.modal", () => {
               console.log("Modal hiding...");
-            },
-            { once: true }
-          );
+            });
+          }
+          
+          this.cropModalInstance.show();
         });
       };
       reader.readAsDataURL(file);
@@ -869,10 +871,10 @@ const app = Vue.createApp({
       }
 
       // Hide modal using Bootstrap 5 API
-      const modalElement = document.getElementById("imageCropModal");
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
+      if (this.cropModalInstance) {
+        const modalElement = document.getElementById("imageCropModal");
+        
+        this.cropModalInstance.hide();
 
         // Clean up any lingering backdrop issues
         modalElement.addEventListener(

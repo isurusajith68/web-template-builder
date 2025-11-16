@@ -477,20 +477,24 @@ const app = Vue.createApp({
         const cropImage = this.$refs.cropImage;
         cropImage.src = e.target.result;
 
-        this.cropModalInstance = new bootstrap.Modal(
-          document.getElementById("imageCropModal")
-        );
-        this.cropModalInstance.show();
+        // Get or create modal instance
+        if (!this.cropModalInstance) {
+          const modalElement = document.getElementById("imageCropModal");
+          if (!modalElement) {
+            console.error("Modal element not found");
+            return;
+          }
 
-        document.getElementById("imageCropModal").addEventListener(
-          "shown.bs.modal",
-          () => {
+          this.cropModalInstance = new bootstrap.Modal(modalElement);
+
+          // Set up event listener only once
+          modalElement.addEventListener("shown.bs.modal", () => {
             if (this.cropper) {
               this.cropper.destroy();
             }
 
             this.cropper = new Cropper(cropImage, {
-              aspectRatio: aspectRatio,
+              aspectRatio: this.cropAspectRatio,
               viewMode: 1,
               dragMode: "move",
               autoCropArea: 0.8,
@@ -504,9 +508,13 @@ const app = Vue.createApp({
               minCropBoxWidth: 100,
               minCropBoxHeight: 100,
             });
-          },
-          { once: true }
-        );
+          });
+        } else {
+          // Update the image source for subsequent uses
+          cropImage.src = e.target.result;
+        }
+
+        this.cropModalInstance.show();
       };
       reader.readAsDataURL(file);
     },
