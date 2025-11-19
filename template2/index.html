@@ -541,13 +541,10 @@
                                 </div>
                                 <button
                                     style="background-color: #f9a826; margin-top: 10px; color: white; border: none; padding: 10px 20px; border-radius: 5px;"
-                                    @click="triggerFileInput(index)">
+                                    @click="uploadImageWithCrop(index)">
                                     Upload Image
                                     <i class="fa fa-upload"></i>
                                 </button>
-                                <input type="file" :ref="'fileInput' + index"
-                                    @change="uploadImageWithCrop($event, index)" style="display: none;"
-                                    accept="image/*" />
                             </div>
                         </div>
                     </div>
@@ -602,11 +599,8 @@
                         <div style="position: relative;" class="img_2">
                             <img :src="aboutUsImages[1].src" :alt="aboutUsImages[1].alt" />
                             <div style="position: absolute; top: 50%; left: 60%;">
-                                <i @click="triggerAboutUsImageUpload(1)" class="fa fa-upload"
-                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
-                                <input type="file" :ref="'aboutImage' + 1"
-                                    @change="uploadAboutUsImageWithCrop($event, 1)" style="display: none;"
-                                    accept="image/*" />
+                                <i @click="uploadAboutUsImageWithCrop(1)" class="fa fa-upload"
+                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px; cursor: pointer;"></i>
                             </div>
                         </div>
                     </div>
@@ -633,22 +627,16 @@
                         <div style="position: relative;" class="img_1">
                             <img :src="hotelFoodImages[0].src" :alt="hotelFoodImages[0].alt" />
                             <div style="position: absolute; top: 50%; left: 60%;">
-                                <i @click="triggerHotelFoodImageUpload(0)" class="fa fa-upload"
-                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
-                                <input type="file" :ref="'hotelFoodImage' + 0"
-                                    @change="uploadHotelFoodImageWithCrop($event, 0)" style="display: none;"
-                                    accept="image/*" />
+                                <i @click="uploadHotelFoodImageWithCrop(0)" class="fa fa-upload"
+                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px; cursor: pointer;"></i>
                             </div>
 
                         </div>
                         <div style="position: relative;" class="img_2">
                             <img :src="hotelFoodImages[1].src" :alt="hotelFoodImages[1].alt" />
                             <div style="position: absolute; top: 50%; left: 60%;">
-                                <i @click="triggerHotelFoodImageUpload(1)" class="fa fa-upload"
-                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px;"></i>
-                                <input type="file" :ref="'hotelFoodImage' + 1"
-                                    @change="uploadHotelFoodImageWithCrop($event, 1)" style="display: none;"
-                                    accept="image/*" />
+                                <i @click="uploadHotelFoodImageWithCrop(1)" class="fa fa-upload"
+                                    style="position: absolute; bottom: 10px; right: 10px; background-color: #f9a826; color: white; padding: 5px; border-radius: 5px; cursor: pointer;"></i>
                             </div>
 
                         </div>
@@ -773,13 +761,15 @@
                         <i class="fa fa-info-circle me-2"></i>
                         <small>
                             <span v-if="cropAspectRatio === 16/9">Cropping for wide banner (16:9 ratio)</span>
+                            <span v-else-if="cropAspectRatio === 9/16">Cropping for portrait image (9:16 ratio)</span>
                             <span v-else-if="cropAspectRatio === 1">Cropping for square image (1:1 ratio)</span>
                             <span v-else>Cropping image</span>
                             - Drag to move, use corners to resize the crop area.
                         </small>
                     </div>
                     <div class="crop-container" style="max-height: 400px; overflow: hidden;">
-                        <img ref="cropImage" id="cropImage" style="max-width: 100%; display: block;">
+                        <img ref="cropImage" :src="cropImageSrc" id="cropImage"
+                            style="max-width: 100%; display: block;">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -799,7 +789,8 @@
         <label style="background-color: #f9a826; padding: 10px; color: white; text-align: center; font-weight: 600;">
             Upload multiple images:
             <input style="background-color: white; border: none; padding: 10px 20px; border-radius: 5px;" type="file"
-                id="files" name="files[]" multiple @change="handleFileChange" />
+                id="files" name="files[]" multiple accept="image/*" @change="handleFileChange"
+                ref="multipleImageInput" />
         </label>
     </div>
     <div class="instragram_area">

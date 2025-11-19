@@ -37,6 +37,30 @@
 
 	<!-- Theme style  -->
 	<link rel="stylesheet" href="css/style.css">
+	<!-- Cropper.js CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+	<style>
+		#cropModal .modal-dialog {
+			z-index: 1055;
+		}
+
+		#cropModal .modal-backdrop {
+			z-index: 1040;
+		}
+
+		#cropModal .modal-content {
+			z-index: 1056;
+		}
+
+		.crop-container {
+			max-height: 500px;
+			overflow: hidden;
+		}
+
+		.cropper-container {
+			z-index: 1056 !important;
+		}
+	</style>
 
 	<!-- Modernizr JS -->
 	<script src="js/modernizr-2.6.2.min.js"></script>
@@ -346,6 +370,28 @@
 		</footer>
 	</div>
 
+	<!-- Image Crop Modal -->
+	<div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true"
+		data-bs-backdrop="static" data-bs-keyboard="false">
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="cropModalLabel">Crop Image</h5>
+					<button type="button" class="btn-close" @click="closeCropModal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="crop-container">
+						<img id="cropImage" :src="cropImageSrc" alt="Image to crop" style="max-width: 100%;" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="closeCropModal">Cancel</button>
+					<button type="button" class="btn btn-primary" @click="applyCrop">Apply Crop</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="gototop js-top">
 		<a href="#" class="js-gotop"><i class="icon-arrow-up22"></i></a>
 	</div>
@@ -354,8 +400,8 @@
 	<script src="js/jquery.min.js"></script>
 	<!-- jQuery Easing -->
 	<script src="js/jquery.easing.1.3.js"></script>
-	<!-- Bootstrap -->
-	<script src="js/bootstrap.min.js"></script>
+	<!-- Bootstrap 5 Bundle -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- Waypoints -->
 	<script src="js/jquery.waypoints.min.js"></script>
 	<!-- Waypoints -->
@@ -365,6 +411,8 @@
 	<script src="js/zoomerang.js"></script>
 	<!-- Main -->
 	<script src="js/main.js"></script>
+	<!-- Cropper.js -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 	<script src="js/vue/index.js"></script>
 
 	<script>

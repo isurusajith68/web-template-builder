@@ -194,17 +194,14 @@ const app = Vue.createApp({
         console.error(`File input for index ${index} not found.`);
       }
     },
-    uploadAboutUsImage(event, index) {
-      const file = event.target.files[0];
-      if (file) {
-        this.openCropModal(file, 1, (croppedFile) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.aboutUsImages[index].src = e.target.result;
-          };
-          reader.readAsDataURL(croppedFile);
-        });
-      }
+    uploadAboutUsImage(index) {
+      this.openCropModal(9 / 16, (croppedFile) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.aboutUsImages[index].src = e.target.result;
+        };
+        reader.readAsDataURL(croppedFile);
+      });
     },
 
     editClickHotelFoodTitle() {
@@ -258,53 +255,44 @@ const app = Vue.createApp({
       this.$refs.fileInput.click();
     },
 
-    async uploadImageRoomBradCam(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.openCropModal(file, 16 / 9, async (croppedFile) => {
-          try {
-            const imageDataUrl = await this.readFileAsync(croppedFile);
-            this.imageRoomBradCam = imageDataUrl;
-            await this.saveChanges();
-          } catch (error) {
-            console.error("Error reading file:", error);
-          }
-        });
-      }
+    async uploadImageRoomBradCam() {
+      this.openCropModal(16 / 9, async (croppedFile) => {
+        try {
+          const imageDataUrl = await this.readFileAsync(croppedFile);
+          this.imageRoomBradCam = imageDataUrl;
+          await this.saveChanges();
+        } catch (error) {
+          console.error("Error reading file:", error);
+        }
+      });
     },
     triggerFileInputAboutUsBradCam() {
       this.$refs.fileInputAboutUs.click();
     },
-    async uploadImageAboutUsBradCam(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.openCropModal(file, 16 / 9, async (croppedFile) => {
-          try {
-            const imageDataUrl = await this.readFileAsync(croppedFile);
-            this.imageAboutBradCam = imageDataUrl;
-            await this.saveChanges();
-          } catch (error) {
-            console.error("Error reading file:", error);
-          }
-        });
-      }
+    async uploadImageAboutUsBradCam() {
+      this.openCropModal(16 / 9, async (croppedFile) => {
+        try {
+          const imageDataUrl = await this.readFileAsync(croppedFile);
+          this.imageAboutBradCam = imageDataUrl;
+          await this.saveChanges();
+        } catch (error) {
+          console.error("Error reading file:", error);
+        }
+      });
     },
     triggerFileInputContactBradCam() {
       this.$refs.fileInputContact.click();
     },
-    async uploadImageContactBradCam(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.openCropModal(file, 16 / 9, async (croppedFile) => {
-          try {
-            const imageDataUrl = await this.readFileAsync(croppedFile);
-            this.imageContactBradCam = imageDataUrl;
-            await this.saveChanges();
-          } catch (error) {
-            console.error("Error reading file:", error);
-          }
-        });
-      }
+    async uploadImageContactBradCam() {
+      this.openCropModal(16 / 9, async (croppedFile) => {
+        try {
+          const imageDataUrl = await this.readFileAsync(croppedFile);
+          this.imageContactBradCam = imageDataUrl;
+          await this.saveChanges();
+        } catch (error) {
+          console.error("Error reading file:", error);
+        }
+      });
     },
     async mapSrc() {
       try {
@@ -316,7 +304,7 @@ const app = Vue.createApp({
       }
     },
     handleFileChange(event) {
-      const files = event.target.files;
+      const files = Array.from(event.target.files);
       const maxFiles = 5;
 
       if (files.length > maxFiles) {
@@ -325,6 +313,11 @@ const app = Vue.createApp({
         setTimeout(() => {
           this.isError = null;
         }, 5000);
+
+        // Reset the input
+        if (this.$refs.multipleImageInput) {
+          this.$refs.multipleImageInput.value = "";
+        }
         return;
       }
 
@@ -338,16 +331,42 @@ const app = Vue.createApp({
         setTimeout(() => {
           this.isError = null;
         }, 5000);
+
+        // Reset the input
+        if (this.$refs.multipleImageInput) {
+          this.$refs.multipleImageInput.value = "";
+        }
         return;
       }
 
-      const formData = new FormData();
+      // Process files through crop modal one by one
+      this.processCroppedImages(files, 0, []);
 
-      for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
-        formData.append("images", files[i]);
+      // Reset the input after processing starts
+      if (this.$refs.multipleImageInput) {
+        this.$refs.multipleImageInput.value = "";
+      }
+    },
+
+    async processCroppedImages(files, index, croppedFiles) {
+      if (index >= files.length) {
+        // All files processed, now upload them
+        const formData = new FormData();
+        croppedFiles.forEach((file, i) => {
+          formData.append("images", file);
+        });
+        this.uploadImages(formData);
+        return;
       }
 
-      this.uploadImages(formData);
+      // Open crop modal for current file
+      this.openCropModalWithFile(files[index], 1, (croppedFile) => {
+        croppedFiles.push(croppedFile);
+        // Add delay before processing next file to allow modal cleanup
+        setTimeout(() => {
+          this.processCroppedImages(files, index + 1, croppedFiles);
+        }, 500);
+      });
     },
     removeRealImage(imageIndex) {
       const imageName = this.realImages.filePaths[imageIndex];
@@ -740,61 +759,53 @@ const app = Vue.createApp({
     },
 
     // Crop functionality methods
-    openCropModal(file, aspectRatio = 1, callback) {
+    openCropModal(aspectRatio, callback) {
       console.log("Opening crop modal with aspect ratio:", aspectRatio);
       this.cropAspectRatio = aspectRatio;
       this.currentCropCallback = callback;
 
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+ 
+      fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          this.loadFileForCrop(file);
+        }
+      };
+
+      fileInput.click();
+    },
+
+    openCropModalWithFile(file, aspectRatio, callback) {
+      console.log(
+        "Opening crop modal with file and aspect ratio:",
+        aspectRatio
+      );
+      this.cropAspectRatio = aspectRatio;
+      this.currentCropCallback = callback;
+      this.loadFileForCrop(file);
+    },
+
+    loadFileForCrop(file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        this.cropImageSrc = e.target.result;
-        console.log("Image loaded for cropping");
+      reader.onload = (event) => {
+        this.cropImageSrc = event.target.result;
 
         // Use Vue's nextTick to ensure DOM is updated
         this.$nextTick(() => {
-          console.log("About to show modal");
-          // Show modal using Bootstrap 5 API with proper backdrop configuration
           const modalElement = document.getElementById("imageCropModal");
-
-          // Ensure any existing backdrop is removed
-          const existingBackdrop = document.querySelector(".modal-backdrop");
-          if (existingBackdrop) {
-            existingBackdrop.remove();
-          }
-
-          const modal = new bootstrap.Modal(modalElement, {
-            backdrop: true,
-            keyboard: true,
-            focus: true,
-          });
+          const modal = new bootstrap.Modal(modalElement);
           modal.show();
 
           // Initialize cropper after modal is shown
           modalElement.addEventListener(
             "shown.bs.modal",
             () => {
-              console.log("Modal shown, initializing cropper");
-
-              // Fix any backdrop issues that might occur
               setTimeout(() => {
-                const backdrop = document.querySelector(".modal-backdrop");
-                if (backdrop) {
-                  backdrop.classList.add("show");
-                  backdrop.style.opacity = "0.5";
-                  backdrop.style.zIndex = "1040";
-                }
-              }, 50);
-
-              this.initializeCropper();
-            },
-            { once: true }
-          );
-
-          // Handle modal hide events to prevent backdrop issues
-          modalElement.addEventListener(
-            "hide.bs.modal",
-            () => {
-              console.log("Modal hiding...");
+                this.initializeCropper();
+              }, 300);
             },
             { once: true }
           );
@@ -804,140 +815,121 @@ const app = Vue.createApp({
     },
 
     initializeCropper() {
-      // Wait a bit for the modal to be fully shown
-      setTimeout(() => {
-        const image = this.$refs.cropImage;
-        if (image && !this.cropperInstance) {
-          image.src = this.cropImageSrc;
+      const image = document.getElementById("cropImage");
+      if (this.cropperInstance) {
+        this.cropperInstance.destroy();
+      }
 
-          image.onload = () => {
-            // Ensure Cropper is available
-            if (typeof Cropper !== "undefined") {
-              this.cropperInstance = new Cropper(image, {
-                aspectRatio: this.cropAspectRatio,
-                viewMode: 2,
-                dragMode: "move",
-                autoCropArea: 0.8,
-                restore: false,
-                guides: true,
-                center: true,
-                highlight: false,
-                cropBoxMovable: true,
-                cropBoxResizable: true,
-                toggleDragModeOnDblclick: false,
-              });
-            } else {
-              console.error("Cropper.js is not loaded");
-            }
-          };
-        }
-      }, 300);
+      this.cropperInstance = new Cropper(image, {
+        aspectRatio: this.cropAspectRatio,
+        viewMode: 1,
+        autoCropArea: 1,
+        responsive: true,
+        background: false,
+        modal: true,
+        guides: true,
+        center: true,
+        highlight: true,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false,
+      });
     },
 
     applyCrop() {
-      if (this.cropperInstance) {
-        const canvas = this.cropperInstance.getCroppedCanvas({
-          width: 800,
-          height: this.cropAspectRatio === 1 ? 800 : 450,
-          imageSmoothingQuality: "high",
-        });
-
-        canvas.toBlob(
-          (blob) => {
-            const croppedFile = new File([blob], "cropped-image.jpg", {
-              type: "image/jpeg",
-            });
-
-            // Call the callback with the cropped file
-            if (this.currentCropCallback) {
-              this.currentCropCallback(croppedFile);
-            }
-
-            this.closeCropModal();
-          },
-          "image/jpeg",
-          0.9
-        );
+      if (!this.cropperInstance) {
+        console.error("Cropper instance not found");
+        return;
       }
+
+      const canvas = this.cropperInstance.getCroppedCanvas({
+        width: 1920,
+        height: this.cropAspectRatio === 16 / 9 ? 1080 : 1920,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: "high",
+      });
+
+      canvas.toBlob(
+        (blob) => {
+          const file = new File([blob], "cropped-image.jpg", {
+            type: "image/jpeg",
+          });
+
+          if (this.currentCropCallback) {
+            this.currentCropCallback(file);
+          }
+
+          this.closeCropModal();
+        },
+        "image/jpeg",
+        0.95
+      );
     },
 
     closeCropModal() {
-      // Destroy cropper instance
+      const modalElement = document.getElementById("imageCropModal");
+      if (!modalElement) {
+        return;
+      }
+
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+
+      // Clean up backdrop manually if it exists
+      modalElement.addEventListener(
+        "hidden.bs.modal",
+        () => {
+          const backdrop = document.querySelector(".modal-backdrop");
+          if (backdrop) {
+            backdrop.remove();
+          }
+          document.body.classList.remove("modal-open");
+          document.body.style.overflow = "";
+          document.body.style.paddingRight = "";
+        },
+        { once: true }
+      );
+
       if (this.cropperInstance) {
         this.cropperInstance.destroy();
         this.cropperInstance = null;
       }
 
-      // Hide modal using Bootstrap 5 API
-      const modalElement = document.getElementById("imageCropModal");
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      if (modal) {
-        modal.hide();
-
-        // Clean up any lingering backdrop issues
-        modalElement.addEventListener(
-          "hidden.bs.modal",
-          () => {
-            // Remove any lingering backdrops
-            const backdrops = document.querySelectorAll(".modal-backdrop");
-            backdrops.forEach((backdrop) => backdrop.remove());
-
-            // Ensure body classes are cleaned up
-            document.body.classList.remove("modal-open");
-            document.body.style.removeProperty("padding-right");
-            document.body.style.removeProperty("overflow");
-
-            console.log("Modal cleanup completed");
-          },
-          { once: true }
-        );
-      }
-
-      // Reset data
       this.cropImageSrc = "";
       this.currentCropCallback = null;
     },
 
     // Updated image upload methods with crop functionality
-    uploadImageWithCrop(event, index) {
-      const file = event.target.files[0];
-      if (file) {
-        console.log("Starting crop for carousel image", index);
-        this.openCropModal(file, 16 / 9, (croppedFile) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.carouselImages[index].src = e.target.result;
-            console.log("Carousel image cropped and updated", index);
-          };
-          reader.readAsDataURL(croppedFile);
-        });
-      }
+    uploadImageWithCrop(index) {
+      this.openCropModal(16 / 9, (croppedFile) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.carouselImages[index].src = e.target.result;
+        };
+        reader.readAsDataURL(croppedFile);
+      });
     },
 
-    uploadAboutUsImageWithCrop(event, index) {
-      const file = event.target.files[0];
-      if (file) {
-        this.openCropModal(file, 1, (croppedFile) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.aboutUsImages[index].src = e.target.result;
-          };
-          reader.readAsDataURL(croppedFile);
-        });
-      }
+    uploadAboutUsImageWithCrop(index) {
+      this.openCropModal(9 / 16, (croppedFile) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.aboutUsImages[index].src = e.target.result;
+        };
+        reader.readAsDataURL(croppedFile);
+      });
     },
 
-    uploadHotelFoodImageWithCrop(event, index) {
-      const file = event.target.files[0];
-      if (file) {
-        this.openCropModal(file, 1, (croppedFile) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.hotelFoodImages[index].src = e.target.result;
-          };
-          reader.readAsDataURL(croppedFile);
-        });
-      }
+    uploadHotelFoodImageWithCrop(index) {
+      this.openCropModal(9 / 16, async (croppedFile) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.hotelFoodImages[index].src = e.target.result;
+        };
+        reader.readAsDataURL(croppedFile);
+      });
     },
   },
   mounted() {

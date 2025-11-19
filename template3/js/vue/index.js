@@ -132,6 +132,13 @@ const app = Vue.createApp({
       isLoading: null,
       isError: null,
       isSuccess: null,
+
+      // Crop Modal Properties
+      organization_id: null,
+      cropAspectRatio: 16 / 9,
+      cropImageSrc: "",
+      currentCropCallback: null,
+      cropperInstance: null,
     };
   },
   methods: {
@@ -516,47 +523,50 @@ const app = Vue.createApp({
     },
 
     triggerFileInput() {
-      this.$refs.fileInput.click();
+      this.uploadSingleImage("homeHeaderImage", 16 / 9);
     },
 
     triggerHeroImageUpload() {
-      this.$refs.heroImage.click();
+      this.uploadSingleImage("heroImage", 16 / 9);
     },
     triggerMenuImage1Upload() {
-      this.$refs.menuImage1.click();
+      this.uploadSingleImage("menuImage1", 1 / 1);
     },
 
     triggerMenuImage2Upload() {
-      this.$refs.menuImage2.click();
+      this.uploadSingleImage("menuImage2", 1 / 1);
     },
 
     triggerMenuImage3Upload() {
-      this.$refs.menuImage3.click();
+      this.uploadSingleImage("menuImage3", 1 / 1);
     },
 
     triggerGalleryHeaderImageUpload() {
-      this.$refs.galleryHeaderImage.click();
+      this.uploadSingleImage("galleryHeaderImage", 16 / 9);
     },
     triggerReservationHeaderImageUpload() {
-      this.$refs.reservationHeaderImage.click();
+      this.uploadSingleImage("reservationHeaderImage", 16 / 9);
     },
     triggerReservationBookTableImageImageUpload() {
-      this.$refs.reservationBookTableImageImage.click();
+      this.uploadSingleImage("reservationBookTableImage", 16 / 9);
     },
     triggerContactHeaderImageUpload() {
-      this.$refs.ContactHeaderImage.click();
+      this.uploadSingleImage("contactHeaderImage", 16 / 9);
     },
     triggerFileInputAboutHeaderImage() {
-      this.$refs.fileInputAboutHeaderImage.click();
+      this.uploadSingleImage("aboutHeaderImage", 16 / 9);
     },
 
-    async uploadSingleImage(event, imageType) {
-      this.isLoading = "Uploading...";
+    triggerBookTableImage() {
+      this.uploadSingleImage("bookTableImage", 16 / 9);
+    },
 
-      const file = event.target.files[0];
-      if (file) {
+    uploadSingleImage(imageType, aspectRatio = 16 / 9) {
+      this.openCropModal(aspectRatio, async (croppedFile) => {
+        this.isLoading = "Uploading...";
+
         const formData = new FormData();
-        formData.append("image", file);
+        formData.append("image", croppedFile);
         formData.append("imageType", imageType);
         formData.append("hotelId", this.hotelId);
         formData.append("templateId", this.templateId);
@@ -595,7 +605,7 @@ const app = Vue.createApp({
             this.isError = null;
           }, 5000);
         }
-      }
+      });
     },
     handleFileChangeFirstFive(event) {
       const files = event.target.files;
@@ -903,6 +913,141 @@ const app = Vue.createApp({
           this.isError = null;
         }, 5000);
       }
+    },
+
+    // Crop Modal Methods
+    openCropModal(aspectRatio, callback) {
+      console.log("Opening crop modal with aspect ratio:", aspectRatio);
+      this.cropAspectRatio = aspectRatio;
+      this.currentCropCallback = callback;
+
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+
+      fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            this.cropImageSrc = event.target.result;
+
+            // Ensure modal element exists
+            const modalElement = document.getElementById("cropModal");
+            if (!modalElement) {
+              console.error("Crop modal element not found in DOM");
+              return;
+            }
+
+            // Use Vue's nextTick to ensure DOM is updated
+            this.$nextTick(() => {
+              const modal = new bootstrap.Modal(modalElement, {
+                backdrop: "static",
+                keyboard: false,
+              });
+              modal.show();
+
+              modalElement.addEventListener(
+                "shown.bs.modal",
+                () => {
+                  this.initializeCropper();
+                },
+                { once: true }
+              );
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+
+      fileInput.click();
+    },
+
+    initializeCropper() {
+      const image = document.getElementById("cropImage");
+      if (this.cropperInstance) {
+        this.cropperInstance.destroy();
+      }
+
+      this.cropperInstance = new Cropper(image, {
+        aspectRatio: this.cropAspectRatio,
+        viewMode: 1,
+        autoCropArea: 1,
+        responsive: true,
+        background: false,
+        modal: true,
+        guides: true,
+        center: true,
+        highlight: true,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false,
+      });
+    },
+
+    applyCrop() {
+      if (!this.cropperInstance) {
+        console.error("Cropper instance not found");
+        return;
+      }
+
+      const canvas = this.cropperInstance.getCroppedCanvas({
+        width: 1920,
+        height: this.cropAspectRatio === 16 / 9 ? 1080 : 1920,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: "high",
+      });
+
+      canvas.toBlob(
+        (blob) => {
+          const file = new File([blob], "cropped-image.jpg", {
+            type: "image/jpeg",
+          });
+
+          if (this.currentCropCallback) {
+            this.currentCropCallback(file);
+          }
+
+          this.closeCropModal();
+        },
+        "image/jpeg",
+        0.95
+      );
+    },
+
+    closeCropModal() {
+      const modalElement = document.getElementById("cropModal");
+      if (!modalElement) {
+        return;
+      }
+
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+
+      // Clean up backdrop manually if it exists
+      modalElement.addEventListener(
+        "hidden.bs.modal",
+        () => {
+          const backdrop = document.querySelector(".modal-backdrop");
+          if (backdrop) {
+            backdrop.remove();
+          }
+          document.body.classList.remove("modal-open");
+          document.body.style.overflow = "";
+          document.body.style.paddingRight = "";
+        },
+        { once: true }
+      );
+
+      if (this.cropperInstance) {
+        this.cropperInstance.destroy();
+        this.cropperInstance = null;
+      }
+
+      this.cropImageSrc = "";
+      this.currentCropCallback = null;
     },
 
     async hotelInfo() {

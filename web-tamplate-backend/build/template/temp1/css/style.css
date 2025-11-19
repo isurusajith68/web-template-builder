@@ -101,7 +101,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 43, 0.7);
+  /* background: rgba(15, 23, 43, 0.7); */
   z-index: 1;
 }
 
@@ -137,7 +137,7 @@
 }
 
 .page-header-inner {
-  background: rgba(15, 23, 43, 0.7);
+  /* background: rgba(15, 23, 43, 0.7); */
 }
 
 .breadcrumb-item + .breadcrumb-item::before {

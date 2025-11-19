@@ -729,8 +729,7 @@ ORDER BY op.view_id, op.roomclass_id;
                   </div>`
              }
             <p class="text-body mb-3">Recommended for 2 adults</p>
-            <div class="d-flex justify-content-between">
-              <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
+            <div class="d-flex justify-content-end">
               <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
             </div>
           </div>
@@ -1114,8 +1113,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
                   </div>`
             }
             <p class="text-body mb-3">Recommended for 2 adults</p>
-            <div class="d-flex justify-content-between">
-              <a class="btn btn-sm btn-primary rounded py-2 px-4" href="#">View Detail</a>
+            <div class="d-flex justify-content-end">
               <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
             </div>
           </div>
