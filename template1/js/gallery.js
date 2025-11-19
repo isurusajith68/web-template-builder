@@ -104,7 +104,7 @@ const gallery = Vue.createApp({
         }
 
         this.cropper = new Cropper(cropImage, {
-          aspectRatio: 1, // Square aspect ratio for gallery images
+          aspectRatio: 1.5 / 1, // Landscape aspect ratio for gallery images (1.5:1)
           viewMode: 1,
           dragMode: "move",
           autoCropArea: 0.8,
@@ -115,7 +115,7 @@ const gallery = Vue.createApp({
           cropBoxMovable: true,
           cropBoxResizable: true,
           toggleDragModeOnDblclick: false,
-          minCropBoxWidth: 100,
+          minCropBoxWidth: 150,
           minCropBoxHeight: 100,
         });
       };
@@ -133,8 +133,7 @@ const gallery = Vue.createApp({
 
       // Get cropped canvas
       const canvas = this.cropper.getCroppedCanvas({
-        width: 800,
-        height: 800,
+        width: 1920,
         imageSmoothingEnabled: true,
         imageSmoothingQuality: "high",
       });

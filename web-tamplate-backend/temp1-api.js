@@ -804,9 +804,11 @@ const buildTemplateGallery = async (
     const rowImages = images.slice(i, i + 2);
     const rowHtml = rowImages
       .map((image, idx) => {
-        return `<div class="image-item"><img src="${image}" alt="Image ${
-          i + idx + 1
-        }" /></div>`;
+        return `<div class="image-item">
+          <div class="image-wrapper">
+            <img src="${image}" alt="Image ${i + idx + 1}" />
+          </div>
+        </div>`;
       })
       .join("");
     imageRows.push(`<div class="gallery-row">${rowHtml}</div>`);
@@ -1348,16 +1350,22 @@ temp1.post("/remove-site", async (req, res) => {
   const organization_id = req.organization_id;
   const { temp } = req.body;
   try {
-    await pool.query(
-      "DELETE FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, temp.templateid]
-    );
+    // await pool.query(
+    //   "DELETE FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
+    //   [hotelId, temp.templateid]
+    // );
     await pool.query(
       "DELETE FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
       [hotelId, temp.templateid]
     );
 
     const nginxConfigPath = `/etc/nginx/sites-available/${temp.website}.conf`;
+    const nginxEnabledPath = `/etc/nginx/sites-enabled/${temp.website}.conf`;
+
+    if (fssync.existsSync(nginxEnabledPath)) {
+      fssync.unlinkSync(nginxEnabledPath);
+    }
+
     if (fssync.existsSync(nginxConfigPath)) {
       fssync.unlinkSync(nginxConfigPath);
       await exec("sudo systemctl restart nginx");
