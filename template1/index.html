@@ -601,9 +601,46 @@
                                 :key="index" :data-wow-delay="`${0.1 * index}s`">
                                 <div class="room-item shadow rounded overflow-hidden">
                                     <div class="position-relative">
-                                        <img class="img-fluid w-100" style="height: 250px;"
+                                        <!-- Room Image Carousel -->
+                                        <div v-if="room.images && room.images.length > 0 && room.images[0] !== null"
+                                            :id="'roomCarousel' + index" class="carousel slide" data-bs-ride="carousel">
+                                            <div class="carousel-inner">
+                                                <div v-for="(image, imgIndex) in room.images.filter(img => img !== null)"
+                                                    :key="imgIndex"
+                                                    :class="['carousel-item', { active: imgIndex === 0 }]">
+                                                    <img class="img-fluid w-100"
+                                                        style="height: 250px; object-fit: cover;" :src="image"
+                                                        :alt="'Room image ' + (imgIndex + 1)"
+                                                        onerror="this.src='img/room4.jpg'">
+                                                </div>
+                                            </div>
+                                            <template v-if="room.images.filter(img => img !== null).length > 1">
+                                                <button class="carousel-control-prev" type="button"
+                                                    :data-bs-target="'#roomCarousel' + index" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="visually-hidden">Previous</span>
+                                                </button>
+                                                <button class="carousel-control-next" type="button"
+                                                    :data-bs-target="'#roomCarousel' + index" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="visually-hidden">Next</span>
+                                                </button>
+                                                <div class="carousel-indicators">
+                                                    <button
+                                                        v-for="(image, imgIndex) in room.images.filter(img => img !== null)"
+                                                        :key="imgIndex" type="button"
+                                                        :data-bs-target="'#roomCarousel' + index"
+                                                        :data-bs-slide-to="imgIndex" :class="{ active: imgIndex === 0 }"
+                                                        :aria-current="imgIndex === 0 ? 'true' : 'false'"
+                                                        :aria-label="'Slide ' + (imgIndex + 1)">
+                                                    </button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <img v-else class="img-fluid w-100" style="height: 250px; object-fit: cover;"
                                             :src="room.imagename ? room.imagename : 'img/room4.jpg'" alt="Room image"
                                             onerror="this.src='img/room4.jpg'">
+
                                         <small
                                             class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                                             Rs {{ room.roprice }} / lowest price
@@ -617,7 +654,7 @@
                                                     class="fa fa-star text-primary"></small>
                                             </div>
                                         </div>
-                                        <div class="d-flex align-items-center mb-3">
+                                        <!-- <div class="d-flex align-items-center mb-3">
                                             <i class="fa fa-h-square text-primary me-2"></i>
 
                                             <div class="d-flex flex-wrap align-items-center">
@@ -634,8 +671,14 @@
                                                     </small>
                                                 </template>
                                             </div>
+                                        </div> -->
+                                        <div class="d-flex align-items-center mb-3">
+                                            <i class="fa fa-h-square text-primary me-2"></i>
+                                            <div class="d-flex flex-wrap align-items-center">
+                                                <span class="me-2">No of Rooms:</span>
+                                                <small>{{ room.room_numbers.length }}</small>
+                                            </div>
                                         </div>
-
                                         <div v-if="room.amenities && room.amenities.length > 0"
                                             class="d-flex flex-wrap gap-2 mb-3">
                                             <small v-for="(amenity, i) in room.amenities" :key="i">
@@ -646,7 +689,7 @@
                                         </div>
 
                                         <p class="text-body mb-3">Recommended for {{ room.maxadultcount }} adults</p>
-                                        <div class="d-flex justify-content-end">
+                                        <div class="d-flex justify-content-center">
                                             <a class="btn btn-sm btn-dark rounded py-2 px-4"
                                                 :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`">Book
                                                 Now</a>

@@ -269,7 +269,7 @@ const gallery = Vue.createApp({
     async removeImageFromServer(imageName) {
       try {
         const response = await fetch(
-          "https://webtemplateapi.ceyinfo.com/temp1/remove-image",
+          "http://localhost:4000/temp1/remove-image",
           {
             method: "DELETE",
             headers: {
@@ -319,7 +319,7 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             body: formData,
@@ -369,7 +369,7 @@ const gallery = Vue.createApp({
       this.isLoading = "Saving...";
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             headers: {
@@ -413,7 +413,7 @@ const gallery = Vue.createApp({
     async hotelInfo() {
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
+          `http://localhost:4000/temp1/hotel-info`,
           {
             credentials: "include",
           }
@@ -451,7 +451,7 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
+          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }

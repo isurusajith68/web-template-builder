@@ -66,7 +66,7 @@ const app = Vue.createApp({
     },
     async hotelInfo() {
       try {
-        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/hotel-info`, {
+        const response = await fetch(`http://localhost:4000/temp1/hotel-info`, {
           credentials: "include",
         });
         if (!response.ok) {
@@ -102,7 +102,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
+          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -153,7 +153,7 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...s";
 
       try {
-        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/rooms-info`, {
+        const response = await fetch(`http://localhost:4000/temp1/rooms-info`, {
           credentials: "include",
         });
 

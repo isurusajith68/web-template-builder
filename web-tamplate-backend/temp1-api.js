@@ -566,21 +566,17 @@ temp1.get("/rooms-info", async (req, res) => {
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    img.imagename,
     orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
-    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
+    ARRAY_AGG(DISTINCT orci.imagename) AS images
 FROM operation_rooms op
 JOIN core_data.core_view cv ON op.view_id = cv.id
 JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
 JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
 JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
-LEFT JOIN (
-    SELECT room_class_id, MIN(imagename) AS imagename
-    FROM operation_roomclass_images
-    GROUP BY room_class_id
-) img ON img.room_class_id = orc.id
 LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
 WHERE 
     op.property_id = $1
     AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
@@ -591,7 +587,6 @@ GROUP BY
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    img.imagename,
     orp.roprice
 ORDER BY op.view_id, op.roomclass_id;
 `,
@@ -637,21 +632,17 @@ const buildTemplate = async (
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    img.imagename,
     orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
-    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
+    ARRAY_AGG(DISTINCT orci.imagename) AS images
 FROM operation_rooms op
 JOIN core_data.core_view cv ON op.view_id = cv.id
 JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
 JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
 JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
-LEFT JOIN (
-    SELECT room_class_id, MIN(imagename) AS imagename
-    FROM operation_roomclass_images
-    GROUP BY room_class_id
-) img ON img.room_class_id = orc.id
 LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
 WHERE 
     op.property_id = $1
     AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
@@ -662,7 +653,6 @@ GROUP BY
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    img.imagename,
     orp.roprice
 ORDER BY op.view_id, op.roomclass_id;
 `,
@@ -673,14 +663,80 @@ ORDER BY op.view_id, op.roomclass_id;
     console.log("Roomsddd :", limitedRooms);
 
     const roomsHtml = limitedRooms
-      .map((room) => {
+      .map((room, index) => {
+        const validImages =
+          room.images && Array.isArray(room.images)
+            ? room.images.filter((img) => img !== null)
+            : [];
+
+        const hasMultipleImages = validImages.length > 1;
+        const carouselId = `roomCarousel${index}`;
+
+        //  <div class="d-flex mb-3">
+        //    <small class="border-end me-3 pe-3">
+        //      <i class="fa fa-h-square text-primary me-2"></i>Room No: $
+        //      {room.room_numbers ? room.room_numbers.join(", ") : ""}
+        //    </small>
+        //  </div>;
+
+        let imageHtml = "";
+        if (validImages.length > 0) {
+          imageHtml = `
+            <div id="${carouselId}" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                ${validImages
+                  .map(
+                    (img, imgIndex) => `
+                  <div class="carousel-item ${imgIndex === 0 ? "active" : ""}">
+                    <img class="img-fluid w-100" style="height: 250px; object-fit: cover;" 
+                         src="${img}" 
+                         alt="Room image ${imgIndex + 1}"
+                         onerror="this.src='./img/room-1.jpg'">
+                  </div>
+                `
+                  )
+                  .join("")}
+              </div>
+              ${
+                hasMultipleImages
+                  ? `
+                <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+                <div class="carousel-indicators">
+                  ${validImages
+                    .map(
+                      (img, imgIndex) => `
+                    <button type="button" data-bs-target="#${carouselId}" data-bs-slide-to="${imgIndex}" 
+                            ${
+                              imgIndex === 0
+                                ? 'class="active" aria-current="true"'
+                                : ""
+                            } 
+                            aria-label="Slide ${imgIndex + 1}"></button>
+                  `
+                    )
+                    .join("")}
+                </div>
+              `
+                  : ""
+              }
+            </div>
+          `;
+        } else {
+          imageHtml = `<img class="img-fluid w-100" style="height: 250px; object-fit: cover;" src="./img/room-1.jpg" alt="Room image">`;
+        }
+
         return `
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
-            <img class="img-fluid w-100" style="height: 250px;" src="${
-              room.imagename ? room.imagename : "./img/room-1.jpg"
-            }" alt="">
+            ${imageHtml}
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                  Rs ${room.roprice} / lowest price
             </small>
@@ -696,15 +752,15 @@ ORDER BY op.view_id, op.roomclass_id;
                   .join("")}
               </div>
             </div>
-            <div class="d-flex mb-3">
+           
+<div class="d-flex mb-3">
               <small class="border-end me-3 pe-3">
-                <i class="fa fa-h-square text-primary me-2"></i>Room No: ${
-                  room.room_numbers ? room.room_numbers.join(", ") : ""
+                <i class="fa fa-h-square text-primary me-2"></i>No of Rooms: ${
+                  room.room_numbers ? room.room_numbers.length : 0
                 }
               </small>
              
             </div>
-
              ${
                room.amenities === null || room.amenities.length === 0
                  ? ""
@@ -729,7 +785,7 @@ ORDER BY op.view_id, op.roomclass_id;
                   </div>`
              }
             <p class="text-body mb-3">Recommended for 2 adults</p>
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-center">
               <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
             </div>
           </div>
@@ -1025,21 +1081,17 @@ const buildTemplateHotelRooms = async (
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    img.imagename,
     orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
-    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities
+    ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
+    ARRAY_AGG(DISTINCT orci.imagename) AS images
 FROM operation_rooms op
 JOIN core_data.core_view cv ON op.view_id = cv.id
 JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
 JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
 JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
-LEFT JOIN (
-    SELECT room_class_id, MIN(imagename) AS imagename
-    FROM operation_roomclass_images
-    GROUP BY room_class_id
-) img ON img.room_class_id = orc.id
 LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
+LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
 WHERE 
     op.property_id = $1
     AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
@@ -1050,7 +1102,6 @@ GROUP BY
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    img.imagename,
     orp.roprice
 ORDER BY op.view_id, op.roomclass_id;`,
       [hotelId]
@@ -1059,14 +1110,73 @@ ORDER BY op.view_id, op.roomclass_id;`,
     console.log("Rooms ss:", rooms.rows);
 
     const roomsHtml = rooms.rows
-      .map((room) => {
+      .map((room, index) => {
+        const validImages =
+          room.images && Array.isArray(room.images)
+            ? room.images.filter((img) => img !== null)
+            : [];
+
+        const hasMultipleImages = validImages.length > 1;
+        const carouselId = `roomCarouselPage${index}`;
+
+        let imageHtml = "";
+        if (validImages.length > 0) {
+          imageHtml = `
+            <div id="${carouselId}" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                ${validImages
+                  .map(
+                    (img, imgIndex) => `
+                  <div class="carousel-item ${imgIndex === 0 ? "active" : ""}">
+                    <img class="img-fluid w-100" style="height: 250px; object-fit: cover;" 
+                         src="${img}" 
+                         alt="Room image ${imgIndex + 1}"
+                         onerror="this.src='./img/room-1.jpg'">
+                  </div>
+                `
+                  )
+                  .join("")}
+              </div>
+              ${
+                hasMultipleImages
+                  ? `
+                <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+                <div class="carousel-indicators">
+                  ${validImages
+                    .map(
+                      (img, imgIndex) => `
+                    <button type="button" data-bs-target="#${carouselId}" data-bs-slide-to="${imgIndex}" 
+                            ${
+                              imgIndex === 0
+                                ? 'class="active" aria-current="true"'
+                                : ""
+                            } 
+                            aria-label="Slide ${imgIndex + 1}"></button>
+                  `
+                    )
+                    .join("")}
+                </div>
+              `
+                  : ""
+              }
+            </div>
+          `;
+        } else {
+          imageHtml = `<img class="img-fluid w-100" style="height: 250px; object-fit: cover;" src="./img/room-1.jpg" alt="Room image">`;
+        }
+
         return `
       <div class="col-lg-4 col-md-6 wow fadeInUp">
         <div class="room-item shadow rounded overflow-hidden">
           <div class="position-relative">
-            <img class="img-fluid w-100" style="height: 250px;" src="${
-              room.imagename ? room.imagename : "./img/room-1.jpg"
-            }" alt="">
+            ${imageHtml}
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
                 Rs ${room.roprice} / lowest price
             </small>
@@ -1084,11 +1194,10 @@ ORDER BY op.view_id, op.roomclass_id;`,
             </div>
             <div class="d-flex mb-3">
               <small class="border-end me-3 pe-3">
-                <i class="fa fa-h-square text-primary me-2"></i>Room No: ${
-                  room.room_numbers ? room.room_numbers.join(", ") : ""
+                <i class="fa fa-h-square text-primary me-2"></i>No of Rooms: ${
+                  room.room_numbers ? room.room_numbers.length : 0
                 }
-              </small>
-             
+              </small>             
             </div>
 
             ${
@@ -1115,7 +1224,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
                   </div>`
             }
             <p class="text-body mb-3">Recommended for 2 adults</p>
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-center">
               <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
             </div>
           </div>
