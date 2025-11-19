@@ -87,6 +87,10 @@ temp1.post("/save-site-details", async (req, res) => {
     subContainerDescription,
     subContainerImage,
     footerDescription,
+    facebookLink,
+    bookingcomLink,
+    tripadvisorLink,
+    youtubeLink,
   } = req.body;
 
   try {
@@ -126,6 +130,10 @@ temp1.post("/save-site-details", async (req, res) => {
             subContainerDescription,
             subContainerImage,
             footerDescription,
+            facebookLink,
+            bookingcomLink,
+            tripadvisorLink,
+            youtubeLink,
           }),
           propertyId,
           templateId,
@@ -161,6 +169,10 @@ temp1.post("/save-site-details", async (req, res) => {
             subContainerDescription,
             subContainerImage,
             footerDescription,
+            facebookLink,
+            bookingcomLink,
+            tripadvisorLink,
+            youtubeLink,
           }),
         ]
       );
@@ -270,6 +282,10 @@ temp1.get("/build-template", async (req, res) => {
       "#footerDescription": result.rows[0].details.footerDescription,
       "#headerC": "#header-carousel",
       "#navbarCollapse": "#navbarCollapse",
+      "#facebookLink": result.rows[0].details.facebookLink || "#",
+      "#bookingcomLink": result.rows[0].details.bookingcomLink || "#",
+      "#tripadvisorLink": result.rows[0].details.tripadvisorLink || "#",
+      "#youtubeLink": result.rows[0].details.youtubeLink || "#",
     };
 
     const getSiteName = await pool.query(

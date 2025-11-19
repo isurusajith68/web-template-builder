@@ -40,6 +40,11 @@ const gallery = Vue.createApp({
       currentCropIndex: 0,
       cropModalInstance: null,
       isCropping: false,
+
+      facebookLink: "",
+      bookingcomLink: "",
+      tripadvisorLink: "",
+      youtubeLink: "",
     };
   },
 
@@ -269,7 +274,7 @@ const gallery = Vue.createApp({
     async removeImageFromServer(imageName) {
       try {
         const response = await fetch(
-          "http://localhost:4000/temp1/remove-image",
+          "https://webtemplateapi.ceyinfo.com/temp1/remove-image",
           {
             method: "DELETE",
             headers: {
@@ -319,7 +324,7 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             body: formData,
@@ -369,7 +374,7 @@ const gallery = Vue.createApp({
       this.isLoading = "Saving...";
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             headers: {
@@ -413,7 +418,7 @@ const gallery = Vue.createApp({
     async hotelInfo() {
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/hotel-info`,
+          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
           {
             credentials: "include",
           }
@@ -451,7 +456,7 @@ const gallery = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -477,6 +482,11 @@ const gallery = Vue.createApp({
             this.footerDescription =
               siteDetails?.details?.footerDescription || this.footerDescription;
           }
+
+          this.facebookLink = siteDetails?.details?.facebookLink || "";
+          this.bookingcomLink = siteDetails?.details?.bookingcomLink || "";
+          this.tripadvisorLink = siteDetails?.details?.tripadvisorLink || "";
+          this.youtubeLink = siteDetails?.details?.youtubeLink || "";
 
           // this.title = siteDetails.details.title;
           // this.email = siteDetails.details.email;

@@ -123,6 +123,15 @@ const app = Vue.createApp({
       cropCallback: null,
       cropAspectRatio: 16 / 9,
       isCropping: false,
+
+      facebookLink: "#",
+      bookingcomLink: "#",
+      tripadvisorLink: "#",
+      youtubeLink: "#",
+
+      currentSocialPlatform: "",
+      currentSocialLink: "",
+      socialModalInstance: null,
     };
   },
 
@@ -137,7 +146,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -171,6 +180,14 @@ const app = Vue.createApp({
             siteDetails?.details?.subContainerImage || this.subContainerImage;
           this.footerDescription =
             siteDetails?.details?.footerDescription || this.footerDescription;
+          this.facebookLink =
+            siteDetails?.details?.facebookLink || this.facebookLink;
+          this.bookingcomLink =
+            siteDetails?.details?.bookingcomLink || this.bookingcomLink;
+          this.tripadvisorLink =
+            siteDetails?.details?.tripadvisorLink || this.tripadvisorLink;
+          this.youtubeLink =
+            siteDetails?.details?.youtubeLink || this.youtubeLink;
 
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
@@ -203,11 +220,15 @@ const app = Vue.createApp({
         subContainerDescription: this.subContainerDescription,
         subContainerImage: this.subContainerImage,
         footerDescription: this.footerDescription,
+        facebookLink: this.facebookLink,
+        bookingcomLink: this.bookingcomLink,
+        tripadvisorLink: this.tripadvisorLink,
+        youtubeLink: this.youtubeLink,
       };
 
       try {
         const response = await fetch(
-          "http://localhost:4000/temp1/save-site-details",
+          "https://webtemplateapi.ceyinfo.com/temp1/save-site-details",
           {
             method: "POST",
             headers: {
@@ -251,7 +272,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/build-template?templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/build-template?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -289,7 +310,7 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(`http://localhost:4000/temp1/hotel-info`, {
+        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/hotel-info`, {
           credentials: "include",
         });
         if (!response.ok) {
@@ -325,7 +346,7 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...";
 
       try {
-        const response = await fetch(`http://localhost:4000/temp1/rooms-info`, {
+        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/rooms-info`, {
           credentials: "include",
         });
 
@@ -369,7 +390,7 @@ const app = Vue.createApp({
     async hotelOffers() {
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/hotel-offers`,
+          `https://webtemplateapi.ceyinfo.com/temp1/hotel-offers`,
           {
             credentials: "include",
           }
@@ -750,6 +771,49 @@ const app = Vue.createApp({
 
     mapSrc() {
       return this.mapIframeHtml;
+    },
+
+    openSocialLinkModal(platform) {
+      const platformMap = {
+        facebook: { name: "Facebook", link: this.facebookLink },
+        booking: { name: "Booking.com", link: this.bookingcomLink },
+        tripadvisor: { name: "TripAdvisor", link: this.tripadvisorLink },
+        youtube: { name: "YouTube", link: this.youtubeLink },
+      };
+
+      const platformData = platformMap[platform];
+      if (platformData) {
+        this.currentSocialPlatform = platformData.name;
+        this.currentSocialLink = platformData.link;
+        this.currentSocialType = platform;
+
+        if (!this.socialModalInstance) {
+          this.socialModalInstance = new bootstrap.Modal(
+            document.getElementById("socialLinksModal")
+          );
+        }
+        this.socialModalInstance.show();
+      }
+    },
+
+    saveSocialLink() {
+      const platformMap = {
+        facebook: "facebookLink",
+        booking: "bookingcomLink",
+        tripadvisor: "tripadvisorLink",
+        youtube: "youtubeLink",
+      };
+
+      const linkProperty = platformMap[this.currentSocialType];
+      if (linkProperty) {
+        this[linkProperty] = this.currentSocialLink;
+        this.socialModalInstance.hide();
+
+        this.isSuccess = `${this.currentSocialPlatform} link updated successfully`;
+        setTimeout(() => {
+          this.isSuccess = null;
+        }, 3000);
+      }
     },
   },
   mounted() {

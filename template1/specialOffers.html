@@ -122,14 +122,11 @@
                         </div>
                         <div class="col-lg-5 px-5 text-end">
                             <div class="d-inline-flex align-items-center py-2">
-                                <a class="me-3" href="https://www.facebook.com/hillroostkandy/"><i
-                                        class="fab fa-facebook-f"></i></a>
-                                <a class="me-3" href="https://www.booking.com/hotel/lk/hill-roost.en-gb.html"><i
-                                        class="fas fa-bed"></i></a>
-                                <a class="me-3"
-                                    href="https://www.tripadvisor.ca/Hotel_Review-g11914132-d15015697-Reviews-Hill_Roost-Ampitiya_Kandy_District_Central_Province.html"
-                                    target="_blank" rel="noopener noreferrer"> <i class="fab fa-tripadvisor"></i></a>
-                                <a class="" href=""><i class="fab fa-youtube"></i></a>
+                                <a class="me-3" :href="facebookLink"><i class="fab fa-facebook-f"></i></a>
+                                <a class="me-3" :href="bookingcomLink"><i class="fas fa-bed"></i></a>
+                                <a class="me-3" :href="tripadvisorLink" target="_blank" rel="noopener noreferrer"> <i
+                                        class="fab fa-tripadvisor"></i></a>
+                                <a class="" :href="youtubeLink"><i class="fab fa-youtube"></i></a>
                             </div>
                         </div>
                     </div>
@@ -287,18 +284,17 @@
                             <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{phoneNumber}}</p>
                             <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{email}}</p>
                             <div class="d-flex pt-2">
-                                <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-light btn-social"
-                                    href="https://www.facebook.com/hillroostkandy/"><i
+                                <a class="btn btn-outline-light btn-social" :href="youtubeLink"><i
+                                        class="fab fa-youtube"></i></a>
+                                <a class="btn btn-outline-light btn-social" :href="facebookLink"><i
                                         class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-light btn-social"
-                                    href="https://www.booking.com/hotel/lk/hill-roost.en-gb.html" target="_blank"
+                                <a class="btn btn-outline-light btn-social" :href="bookingcomLink" target="_blank"
                                     rel="noopener noreferrer">
                                     <i class="fas fa-bed"></i> <!-- Example icon for Booking.com -->
                                 </a>
-                                <a class="btn btn-outline-light btn-social"
-                                    href="https://www.tripadvisor.ca/Hotel_Review-g11914132-d15015697-Reviews-Hill_Roost-Ampitiya_Kandy_District_Central_Province.html"
-                                    target="_blank" rel="noopener noreferrer">
+                                <a class="btn btn-outline-light btn-social" :href="tripadvisorLink" target="_blank"
+                                    rel="noopener noreferrer">
+
                                     <i class="fab fa-tripadvisor"></i> <!-- TripAdvisor icon -->
                                 </a>
 

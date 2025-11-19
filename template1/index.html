@@ -110,14 +110,19 @@
                         </div>
                         <div class="col-lg-5 px-5 text-end">
                             <div class="d-inline-flex align-items-center py-2">
-                                <a class="me-3" href="https://www.facebook.com/hillroostkandy/"><i
-                                        class="fab fa-facebook-f"></i></a>
-                                <a class="me-3" href="https://www.booking.com/hotel/lk/hill-roost.en-gb.html"><i
-                                        class="fas fa-bed"></i></a>
-                                <a class="me-3"
-                                    href="https://www.tripadvisor.ca/Hotel_Review-g11914132-d15015697-Reviews-Hill_Roost-Ampitiya_Kandy_District_Central_Province.html"
-                                    target="_blank" rel="noopener noreferrer"> <i class="fab fa-tripadvisor"></i></a>
-                                <a class="" href=""><i class="fab fa-youtube"></i></a>
+                                <a class="me-3" :href="facebookLink" @click.prevent="openSocialLinkModal('facebook')">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a class="me-3" :href="bookingcomLink" @click.prevent="openSocialLinkModal('booking')">
+                                    <i class="fas fa-bed"></i>
+                                </a>
+                                <a class="me-3" :href="tripadvisorLink"
+                                    @click.prevent="openSocialLinkModal('tripadvisor')">
+                                    <i class="fab fa-tripadvisor"></i>
+                                </a>
+                                <a class="" :href="youtubeLink" @click.prevent="openSocialLinkModal('youtube')">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -1077,6 +1082,36 @@
 
                 <!-- Newsletter end -->
 
+                <!-- Social Links Modal Start -->
+                <div class="modal fade" id="socialLinksModal" tabindex="-1" aria-labelledby="socialLinksModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="socialLinksModalLabel">Edit {{ currentSocialPlatform }} Link
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label :for="'socialLink'" class="form-label">{{ currentSocialPlatform }}
+                                        URL</label>
+                                    <input type="url" class="form-control" id="socialLink" v-model="currentSocialLink"
+                                        :placeholder="'Enter ' + currentSocialPlatform + ' link'">
+                                    <div class="form-text">Enter the complete URL (e.g., https://facebook.com/yourpage)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" @click="saveSocialLink">Save Link</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Social Links Modal End -->
+
                 <!-- Image Crop Modal Start -->
                 <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel"
                     aria-hidden="true">
@@ -1151,19 +1186,17 @@
                                     {{email}}
                                 </p>
                                 <div class="d-flex pt-2">
-                                    <a class="btn btn-outline-light btn-social" href=""><i
-                                            class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-outline-light btn-social"
-                                        href="https://www.facebook.com/hillroostkandy/"><i
+                                    <a class="btn btn-outline-light btn-social" :href="youtubeLink"><i
+                                            class="fab fa-youtube"></i></a>
+                                    <a class="btn btn-outline-light btn-social" :href="facebookLink"><i
                                             class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-outline-light btn-social"
-                                        href="https://www.booking.com/hotel/lk/hill-roost.en-gb.html" target="_blank"
+                                    <a class="btn btn-outline-light btn-social" :href="bookingcomLink" target="_blank"
                                         rel="noopener noreferrer">
                                         <i class="fas fa-bed"></i> <!-- Example icon for Booking.com -->
                                     </a>
-                                    <a class="btn btn-outline-light btn-social"
-                                        href="https://www.tripadvisor.ca/Hotel_Review-g11914132-d15015697-Reviews-Hill_Roost-Ampitiya_Kandy_District_Central_Province.html"
-                                        target="_blank" rel="noopener noreferrer">
+                                    <a class="btn btn-outline-light btn-social" :href="tripadvisorLink" target="_blank"
+                                        rel="noopener noreferrer">
+
                                         <i class="fab fa-tripadvisor"></i> <!-- TripAdvisor icon -->
                                     </a>
 

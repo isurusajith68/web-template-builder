@@ -47,6 +47,11 @@ const app = Vue.createApp({
       isLoading: null,
       isError: null,
       isSuccess: null,
+
+      facebookLink: "",
+      bookingcomLink: "",
+      tripadvisorLink: "",
+      youtubeLink: "",
     };
   },
   methods: {
@@ -55,7 +60,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/site-details?templateId=${this.templateId}`,
+          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -85,6 +90,11 @@ const app = Vue.createApp({
           this.attractionList = siteDetails?.details?.attractionList || [];
           this.footerDescription =
             siteDetails?.details?.footerDescription || this.footerDescription;
+
+          this.facebookLink = siteDetails?.details?.facebookLink || "";
+          this.bookingcomLink = siteDetails?.details?.bookingcomLink || "";
+          this.tripadvisorLink = siteDetails?.details?.tripadvisorLink || "";
+          this.youtubeLink = siteDetails?.details?.youtubeLink || "";
 
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
@@ -162,7 +172,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          "http://localhost:4000/temp1/save-site-details",
+          "https://webtemplateapi.ceyinfo.com/temp1/save-site-details",
           {
             method: "POST",
             headers: {
@@ -210,7 +220,7 @@ const app = Vue.createApp({
     async hotelInfo() {
       try {
         const response = await fetch(
-          `http://localhost:4000/temp1/hotel-info`,
+          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
           {
             credentials: "include",
           }
