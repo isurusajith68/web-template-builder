@@ -31,6 +31,8 @@ app.use(
       "https://temp3.ceyinfo.com",
       "https://.ceyinfo.com",
       "https://web.ceyinfo.com",
+      "http://localhost:4015",
+      "https://property.ceyinfo.com",
     ],
     credentials: true,
   })

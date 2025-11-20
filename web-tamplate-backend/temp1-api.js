@@ -36,6 +36,86 @@ temp1.get("/site-details", async (req, res) => {
   }
 });
 
+temp1.get("/real-images", async (req, res) => {
+  const pool = req.tenantPool;
+  const propertyId = req.property_id;
+  const organization_id = req.organization_id;
+
+  const templateId = req.query?.templateId || "1";
+  console.log(templateId, propertyId, organization_id);
+  if (!propertyId || !templateId) {
+    return res.status(400).json({
+      message: "hotelId and templateId are required",
+    });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
+      [propertyId, templateId]
+    );
+    if (result.rows.length === 0) {
+      console.log("No site details found");
+      return res.status(404).json({
+        message: "No site details found please save site details",
+      });
+    }
+
+    const realImages = result.rows[0].details?.realImages || { filePaths: [] };
+
+    // Convert image paths to base64 strings
+    const imagesWithBase64 = await Promise.all(
+      realImages.filePaths.map(async (imagePath) => {
+        try {
+          const fullPath = path.join(
+            `/var/www/template${templateId}/organization${organization_id}/property${propertyId}`,
+            imagePath
+          );
+
+          const imageBuffer = await fs.readFile(fullPath);
+          const base64String = imageBuffer.toString("base64");
+          const ext = path.extname(imagePath).toLowerCase();
+          const mimeType =
+            ext === ".png"
+              ? "image/png"
+              : ext === ".jpg" || ext === ".jpeg"
+              ? "image/jpeg"
+              : "image/jpg";
+
+          return {
+            path: imagePath,
+            base64: `data:${mimeType};base64,${base64String}`,
+          };
+        } catch (error) {
+          console.error(`Error reading image ${imagePath}:`, error);
+          return {
+            path: imagePath,
+            base64: null,
+            error: "Failed to read image",
+          };
+        }
+      })
+    );
+
+    console.log("Images converted to base64");
+
+    res.status(200).json({
+      success: true,
+      data: {
+        filePaths: realImages.filePaths,
+        images: imagesWithBase64,
+      },
+      message: "Real images loaded successfully",
+    });
+  } catch (err) {
+    console.error("Error loading site details:", err);
+    res.status(500).json({
+      success: false,
+      message: "Error loading real images",
+    });
+  }
+});
+
 temp1.get("/hotel-info", async (req, res) => {
   try {
     const pool = req.tenantPool;
