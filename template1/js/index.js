@@ -146,7 +146,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
+          `${window.API_BASE}/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -228,7 +228,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          "https://webtemplateapi.ceyinfo.com/temp1/save-site-details",
+          `${window.API_BASE}/temp1/save-site-details`,
           {
             method: "POST",
             headers: {
@@ -272,7 +272,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/build-template?templateId=${this.templateId}`,
+          `${window.API_BASE}/temp1/build-template?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -310,7 +310,7 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/hotel-info`, {
+        const response = await fetch(`${window.API_BASE}/temp1/hotel-info`, {
           credentials: "include",
         });
         if (!response.ok) {
@@ -346,7 +346,7 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...";
 
       try {
-        const response = await fetch(`https://webtemplateapi.ceyinfo.com/temp1/rooms-info`, {
+        const response = await fetch(`${window.API_BASE}/temp1/rooms-info`, {
           credentials: "include",
         });
 
@@ -389,12 +389,9 @@ const app = Vue.createApp({
     },
     async hotelOffers() {
       try {
-        const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/hotel-offers`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${window.API_BASE}/temp1/hotel-offers`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const err = await response.json();

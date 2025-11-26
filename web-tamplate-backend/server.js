@@ -33,6 +33,11 @@ app.use(
       "https://web.ceyinfo.com",
       "http://localhost:4015",
       "https://property.ceyinfo.com",
+      "https://v2d.temp1.ceyinfo.com",
+      "https://v2d.temp2.ceyinfo.com",
+      "https://v2d.temp3.ceyinfo.com",
+      "https://v2d.config.ceyinfo.com",
+      "https://v2d.web.ceyinfo.com",
     ],
     credentials: true,
   })

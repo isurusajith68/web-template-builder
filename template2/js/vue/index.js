@@ -381,21 +381,18 @@ const app = Vue.createApp({
 
     async removeImageFromServer(imageName) {
       try {
-        const response = await fetch(
-          "https://webtemplateapi.ceyinfo.com/temp1/remove-image",
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              hotelId: this.hotelId,
-              templateId: this.templateId,
-              imageName: imageName,
-            }),
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${window.API_BASE}/temp1/remove-image`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            hotelId: this.hotelId,
+            templateId: this.templateId,
+            imageName: imageName,
+          }),
+          credentials: "include",
+        });
 
         const result = await response.json();
 
@@ -433,7 +430,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `${window.API_BASE}/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             method: "POST",
             body: formData,
@@ -480,7 +477,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
+          `${window.API_BASE}/temp1/site-details?templateId=${this.templateId}`,
           {
             method: "GET",
             headers: {
@@ -564,7 +561,7 @@ const app = Vue.createApp({
       // console.log("Data to save:", data);
       try {
         const response = await fetch(
-          "https://webtemplateapi.ceyinfo.com/temp2/save-site-details",
+          `${window.API_BASE}/temp2/save-site-details`,
           {
             method: "POST",
             headers: {
@@ -601,16 +598,13 @@ const app = Vue.createApp({
       this.isLoading = "Loading room data...";
 
       try {
-        const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/rooms-info`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${window.API_BASE}/temp1/rooms-info`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const errorText = await response.json();
@@ -652,12 +646,9 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${window.API_BASE}/temp1/hotel-info`, {
+          credentials: "include",
+        });
         if (!response.ok) {
           const err = await response.json();
 
@@ -691,7 +682,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp2/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+          `${window.API_BASE}/temp2/build-template?hotelId=${this.hotelId}&templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -726,12 +717,9 @@ const app = Vue.createApp({
     },
     async hotelOffers() {
       try {
-        const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/hotel-offers`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${window.API_BASE}/temp1/hotel-offers`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const err = await response.json();
@@ -767,7 +755,7 @@ const app = Vue.createApp({
       const fileInput = document.createElement("input");
       fileInput.type = "file";
       fileInput.accept = "image/*";
- 
+
       fileInput.onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
