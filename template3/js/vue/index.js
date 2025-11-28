@@ -573,7 +573,7 @@ const app = Vue.createApp({
 
         try {
           const response = await fetch(
-            `https://webtemplateapi.ceyinfo.com/temp3/upload-single?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+            `${window.API_BASE}/temp3/upload-single?hotelId=${this.hotelId}&templateId=${this.templateId}`,
             {
               method: "POST",
               body: formData,
@@ -700,7 +700,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
+          `${window.API_BASE}/temp3/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}&imageType=${imageType}`,
           {
             method: "POST",
             body: formData,
@@ -749,7 +749,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/site-details?templateId=${this.templateId}`,
+          `${window.API_BASE}/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
           }
@@ -881,7 +881,7 @@ const app = Vue.createApp({
       console.log("Data to save:", data);
       try {
         const response = await fetch(
-          "https://webtemplateapi.ceyinfo.com/temp3/save-site-details",
+          `${window.API_BASE}/temp3/save-site-details`,
           {
             method: "POST",
             headers: {
@@ -1052,12 +1052,9 @@ const app = Vue.createApp({
 
     async hotelInfo() {
       try {
-        const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp1/hotel-info`,
-          {
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${window.API_BASE}/temp1/hotel-info`, {
+          credentials: "include",
+        });
         if (!response.ok) {
           const err = await response.json();
 
@@ -1091,7 +1088,7 @@ const app = Vue.createApp({
 
       try {
         const response = await fetch(
-          `https://webtemplateapi.ceyinfo.com/temp3/build-template?templateId=${this.templateId}`,
+          `${window.API_BASE}/temp3/build-template?templateId=${this.templateId}`,
           {
             credentials: "include",
           }

@@ -61,11 +61,12 @@ temp1.get("/real-images", async (req, res) => {
       });
     }
 
-    const realImages = result.rows[0].details?.realImages || { filePaths: [] };
+    const realImages = result.rows[0].details?.realImages || {};
+    const filePaths = realImages.filePaths || [];
 
     // Convert image paths to base64 strings
     const imagesWithBase64 = await Promise.all(
-      realImages.filePaths.map(async (imagePath) => {
+      filePaths.map(async (imagePath) => {
         try {
           const fullPath = path.join(
             `/var/www/template${templateId}/organization${organization_id}/property${propertyId}`,
@@ -102,7 +103,7 @@ temp1.get("/real-images", async (req, res) => {
     res.status(200).json({
       success: true,
       data: {
-        filePaths: realImages.filePaths,
+        filePaths: filePaths,
         images: imagesWithBase64,
       },
       message: "Real images loaded successfully",
@@ -486,23 +487,7 @@ const ensureDirectoryExistence2 = async (
   organization_id
 ) => {
   if (!fssync.existsSync(dir)) {
-    try {
-      const targetDir = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}`;
-      const sourceDir = path.resolve(
-        __dirname,
-        `build/template/temp${templateId}`
-      );
-
-      await fs.mkdir(targetDir, { recursive: true });
-      await fs.cp(sourceDir, targetDir, { recursive: true });
-
-      console.log(`Template copied from ${sourceDir} to ${targetDir}`);
-    } catch (error) {
-      console.error(
-        "Error during directory creation or copy operation:",
-        error
-      );
-    }
+    fssync.mkdirSync(dir, { recursive: true });
   }
 };
 

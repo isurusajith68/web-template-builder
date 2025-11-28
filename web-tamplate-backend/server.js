@@ -38,6 +38,7 @@ app.use(
       "https://v2d.temp3.ceyinfo.com",
       "https://v2d.config.ceyinfo.com",
       "https://v2d.web.ceyinfo.com",
+      "https://v2d.property.ceyinfo.com",
     ],
     credentials: true,
   })
