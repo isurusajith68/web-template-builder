@@ -68,12 +68,19 @@
         <!-- Header Start -->
         <div class="container-fluid bg-dark px-0">
             <div class="row gx-0">
-                <div class="col-lg-3 bg-dark d-none d-lg-flex">
-
+                <div class="col-lg-3  d-none d-lg-flex align-items-center justify-content-center px-4">
                     <a :href="`index.html?hotelId=${hotelId}`"
-                        class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
-                        <h1 class="m-0 text-primary text-uppercase">{{title}}</h1>
+                        class="navbar-brand d-flex align-items-center justify-content-center gap-3 " style="height: 90px;">
+                
+                        <img :src="logo" alt="Logo" style="max-width: 60px; max-height: 60px; object-fit: contain; " />
+
+                
+                        <h3 class="m-0 text-primary text-uppercase ms-2 text-break" style="white-space: normal; line-height: 1;">
+                            {{ title }}
+                        </h3>
                     </a>
+                
+                
                 </div>
                 <div class="col-lg-9">
                     <div class="row gx-0 bg-white d-none d-lg-flex">
@@ -129,9 +136,11 @@
                                 <a :href="`gallery.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Gallery</a>
                                 <a :href="`attraction.html?hotelId=${hotelId}`"
                                     class="nav-item nav-link ms-3">Attractions</a>
-                                <a :href="`booking.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Bookings</a>
                                 <a :href="`contact.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Contact</a>
+
                             </div>
+                            <a :href="`booking.html?hotelId=${hotelId}`" class="btn btn-primary py-2 px-4 ms-3"
+                                style="text-decoration: none; color: white;">Book Now</a>
                         </div>
                     </nav>
 
@@ -165,72 +174,79 @@
 
         <!-- Room Start -->
         <div class="container-xxl py-5">
-            <div class="container">
-                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <h6 class="section-title text-center text-primary text-uppercase">Our Rooms</h6>
-                    <h1 class="">Explore Our <span class="text-primary text-uppercase">Rooms</span></h1>
-                    <div class="mb-5">
-                        <span style="color: gray; font-size: 10px;">
-                            (system generated)
-                        </span>
-                    </div>
+            <div class="mb-4">
+                <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                    <span class="px-6"
+                        style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                        system generated
+                    </span>
                 </div>
-                <div class="row g-4">
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" v-for="(room, index) in roomsDetails" :key="index"
-                        :data-wow-delay="`${0.1 * index}s`">
-                        <div class="room-item shadow rounded overflow-hidden">
-                            <div class="position-relative">
-                                <!-- Carousel for multiple images -->
-                                <div v-if="room.images && room.images.filter(img => img !== null).length > 0"
-                                    :id="'roomCarouselRoom' + index" class="carousel slide" data-bs-ride="carousel">
-                                    <div class="carousel-inner">
-                                        <div v-for="(img, imgIndex) in room.images.filter(img => img !== null)"
-                                            :key="imgIndex" :class="['carousel-item', { 'active': imgIndex === 0 }]">
-                                            <img class="img-fluid w-100" style="height: 250px; object-fit: cover;"
-                                                :src="img" :alt="'Room image ' + (imgIndex + 1)"
-                                                onerror="this.src='img/room4.jpg'">
+
+                <div class="container px-5 pb-5 pt-4 border-b border-r border-l border-gray-600 rounded-md"
+                    style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Our Rooms</h6>
+                        <h1 class="">Explore Our <span class="text-primary text-uppercase">Rooms</span></h1>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" v-for="(room, index) in roomsDetails" :key="index"
+                            :data-wow-delay="`${0.1 * index}s`">
+                            <div class="room-item shadow rounded overflow-hidden">
+                                <div class="position-relative">
+                                    <!-- Carousel for multiple images -->
+                                    <div v-if="room.images && room.images.filter(img => img !== null).length > 0"
+                                        :id="'roomCarouselRoom' + index" class="carousel slide" data-bs-ride="carousel">
+                                        <div class="carousel-inner">
+                                            <div v-for="(img, imgIndex) in room.images.filter(img => img !== null)"
+                                                :key="imgIndex"
+                                                :class="['carousel-item', { 'active': imgIndex === 0 }]">
+                                                <img class="img-fluid w-100" style="height: 250px; object-fit: cover;"
+                                                    :src="img" :alt="'Room image ' + (imgIndex + 1)"
+                                                    onerror="this.src='img/room4.jpg'">
+                                            </div>
+                                        </div>
+                                        <!-- Controls - only show if multiple images -->
+                                        <template v-if="room.images.filter(img => img !== null).length > 1">
+                                            <button class="carousel-control-prev" type="button"
+                                                :data-bs-target="'#roomCarouselRoom' + index" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Previous</span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button"
+                                                :data-bs-target="'#roomCarouselRoom' + index" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Next</span>
+                                            </button>
+                                            <!-- Indicators -->
+                                            <div class="carousel-indicators">
+                                                <button
+                                                    v-for="(img, imgIndex) in room.images.filter(img => img !== null)"
+                                                    :key="imgIndex" type="button"
+                                                    :data-bs-target="'#roomCarouselRoom' + index"
+                                                    :data-bs-slide-to="imgIndex" :class="{ 'active': imgIndex === 0 }"
+                                                    :aria-current="imgIndex === 0 ? 'true' : 'false'"
+                                                    :aria-label="'Slide ' + (imgIndex + 1)"></button>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <!-- Fallback to single image if no images array -->
+                                    <img v-else class="img-fluid w-100" style="height: 250px; object-fit: cover;"
+                                        :src="room.imagename ? room.imagename : 'img/room4.jpg'" alt="Room image"
+                                        onerror="this.src='img/room4.jpg'">
+                                    <small
+                                        class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
+                                        Rs {{ room.roprice.toLocaleString('en-US') }} / lowest price
+                                    </small>
+                                </div>
+                                <div class="p-4 mt-2">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h6 class="mb-0"><b>{{ room.custom_name }} / {{room.roomview}}</b></h6>
+                                        <div class="ps-2">
+                                            <small v-for="star in 5" :key="star"
+                                                class="fa fa-star text-primary"></small>
                                         </div>
                                     </div>
-                                    <!-- Controls - only show if multiple images -->
-                                    <template v-if="room.images.filter(img => img !== null).length > 1">
-                                        <button class="carousel-control-prev" type="button"
-                                            :data-bs-target="'#roomCarouselRoom' + index" data-bs-slide="prev">
-                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                            <span class="visually-hidden">Previous</span>
-                                        </button>
-                                        <button class="carousel-control-next" type="button"
-                                            :data-bs-target="'#roomCarouselRoom' + index" data-bs-slide="next">
-                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                            <span class="visually-hidden">Next</span>
-                                        </button>
-                                        <!-- Indicators -->
-                                        <div class="carousel-indicators">
-                                            <button v-for="(img, imgIndex) in room.images.filter(img => img !== null)"
-                                                :key="imgIndex" type="button"
-                                                :data-bs-target="'#roomCarouselRoom' + index"
-                                                :data-bs-slide-to="imgIndex" :class="{ 'active': imgIndex === 0 }"
-                                                :aria-current="imgIndex === 0 ? 'true' : 'false'"
-                                                :aria-label="'Slide ' + (imgIndex + 1)"></button>
-                                        </div>
-                                    </template>
-                                </div>
-                                <!-- Fallback to single image if no images array -->
-                                <img v-else class="img-fluid w-100" style="height: 250px; object-fit: cover;"
-                                    :src="room.imagename ? room.imagename : 'img/room4.jpg'" alt="Room image"
-                                    onerror="this.src='img/room4.jpg'">
-                                <small
-                                    class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                                    Rs {{ room.roprice }} / lowest price
-                                </small>
-                            </div>
-                            <div class="p-4 mt-2">
-                                <div class="d-flex justify-content-between mb-3">
-                                    <h6 class="mb-0"><b>{{ room.custom_name }} / {{room.roomview}}</b></h6>
-                                    <div class="ps-2">
-                                        <small v-for="star in 5" :key="star" class="fa fa-star text-primary"></small>
-                                    </div>
-                                </div>
-                                <!-- <div class="d-flex align-items-center mb-3">
+                                    <!-- <div class="d-flex align-items-center mb-3">
                                     <i class="fa fa-h-square text-primary me-2"></i>
 
                                     <div class="d-flex flex-wrap align-items-center">
@@ -248,30 +264,32 @@
                                         </template>
                                     </div>
                                 </div> -->
-                                <div class="d-flex align-items-center mb-3">
-                                    <i class="fa fa-h-square text-primary me-2"></i>
-                                    <div class="d-flex flex-wrap align-items-center">
-                                        <span class="me-2">No of Rooms:</span>
-                                        <small>{{ room.room_numbers.length }}</small>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fa fa-h-square text-primary me-2"></i>
+                                        <div class="d-flex flex-wrap align-items-center">
+                                            <span class="me-2">No of Rooms:</span>
+                                            <small>{{ room.room_numbers.length }}</small>
+                                        </div>
                                     </div>
-                                </div>
-                                <div v-if="room.amenities && room.amenities.length > 0"
-                                    class="d-flex flex-wrap gap-2 mb-3">
-                                    <small v-for="(amenity, i) in room.amenities" :key="i">
-                                        <span class="badge bg-secondary text-light px-3 py-2">{{ amenity }}</span>
-                                    </small>
-                                </div>
+                                    <div v-if="room.amenities && room.amenities.length > 0" class="d-flex flex-wrap gap-2 mb-3">
+                                        <small v-for="(amenity, i) in room.amenities" :key="i">
+                                            <span class="badge bg-dark text-light "
+                                                style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">{{
+                                                amenity }}</span>
+                                        </small>
+                                    </div>
 
-                                <p class="text-body mb-3">Recommended for {{ room.maxadultcount }} adults</p>
-                                <div class="d-flex justify-content-center">
-                                    <a class="btn btn-sm btn-dark rounded py-2 px-4"
-                                        :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`">Book
-                                        Now</a>
+                                    <p class="text-body mb-3">Recommended for {{ room.maxadultcount }} adults</p>
+                                    <div class="d-flex justify-content-center">
+                                        <a class="btn btn-sm btn-dark rounded py-2 px-4"
+                                            :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`">Book
+                                            Now</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
         </div>
@@ -281,7 +299,40 @@
 
         <!-- Newsletter end -->
 
+        <div class="modal fade" id="privacyPolicyModal" tabindex="-1" aria-labelledby="privacyPolicyModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" :value="privacyPolicy" rows="10" readonly></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="termsModalLabel">Terms & Condition</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" v-model="termsCondition" rows="10" readonly></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Footer Start -->
         <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"
             data-wow-delay="0.1s">
@@ -328,12 +379,15 @@
                     <div class="col-lg-5 col-md-12 ">
                         <div class="row  g-4">
                             <div class="col-md-6" style="margin-left:10%;">
-                                <h6 class="section-title text-start text-primary text-uppercase mb-4">Company</h6>
-                                <a class="btn btn-link" href="">About Us</a>
-                                <a class="btn btn-link" href="">Contact Us</a>
-                                <a class="btn btn-link" href="">Privacy Policy</a>
-                                <a class="btn btn-link" href="">Terms & Condition</a>
-                                <a class="btn btn-link" href="">Support</a>
+                                <h6 class="section-title text-start text-primary text-uppercase mb-4">
+                                    Company
+                                </h6>
+                                <a class="btn btn-link" href="/about.html">About Us</a>
+                                <a class="btn btn-link" href="/contact.html">Contact Us</a>
+                                <button class="btn btn-link" @click="openPrivacyModal" style="cursor: pointer;">Privacy
+                                    Policy</button>
+                                <button class="btn btn-link" @click="openTermsModal" style="cursor: pointer;">Terms &
+                                    Condition</button>
                             </div>
 
                         </div>
@@ -353,12 +407,7 @@
                                     Ltd. </a>
                             </div>
                             <div class="col-md-6">
-                                <div class="footer-menu">
-                                    <a href="">Home</a>
-                                    <a href="">Cookies</a>
-                                    <a href="">Help</a>
-                                    <a href="">FQAs</a>
-                                </div>
+
                                 <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
                                         class="bi bi-arrow-up"></i></a>
                             </div>
@@ -488,6 +537,10 @@
             <script src="js/config.js"></script>
             <script src="js/main.js"></script>
             <script src="js/room.js"></script>
+        </div>
+
+
+    </div>
 </body>
 
 </html>

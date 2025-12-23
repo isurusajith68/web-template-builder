@@ -41,13 +41,6 @@
 
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-
         /* Container for the gallery */
         .gallery-container {
             width: 80%;
@@ -254,12 +247,20 @@
         <!-- Header Start -->
         <div class="container-fluid bg-dark px-0">
             <div class="row gx-0">
-                <div class="col-lg-3 bg-dark d-none d-lg-flex">
-
+                <div class="col-lg-3  d-none d-lg-flex align-items-center justify-content-center px-4">
                     <a :href="`index.html?hotelId=${hotelId}`"
-                        class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
-                        <h1 class="m-0 text-primary text-uppercase">{{title}}</h1>
+                        class="navbar-brand d-flex align-items-center justify-content-center gap-3 "
+                        style="height: 90px;">
+
+                        <img :src="logo" alt="Logo" style="max-width: 60px; max-height: 60px; object-fit: contain; " />
+
+                        <h3 class="m-0 text-primary text-uppercase ms-2 text-break"
+                            style="white-space: normal; line-height: 1;">
+                            {{ title }}
+                        </h3>
                     </a>
+
+
                 </div>
                 <div class="col-lg-9">
                     <div class="row gx-0 bg-white d-none d-lg-flex">
@@ -300,7 +301,7 @@
                     </div>
                     <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0" style="margin-left: 0;">
                         <a :href="`index.html?hotelId=${hotelId}`" class="navbar-brand d-block d-lg-none">
-                            <h1 class="m-0 text-primary text-uppercase">Hill Roost</h1>
+                            <h1 class="m-0 text-primary text-uppercase">{{title}}</h1>
                         </a>
                         <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
                             data-bs-target="#navbarCollapse">
@@ -309,28 +310,22 @@
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
                                 <a :href="`index.html?hotelId=${hotelId}`" class="nav-item nav-link  ms-3">Home</a>
-                                <a :href="`about.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">About</a>
-                                <a :href="`room.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Rooms</a>
+                                <a :href="`about.html?hotelId=${hotelId}`" class="nav-item  nav-link ms-3">About</a>
+                                <a :href="`room.html?hotelId=${hotelId}`" class="nav-item nav-link  ms-3">Rooms</a>
                                 <a :href="`specialOffers.html?hotelId=${hotelId}`"
                                     class="nav-item nav-link ms-3">Special Offers</a>
                                 <a :href="`gallery.html?hotelId=${hotelId}`"
-                                    class="nav-item nav-link active ms-3">Gallery</a>
+                                    class="nav-item active nav-link ms-3">Gallery</a>
                                 <a :href="`attraction.html?hotelId=${hotelId}`"
                                     class="nav-item nav-link ms-3">Attractions</a>
-                                <a :href="`booking.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Bookings</a>
                                 <a :href="`contact.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Contact</a>
 
-                                <!-- <div class="nav-item dropdown">
-                                    <a href="#" class="nav-link dropdown-toggle ms-3" data-bs-toggle="dropdown">Pages</a>
-                                    <div class="dropdown-menu rounded-0 m-0">
-                                        <a href="booking.html" class="dropdown-item">Booking</a>
-                                        <a href="team.html" class="dropdown-item">Gallery</a>
-                                    </div>
-                                </div> -->
-
                             </div>
+                            <a :href="`booking.html?hotelId=${hotelId}`" class="btn btn-primary py-2 px-4 ms-3"
+                                style="text-decoration: none; color: white;">Book Now</a>
                         </div>
                     </nav>
+
 
                 </div>
             </div>
@@ -361,80 +356,91 @@
         <!-- Booking Start -->
 
         <!-- Booking End -->
-        <div class="container mt-4 mb-4">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="">
-                                <span style="color: gray; font-size: 10px;">
-                                    (template editable)
-                                </span>
-                            </div>
-                            <h5 class="card-title mb-3">
-                                <i class="fas fa-cloud-upload-alt text-primary"></i>
-                                Upload Gallery Images
-                            </h5>
-                            <p class="text-muted mb-3">
-                                Select multiple images to upload to your gallery. Each image will be cropped for optimal
-                                display.
-                            </p>
+        <div class="container-xxl py-5">
+            <div class="mb-4">
+                <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                    <span class="px-6"
+                        style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                        template editable
+                    </span>
+                </div>
 
-                            <div class="upload-area border border-2 border-dashed rounded p-4 mb-3"
-                                style="border-color: #dee2e6 !important; transition: all 0.3s ease;"
-                                @click="triggerFileInput" @dragover.prevent="onDragOver"
-                                @dragleave.prevent="onDragLeave" @drop.prevent="onDrop">
-                                <i class="fas fa-images fa-3x text-muted mb-3"></i>
-                                <p class="mb-2">
-                                    <strong>Click to browse</strong> or drag and drop images here
-                                </p>
-                                <small class="text-muted">
-                                    Supports: JPG, PNG, GIF (Max 5MB per image)
-                                </small>
+                <div class="container px-5 pb-5 pt-4 border-b border-r border-l border-gray-600 rounded-md"
+                    style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="mt-4 mb-4">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div class="card shadow-sm">
+                                    <div class="card-body text-center">
 
-                                <input type="file" id="files" name="files[]" multiple accept="image/*"
-                                    @change="handleFileChange" style="display: none;" />
-                            </div>
+                                        <h5 class="card-title mb-3">
+                                            <i class="fas fa-cloud-upload-alt text-primary"></i>
+                                            Upload Gallery Images
+                                        </h5>
+                                        <p class="text-muted mb-3">
+                                            Select multiple images to upload to your gallery. Each image will be cropped
+                                            for optimal
+                                            display.
+                                        </p>
 
-                            <div v-if="selectedFiles.length > 0 && !isLoading" class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                {{ selectedFiles.length }} image(s) selected. Click crop to process them.
+                                        <div class="upload-area border border-2 border-dashed rounded p-4 mb-3"
+                                            style="border-color: #dee2e6 !important; transition: all 0.3s ease;"
+                                            @click="triggerFileInput" @dragover.prevent="onDragOver"
+                                            @dragleave.prevent="onDragLeave" @drop.prevent="onDrop">
+                                            <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                                            <p class="mb-2">
+                                                <strong>Click to browse</strong> or drag and drop images here
+                                            </p>
+                                            <small class="text-muted">
+                                                Supports: JPG, PNG, GIF (Max 5MB per image)
+                                            </small>
+
+                                            <input type="file" id="files" name="files[]" multiple accept="image/*"
+                                                @change="handleFileChange" style="display: none;" />
+                                        </div>
+
+                                        <div v-if="selectedFiles.length > 0 && !isLoading" class="alert alert-info">
+                                            <i class="fas fa-info-circle"></i>
+                                            {{ selectedFiles.length }} image(s) selected. Click crop to process them.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <div v-if="!userUseRealImages" class="gallery-container">
-            <div v-for="(row, rowIndex) in imageRows" :key="rowIndex" class="gallery-row">
-                <div v-for="(image, imageIndex) in row" :key="imageIndex" class="image-item">
-                    <div class="image-wrapper">
-                        <button @click="removeImage(rowIndex * 2 + imageIndex)" style="position: absolute; top: 8px; left: 8px; background-color: rgba(255, 0, 0, 0.7); 
+                    <div v-if="!userUseRealImages" class="gallery-container">
+                        <div v-for="(row, rowIndex) in imageRows" :key="rowIndex" class="gallery-row">
+                            <div v-for="(image, imageIndex) in row" :key="imageIndex" class="image-item">
+                                <div class="image-wrapper">
+                                    <button @click="removeImage(rowIndex * 2 + imageIndex)" style="position: absolute; top: 8px; left: 8px; background-color: rgba(255, 0, 0, 0.7); 
                      color: white; border: none; border-radius: 50%; width: 24px; height: 24px; 
                      font-size: 14px; font-weight: bold; display: flex; justify-content: center; 
                      align-items: center; cursor: pointer; z-index: 10;">X</button>
-                        <img :src="image" :alt="'Image ' + (rowIndex * 2 + imageIndex + 1)">
+                                    <img :src="image" :alt="'Image ' + (rowIndex * 2 + imageIndex + 1)">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Real Uploaded Images -->
-        <div v-if="userUseRealImages" class="gallery-container">
-            <div v-for="(row, rowIndex) in imageRows" :key="rowIndex" class="gallery-row">
-                <div v-for="(image, imageIndex) in row" :key="imageIndex" class="image-item">
-                    <div class="image-wrapper">
-                        <button @click="removeRealImage(rowIndex * 2 + imageIndex)" style="position: absolute; top: 8px; left: 8px; background-color: rgba(255, 0, 0, 0.7); 
+                    <!-- Real Uploaded Images -->
+                    <div v-if="userUseRealImages" class="gallery-container">
+                        <div v-for="(row, rowIndex) in imageRows" :key="rowIndex" class="gallery-row">
+                            <div v-for="(image, imageIndex) in row" :key="imageIndex" class="image-item">
+                                <div class="image-wrapper">
+                                    <button @click="removeRealImage(rowIndex * 2 + imageIndex)" style="position: absolute; top: 8px; left: 8px; background-color: rgba(255, 0, 0, 0.7); 
                      color: white; border: none; border-radius: 50%; width: 24px; height: 24px; 
                      font-size: 14px; font-weight: bold; display: flex; justify-content: center; 
                      align-items: center; cursor: pointer; z-index: 10;">X</button>
-                        <img :src="image" :alt="'Image ' + (rowIndex * 2 + imageIndex + 1)">
+                                    <img :src="image" :alt="'Image ' + (rowIndex * 2 + imageIndex + 1)">
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
-
 
         <style>
             @media (max-width: 768px) {
@@ -554,12 +560,13 @@
                     <div class="col-lg-5 col-md-12 ">
                         <div class="row  g-4">
                             <div class="col-md-6" style="margin-left:10%;">
-                                <h6 class="section-title text-start text-primary text-uppercase mb-4">Company</h6>
-                                <a class="btn btn-link" href="">About Us</a>
-                                <a class="btn btn-link" href="">Contact Us</a>
-                                <a class="btn btn-link" href="">Privacy Policy</a>
-                                <a class="btn btn-link" href="">Terms & Condition</a>
-                                <a class="btn btn-link" href="">Support</a>
+                                <h6 class="section-title text-start text-primary text-uppercase mb-4">
+                                    Company
+                                </h6>
+                                <a class="btn btn-link" href="/about.html">About Us</a>
+                                <a class="btn btn-link" href="/contact.html">Contact Us</a>
+                                <a class="btn btn-link" href="/">Privacy Policy</a>
+                                <a class="btn btn-link" href="/">Terms & Condition</a>
                             </div>
 
                         </div>
@@ -582,12 +589,7 @@
                                     Ltd. </a>
                             </div>
                             <div class="col-md-6">
-                                <div class="footer-menu">
-                                    <a href="">Home</a>
-                                    <a href="">Cookies</a>
-                                    <a href="">Help</a>
-                                    <a href="">FQAs</a>
-                                </div>
+
                                 <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
                                         class="bi bi-arrow-up"></i></a>
                             </div>

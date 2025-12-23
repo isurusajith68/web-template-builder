@@ -18,11 +18,13 @@ const requireAuth = require("./middleware/auth-middleware");
 const tenantMiddleware = require("./middleware/tenet-middleware");
 const cookieParser = require("cookie-parser");
 const imageUpload = require("./image-upload");
+const utils = require("./utils");
 
 app.use(
   cors({
     origin: [
       "http://localhost:5500",
+      "http://localhost:4008",
       "http://localhost:3000",
       "http://localhost:3010",
       "http://127.0.0.1:5500",
@@ -49,11 +51,19 @@ app.use(
     limit: "50mb",
   })
 );
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 app.use(cookieParser());
 app.use("/temp1", requireAuth, tenantMiddleware, temp1);
 app.use("/temp2", requireAuth, tenantMiddleware, temp2);
 app.use("/temp3", requireAuth, tenantMiddleware, temp3);
 app.use("/api/v1", requireAuth, tenantMiddleware, imageUpload);
+app.use("/utils", utils);
 
 // app.post("/save-site-details", async (req, res) => {
 //   const {

@@ -481,3 +481,20 @@
   padding-right: 0;
   border-right: none;
 }
+
+/*** Room Cards ***/
+.room-item {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-item .p-4 {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-item .p-4 .d-flex:last-child {
+  margin-top: auto;
+}

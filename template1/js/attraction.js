@@ -9,6 +9,7 @@ const app = Vue.createApp({
       phoneNumber: "Site phone number",
       address: "Site address",
       realImages: [],
+      logo: "",
 
       mapIframeHtml: `<div style="max-width:100%;overflow:hidden;color:red;height:400px;"><div id="display-google-map" style="height:100%; width:100%;max-width:100%;"><iframe style="height:100%;width:100%;border:0;" frameborder="0" src="https://www.google.com/maps/embed/v1/place?q=hillroost&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe></div><a class="from-embedmap-code" href="https://www.bootstrapskins.com/themes" id="auth-map-data">premium bootstrap themes</a><style>#display-google-map img.text-marker{max-width:none!important;background:none!important;}img{max-width:none}</style></div>`,
 
@@ -244,6 +245,7 @@ const app = Vue.createApp({
             this.address = result.data.address1;
             this.hotelId = result.data.id;
             this.orgId = result.data.orgId;
+            this.logo = result.data.logo;
           }
         }
       } catch (error) {

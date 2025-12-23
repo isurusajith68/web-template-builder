@@ -6,6 +6,11 @@ const fssync = require("fs");
 const temp1 = express.Router();
 const { exec } = require("child_process");
 
+const dotenv = require("dotenv");
+dotenv.config();
+
+const webBookingURL = process.env.WEB_BOOKING_URL;
+
 temp1.get("/site-details", async (req, res) => {
   const pool = req.tenantPool;
   const propertyId = req.property_id;
@@ -123,7 +128,16 @@ temp1.get("/hotel-info", async (req, res) => {
     const propertyId = req.property_id;
 
     const result = await pool.query(
-      "SELECT * FROM operation_property WHERE id = $1",
+      `SELECT 
+        op.*,
+        cc.name AS city,
+        cp.name AS province,
+        cco.name AS country
+      FROM operation_property op
+      LEFT JOIN core_data.core_city cc ON op.city_id = cc.id
+      LEFT JOIN core_data.core_province cp ON op."Province_id" = cp.id
+      LEFT JOIN core_data.core_country cco ON op.country_id = cco.id
+      WHERE op.id = $1`,
       [propertyId]
     );
 
@@ -132,10 +146,24 @@ temp1.get("/hotel-info", async (req, res) => {
         message: "No hotel information found please add hotel information",
       });
     }
+    const selectTags = `
+      SELECT 
+        core_data.core_tags.id AS tag_id,
+        core_data.core_tags.name AS tag_name
+      FROM operation_propertytag 
+      INNER JOIN core_data.core_tags 
+      ON operation_propertytag.tag_id = core_data.core_tags.id 
+      WHERE property_id = $1
+    `;
+    const resultTags = await pool.query(selectTags, [propertyId]);
 
     const data = {
       ...result.rows[0],
       orgId: req.organization_id,
+      tags: resultTags.rows.map((row) => ({
+        tag_id: row.tag_id,
+        tag_name: row.tag_name,
+      })),
     };
 
     res.send({
@@ -150,7 +178,6 @@ temp1.get("/hotel-info", async (req, res) => {
 temp1.post("/save-site-details", async (req, res) => {
   const pool = req.tenantPool;
   const propertyId = req.property_id;
-
   const {
     templateId,
     title,
@@ -172,6 +199,13 @@ temp1.post("/save-site-details", async (req, res) => {
     bookingcomLink,
     tripadvisorLink,
     youtubeLink,
+    privacyPolicy,
+    termsCondition,
+    logo,
+    tags,
+    locationdescription,
+    city,
+    otherServices,
   } = req.body;
 
   try {
@@ -215,6 +249,13 @@ temp1.post("/save-site-details", async (req, res) => {
             bookingcomLink,
             tripadvisorLink,
             youtubeLink,
+            privacyPolicy,
+            termsCondition,
+            logo,
+            locationdescription,
+            city,
+            tags,
+            otherServices,
           }),
           propertyId,
           templateId,
@@ -254,6 +295,13 @@ temp1.post("/save-site-details", async (req, res) => {
             bookingcomLink,
             tripadvisorLink,
             youtubeLink,
+            privacyPolicy,
+            termsCondition,
+            logo,
+            locationdescription,
+            city,
+            tags,
+            otherServices,
           }),
         ]
       );
@@ -281,6 +329,7 @@ temp1.get("/build-template", async (req, res) => {
   const pool = req.tenantPool;
   const hotelId = req.property_id;
   const organization_id = req.organization_id;
+  console.log(pool, hotelId, organization_id, "pool hotelid");
   const { templateId } = req.query;
   if (!hotelId || !templateId) {
     return res.status(404).json({
@@ -317,7 +366,7 @@ temp1.get("/build-template", async (req, res) => {
       try {
         console.log("Checking if template is already published");
         const alreadyPublish = await pool.query(
-          "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateId = $2",
+          "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
           [hotelId, tempId]
         );
 
@@ -326,47 +375,153 @@ temp1.get("/build-template", async (req, res) => {
             message: `Template ${tempId} is already linked to the domain ${alreadyPublish.rows[0].website}.`,
           });
         }
+        console.log("No template linked");
       } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });
       }
     }
 
-    const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
+    const hotelURL = `${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}`;
+
+    let offerHtml = [];
+
+    const resultOffer = await pool.query(
+      "SELECT * FROM operation_hoteloffers WHERE property_id = $1 AND CURRENT_DATE BETWEEN startdate AND enddate",
+      [hotelId]
+    );
+    if (resultOffer.rows?.length === 0) {
+      offerHtml = [`<div class="text-center">No special offers found</div>`];
+    } else {
+      offerHtml = resultOffer.rows.map(
+        (offer) => `
+        <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;">
+          <img src="${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
+          </div>
+        `
+      );
+    }
+
+    const privacyPolicyModel = `
+<div class="modal fade" id="privacyPolicyModalOpen" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details?.privacyPolicy ||
+                  "No privacy policy available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+`;
+
+    const termsConditionModel = `
+<div class="modal fade" id="termsConditionModalOpen" tabindex="-1" aria-labelledby="termsConditionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsConditionModalLabel">Terms & Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details?.termsCondition ||
+                  "No terms and conditions available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+`;
+
+    const siteTags = result.rows[0].details?.tags
+      ?.map((tagObj) => {
+        return `<span class="px-4 py-2" style="border: 1px solid #333; font-size: 14px; color: #333;">${tagObj.tag_name}</span>`;
+      })
+      .join("\n");
+    //  <table class="table table-bordered table-hover align-middle">
+    //                       <tbody>
+    //                           <tr v-for="(service, index) in otherServices" :key="index">
+    //                               <template v-if="!service.isEditing">
+    //                                   <td class="fw-bold fs-6 text-center">{{ service.serviceType }}</td>
+    //                                   <td class="fs-6 text-center">{{ service.serviceDescription }}</td>
+    //                               </template>
+    //                           </tr>
+    //                       </tbody>
+    //                   </table>
+
+    const otherServices = `<div class="table-responsive mt-5">
+                        <table class="table table-bordered table-hover align-middle">
+                            <tbody>
+                                ${result.rows[0].details?.otherServices
+                                  ?.map(
+                                    (service) => `
+                                    <tr>
+                                        <td class="fw-bold fs-6 text-center">${service.serviceType}</td>
+                                        <td class="fs-6 text-center">${service.serviceDescription}</td>\
+                                    </tr>
+                                `
+                                  )
+                                  .join("\n")}
+                            </tbody>\
+                        </table>\
+                    </div>
+    `;
+
+    const details = result.rows[0].details;
+    if (!details) {
+      return res.status(404).json({
+        message: "site details are invalid",
+      });
+    }
 
     const data = {
       "#hotelURL": hotelURL,
-      "#siteTitle": result.rows[0].details.title,
-      "#siteEmail": result.rows[0].details.email,
-      "#sitePhoneNumber": result.rows[0].details.phoneNumber,
-      "#siteAboutUsImages1": result.rows[0].details.aboutUsImages[0].src,
-      "#siteAboutUsImages2": result.rows[0].details.aboutUsImages[1].src,
-      "#siteAboutUsImages3": result.rows[0].details.aboutUsImages[2].src,
-      "#siteAboutUsImages4": result.rows[0].details.aboutUsImages[3].src,
-      "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
-      "#siteCarouselImages2": result.rows[0].details.carouselImages[1].src,
-      "#siteCarouselTitle1":
-        result.rows[0].details.carouselImages[0].carouselTitle,
-      "#siteCarouselTitle2":
-        result.rows[0].details.carouselImages[1].carouselTitle,
+      "#siteTitle": details.title || "",
+      "#siteEmail": details.email || "",
+      "#sitePhoneNumber": details.phoneNumber || "",
+      "#siteAboutUsImages1": details.aboutUsImages?.[0]?.src || "",
+      "#siteAboutUsImages2": details.aboutUsImages?.[1]?.src || "",
+      "#siteAboutUsImages3": details.aboutUsImages?.[2]?.src || "",
+      "#siteAboutUsImages4": details.aboutUsImages?.[3]?.src || "",
+      "#siteCarouselImages1": details.carouselImages?.[0]?.src || "",
+      "#siteCarouselImages2": details.carouselImages?.[1]?.src || "",
+      "#siteCarouselTitle1": details.carouselImages?.[0]?.carouselTitle || "",
+      "#siteCarouselTitle2": details.carouselImages?.[1]?.carouselTitle || "",
       "#siteCarouselDescription1":
-        result.rows[0].details.carouselImages[0].carouselDescription,
+        details.carouselImages?.[0]?.carouselDescription || "",
       "#siteCarouselDescription2":
-        result.rows[0].details.carouselImages[1].carouselDescription,
-      "#siteDescription": result.rows[0].details.description,
-      "#siteAddress": result.rows[0].details.address,
-      "#mapIframeHtml": result.rows[0].details.mapIframeHtml,
-      "#subContainerTitle": result.rows[0].details.subContainerTitle,
-      "#subContainerDescription":
-        result.rows[0].details.subContainerDescription,
-      "#subContainerImage": result.rows[0].details.subContainerImage,
-      "#footerDescription": result.rows[0].details.footerDescription,
+        details.carouselImages?.[1]?.carouselDescription || "",
+      "#siteDescription": details.description || "",
+      "#siteAddress": details.address || "",
+      "#mapIframeHtml": details.mapIframeHtml || "",
+      "#subContainerTitle": details.subContainerTitle || "",
+      "#subContainerDescription": details.subContainerDescription || "",
+      "#subContainerImage": details.subContainerImage || "",
+      "#footerDescription": details.footerDescription || "",
       "#headerC": "#header-carousel",
       "#navbarCollapse": "#navbarCollapse",
-      "#facebookLink": result.rows[0].details.facebookLink || "#",
-      "#bookingcomLink": result.rows[0].details.bookingcomLink || "#",
-      "#tripadvisorLink": result.rows[0].details.tripadvisorLink || "#",
-      "#youtubeLink": result.rows[0].details.youtubeLink || "#",
+      "#facebookLink": details.facebookLink || "#",
+      "#bookingcomLink": details.bookingcomLink || "#",
+      "#tripadvisorLink": details.tripadvisorLink || "#",
+      "#youtubeLink": details.youtubeLink || "#",
+      "#privacyModal": privacyPolicyModel,
+      "#termsCondition": termsConditionModel,
+      "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
+      "#termsConditionModalOpen": "#termsConditionModalOpen",
+      "#siteLogo": details.logo || "",
+      "#siteLocationDescription": details.locationdescription || "",
+      "#siteCity": details.city || "",
+      "#fda01f": "#fda01f",
+      "#sitetags": siteTags,
+      "#offerHtml": offerHtml.join("\n"),
+      "#otherServices": otherServices,
     };
 
     const getSiteName = await pool.query(
@@ -386,65 +541,77 @@ temp1.get("/build-template", async (req, res) => {
         message: "website domain not found",
       });
     }
+    try {
+      await buildTemplate(data, hotelId, templateId, pool, organization_id);
+      await buildTemplateAboutUs(
+        data,
+        hotelId,
+        templateId,
+        pool,
+        organization_id
+      );
+      await buildTemplateGallery(
+        result,
+        hotelId,
+        templateId,
+        pool,
+        organization_id
+      );
+      await buildTemplateContactUs(
+        data,
+        hotelId,
+        templateId,
+        pool,
+        organization_id
+      );
+      await buildTemplateAttraction(
+        result,
+        hotelId,
+        templateId,
+        pool,
+        organization_id
+      );
+      await buildTemplateHotelRooms(
+        result,
+        hotelId,
+        templateId,
+        pool,
+        organization_id
+      );
+      await buildTemplateBooking(
+        data,
+        hotelId,
+        templateId,
+        pool,
+        organization_id
+      );
+      await buildTemplateSpecialOffers(
+        data,
+        hotelId,
+        templateId,
+        pool,
+        organization_id
+      );
+    } catch (buildError) {
+      console.error("Error building templates:", buildError);
+      return res.status(500).json({
+        message: "Error building templates",
+      });
+    }
 
-    await buildTemplate(data, hotelId, templateId, pool, organization_id);
-    await buildTemplateAboutUs(
-      data,
-      hotelId,
-      templateId,
-      pool,
-      organization_id
-    );
-    await buildTemplateGallery(
-      result,
-      hotelId,
-      templateId,
-      pool,
-      organization_id
-    );
-    await buildTemplateContactUs(
-      data,
-      hotelId,
-      templateId,
-      pool,
-      organization_id
-    );
-    await buildTemplateAttraction(
-      result,
-      hotelId,
-      templateId,
-      pool,
-      organization_id
-    );
-    await buildTemplateHotelRooms(
-      result,
-      hotelId,
-      templateId,
-      pool,
-      organization_id
-    );
-    await buildTemplateBooking(
-      data,
-      hotelId,
-      templateId,
-      pool,
-      organization_id
-    );
-    await buildTemplateSpecialOffers(
-      data,
-      hotelId,
-      templateId,
-      pool,
-      organization_id
-    );
-    await generateNginxConfig(hotelId, templateId, pool, organization_id);
+    try {
+      await generateNginxConfig(hotelId, templateId, pool, organization_id);
+    } catch (nginxError) {
+      console.error("Error generating nginx config:", nginxError);
+      // Note: Continue even if nginx fails, as templates are built
+    }
     res.send({
       message: "Template built successfully",
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "server error plz try again",
+      message: "server error please try again",
     });
   }
 });
@@ -455,7 +622,7 @@ temp1.get("/hotel-offers", async (req, res) => {
     const hotelId = req.property_id;
 
     const result = await pool.query(
-      "SELECT * FROM operation_hoteloffers WHERE property_id = $1",
+      "SELECT * FROM operation_hoteloffers WHERE property_id = $1 AND CURRENT_DATE BETWEEN startdate AND enddate",
       [hotelId]
     );
 
@@ -647,7 +814,7 @@ temp1.get("/rooms-info", async (req, res) => {
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    orp.roprice,
+    MIN(orp.roprice) as roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
     ARRAY_AGG(DISTINCT orci.imagename) AS images
@@ -658,17 +825,17 @@ JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
 JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
 LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
 LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
+LEFT JOIN operation_room_prices_web orpw ON orpw.schedule_id = ohps.id
 WHERE 
     op.property_id = $1
-    AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
+    AND CURRENT_DATE BETWEEN orpw.from_date AND orpw.to_date
 GROUP BY 
     op.view_id, 
     op.roomclass_id, 
     cv.roomview, 
     orc.custom_name, 
     orc.maxadultcount,
-    orc.maxchildcount,
-    orp.roprice
+    orc.maxchildcount
 ORDER BY op.view_id, op.roomclass_id;
 `,
       [hotelId]
@@ -713,7 +880,7 @@ const buildTemplate = async (
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    orp.roprice,
+    MIN(orp.roprice) as roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
     ARRAY_AGG(DISTINCT orci.imagename) AS images
@@ -724,6 +891,7 @@ JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
 JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
 LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
 LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
+LEFT JOIN operation_room_prices_web orpw ON orpw.schedule_id = ohps.id
 WHERE 
     op.property_id = $1
     AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
@@ -733,8 +901,7 @@ GROUP BY
     cv.roomview, 
     orc.custom_name, 
     orc.maxadultcount,
-    orc.maxchildcount,
-    orp.roprice
+    orc.maxchildcount
 ORDER BY op.view_id, op.roomclass_id;
 `,
       [hotelId]
@@ -819,7 +986,7 @@ ORDER BY op.view_id, op.roomclass_id;
           <div class="position-relative">
             ${imageHtml}
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                 Rs ${room.roprice} / lowest price
+                 Rs ${room.roprice.toLocaleString('en-US')} / lowest price
             </small>
           </div>
           <div class="p-4 mt-2">
@@ -867,7 +1034,7 @@ ORDER BY op.view_id, op.roomclass_id;
              }
             <p class="text-body mb-3">Recommended for 2 adults</p>
             <div class="d-flex justify-content-center">
-              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
+              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
             </div>
           </div>
         </div>
@@ -875,7 +1042,7 @@ ORDER BY op.view_id, op.roomclass_id;
     `;
       })
       .join("");
-    const hotelURL = `https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}`;
+    const hotelURL = `${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}`;
 
     const data2 = {
       ...data,
@@ -952,7 +1119,43 @@ const buildTemplateGallery = async (
   }
 
   const galleryHtml = imageRows.join("");
+  const privacyPolicyModel = `
+<div class="modal fade" id="privacyPolicyModalOpen" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details.privacyPolicy ||
+                  "No privacy policy available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+`;
 
+  const termsConditionModel = `
+<div class="modal fade" id="termsConditionModalOpen" tabindex="-1" aria-labelledby="termsConditionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsConditionModalLabel">Terms & Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details.termsCondition ||
+                  "No terms and conditions available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+`;
   const data = {
     "#siteTitle": result.rows[0].details.title,
     "#siteEmail": result.rows[0].details.email,
@@ -962,6 +1165,11 @@ const buildTemplateGallery = async (
     "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
     "#footerDescription": result.rows[0].details.footerDescription,
     "#navbarCollapse": "#navbarCollapse",
+    "#privacyModal": privacyPolicyModel,
+    "#termsCondition": termsConditionModel,
+    "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
+    "#termsConditionModalOpen": "#termsConditionModalOpen",
+    "#siteLogo": result.rows[0].details.logo || "",
   };
 
   const templatePath = `./template/temp${templateId}/gallery.html`;
@@ -1032,7 +1240,7 @@ const buildTemplateBooking = async (
   }
 
   document.getElementById("bookingLink").addEventListener("click", function () {
-    const baseUrl = "https://web-booking.ceyinfo.com";
+    const baseUrl = "${webBookingURL}";
     const dynamicParams = otherParms();
     const finalUrl = \`\${baseUrl}?\${dynamicParams}\`;
     window.location.href = finalUrl;
@@ -1077,10 +1285,48 @@ const buildTemplateAttraction = async (
     if (!Array.isArray(attractionList)) {
       throw new Error("attractionList is not an array or is undefined");
     }
+    const privacyPolicyModel = `
+<div class="modal fade" id="privacyPolicyModalOpen" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details.privacyPolicy ||
+                  "No privacy policy available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+`;
 
-    const attractionListHtml = attractionList
-      .map(
-        (attraction, index) => `
+    const termsConditionModel = `
+<div class="modal fade" id="termsConditionModalOpen" tabindex="-1" aria-labelledby="termsConditionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsConditionModalLabel">Terms & Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details.termsCondition ||
+                  "No terms and conditions available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+`;
+    const attractionListHtml =
+      attractionList?.length > 0
+        ? attractionList
+            .map(
+              (attraction, index) => `
       <div class="attraction-card" key="${index}">
         <img src="${
           attraction.image
@@ -1096,8 +1342,9 @@ const buildTemplateAttraction = async (
         </div>
       </div>
     `
-      )
-      .join("");
+            )
+            .join("")
+        : "<p>No attractions available</p>";
 
     const data = {
       "#siteTitle": result.rows[0].details.title,
@@ -1108,6 +1355,11 @@ const buildTemplateAttraction = async (
       "#footerDescription": result.rows[0].details.footerDescription,
       "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
       "#navbarCollapse": "#navbarCollapse",
+      "#privacyModal": privacyPolicyModel,
+      "#termsCondition": termsConditionModel,
+      "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
+      "#termsConditionModalOpen": "#termsConditionModalOpen",
+      "#siteLogo": result.rows[0].details.logo || "",
     };
 
     const result1 = template.replace(
@@ -1162,7 +1414,7 @@ const buildTemplateHotelRooms = async (
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    orp.roprice,
+    MIN(orp.roprice) as roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
     ARRAY_AGG(DISTINCT orci.imagename) AS images
@@ -1173,6 +1425,7 @@ JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
 JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
 LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
 LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
+LEFT JOIN operation_room_prices_web orpw ON orpw.schedule_id = ohps.id
 WHERE 
     op.property_id = $1
     AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
@@ -1182,14 +1435,49 @@ GROUP BY
     cv.roomview, 
     orc.custom_name, 
     orc.maxadultcount,
-    orc.maxchildcount,
-    orp.roprice
+    orc.maxchildcount
 ORDER BY op.view_id, op.roomclass_id;`,
       [hotelId]
     );
 
     console.log("Rooms ss:", rooms.rows);
+    const privacyPolicyModel = `
+<div class="modal fade" id="privacyPolicyModalOpen" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details.privacyPolicy ||
+                  "No privacy policy available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+`;
 
+    const termsConditionModel = `
+<div class="modal fade" id="termsConditionModalOpen" tabindex="-1" aria-labelledby="termsConditionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsConditionModalLabel">Terms & Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details.termsCondition ||
+                  "No terms and conditions available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+`;
     const roomsHtml = rooms.rows
       .map((room, index) => {
         const validImages =
@@ -1259,7 +1547,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
           <div class="position-relative">
             ${imageHtml}
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                Rs ${room.roprice} / lowest price
+                Rs ${room.roprice.toLocaleString('en-US')} / lowest price
             </small>
           </div>
           <div class="p-4 mt-2">
@@ -1306,7 +1594,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
             }
             <p class="text-body mb-3">Recommended for 2 adults</p>
             <div class="d-flex justify-content-center">
-              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="https://web-booking.ceyinfo.com?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
+              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
             </div>
           </div>
         </div>
@@ -1324,6 +1612,11 @@ ORDER BY op.view_id, op.roomclass_id;`,
       "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
       "#footerDescription": result.rows[0].details.footerDescription,
       "#navbarCollapse": "#navbarCollapse",
+      "#privacyModal": privacyPolicyModel,
+      "#termsCondition": termsConditionModel,
+      "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
+      "#termsConditionModalOpen": "#termsConditionModalOpen",
+      "#siteLogo": result.rows[0].details.logo || "",
     };
 
     const templatePath = `./template/temp${templateId}/room.html`;
@@ -1374,7 +1667,7 @@ const buildTemplateSpecialOffers = async (
     const template = await fs.readFile(templatePath, "utf8");
 
     const result = await pool.query(
-      "SELECT * FROM operation_hoteloffers WHERE property_id = $1",
+      "SELECT * FROM operation_hoteloffers WHERE property_id = $1 AND CURRENT_DATE BETWEEN startdate AND enddate",
       [hotelId]
     );
 

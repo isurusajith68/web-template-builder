@@ -41,11 +41,11 @@
 <body>
     <div id="app" class="container-xxl bg-white p-0">
         <div style="display: flex; width: 100%; background-color: antiquewhite;">
-            <button @click="saveDetails">
+            <button @click="saveDetails" class="btn btn-success">
                 Save Changes
             </button>
 
-            <button @click="publishChanges">
+            <button @click="publishChanges" class="btn btn-danger ml-3">
                 Publish Changes
             </button>
         </div>
@@ -82,69 +82,89 @@
                 <div class="col-lg-3 bg-dark d-none d-lg-flex">
 
                     <a class="w-100 h-100 m-0 p-0 d-flex flex-column align-items-center justify-content-center">
-                        <h1 v-if="!isEditingTitle" @click="editClickTitle" class="m-0  text-primary text-uppercase">{{
-                            title
-                            }}
-                        </h1>
+                        <div
+                            style="position: relative; border: 2px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 10px;">
+                            <span
+                                style="background: rgb(23, 93, 158); position: absolute; top: -10px; left: 50%; transform: translateX(-50%);  padding: 2px 10px; font-size: 10px; color: white; border-radius: 4px;">
+                                system
+                                generated</span>
+                            <div class="d-flex align-items-center justify-content-center gap-3  ">
+                                <img :src="logo" alt="Logo"
+                                    style="max-width: 60px; max-height: 60px; object-fit: contain; " />
 
-                        <input v-if="isEditingTitle" v-model="editTitle" @keyup.enter="updateTitle" />
-                        <span style="color: gray; font-size: 10px; ">
-                            (system generated)
-                        </span>
+                                <h3 v-if="!isEditingTitle" class="m-0 text-primary text-uppercase fw-bold"
+                                    style="cursor: pointer; transition: color 0.3s;">
+                                    {{ title }}
+                                </h3>
+                            </div>
+
+
+                            <input v-if="isEditingTitle" v-model="editTitle" @keyup.enter="updateTitle" />
+                        </div>
                     </a>
                 </div>
                 <div class="col-lg-9">
-                    <div class="row gx-0 bg-white d-none d-lg-flex">
+                    <div class="row gx-0 bg-white d-none d-lg-flex justify-content-center p-1">
                         <div class="col-lg-7 px-5 text-start">
-                            <div class="h-100 d-inline-flex align-items-center py-2 me-4">
-                                <i class="fa fa-envelope text-primary me-2"></i>
-                                <p v-if="!isEditingEmail" @click="editClickEmail" class="mb-0">
-                                    {{email}}
-                                </p>
-                                <input v-if="isEditingEmail" v-model="editEmail" @keyup.enter="updateEmail" />
-                            </div>
-                            <div class="h-100 d-inline-flex align-items-center py-2">
-                                <i class="fa fa-phone-alt text-primary me-2"></i>
-                                <p v-if="!isEditingPhoneNumber" @click="editClickPhoneNumber" class="mb-0">
-                                    {{phoneNumber}}</p>
-                                <input v-if="isEditingPhoneNumber" v-model="editPhoneNumber"
-                                    @keyup.enter="updatePhoneNumber" />
-                            </div>
-                            <div class="h-100 d-inline-flex align-items-center px-2">
-                                <span style="color: gray; font-size: 10px;">
-                                    (system generated)
-                                </span>
+                            <div
+                                style="position: relative; border: 2px solid #e0e0e0; padding: 2px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                <span
+                                    style="position: absolute; top: 20px; right: 0%; transform: translateX(50%); background: rgb(23, 93, 158);padding: 1px 5px; font-size: 10px; color: white; border-radius: 4px;">system
+                                    generated</span>
+                                <div class="h-100 d-inline-flex align-items-center py-2 me-4">
+                                    <i class="fa fa-envelope text-primary me-2"></i>
+                                    <p v-if="!isEditingEmail"  class="mb-0">
+                                        {{email}}
+                                    </p>
+                                    <input v-if="isEditingEmail" v-model="editEmail" @keyup.enter="updateEmail" />
+                                </div>
+                                <div class="h-100 d-inline-flex align-items-center py-2">
+                                    <i class="fa fa-phone-alt text-primary me-2"></i>
+                                    <p v-if="!isEditingPhoneNumber"  class="mb-0">
+                                        {{phoneNumber}}</p>
+                                    <input v-if="isEditingPhoneNumber" v-model="editPhoneNumber"
+                                        @keyup.enter="updatePhoneNumber" />
+                                </div>
                             </div>
                         </div>
+                        <div class="col-lg-1 px-0 text-center">
+                            <!-- Empty column for spacing -->
 
-                        <div class="col-lg-5 px-5 text-end">
-                            <div class="h-100 d-inline-flex align-items-center px-2">
-                                <span style="color: gray; font-size: 10px;">
-                                    (click icon to edit social link)
-                                </span>
-                            </div>
-                            <div class="d-inline-flex align-items-center py-2">
-                                <a class="me-3" :href="facebookLink" @click.prevent="openSocialLinkModal('facebook')">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                                <a class="me-3" :href="bookingcomLink" @click.prevent="openSocialLinkModal('booking')">
-                                    <i class="fas fa-bed"></i>
-                                </a>
-                                <a class="me-3" :href="tripadvisorLink"
-                                    @click.prevent="openSocialLinkModal('tripadvisor')">
-                                    <i class="fab fa-tripadvisor"></i>
-                                </a>
-                                <a class="" :href="youtubeLink" @click.prevent="openSocialLinkModal('youtube')">
-                                    <i class="fab fa-youtube"></i>
-                                </a>
+                        </div>
+
+                        <div class="col-lg-4 px-4 text-end">
+                            <div
+                                style="position: relative; border: 2px solid #e0e0e0; padding: 2px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                <span
+                                    style="position: absolute; top: 10px; left: -10%; transform: translateY(50%); background: rgb(23, 93, 158); padding: 1px 5px; font-size: 10px; color: white; border-radius: 4px;">
+                                    click icon to edit social link</span>
+
+                                <div class="d-inline-flex align-items-center py-2">
+                                    <a class="me-3" :href="facebookLink"
+                                        @click.prevent="openSocialLinkModal('facebook')">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a class="me-3" :href="bookingcomLink"
+                                        @click.prevent="openSocialLinkModal('booking')">
+                                        <i class="fas fa-bed"></i>
+                                    </a>
+                                    <a class="me-3" :href="tripadvisorLink"
+                                        @click.prevent="openSocialLinkModal('tripadvisor')">
+                                        <i class="fab fa-tripadvisor"></i>
+                                    </a>
+                                    <a class="" :href="youtubeLink" @click.prevent="openSocialLinkModal('youtube')">
+                                        <i class="fab fa-youtube"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0" style="margin-left: 0;">
-                        <a :href="`index.html?hotelId=${hotelId}`" class="navbar-brand d-block d-lg-none">
-                            <h1 class="m-0 text-primary text-uppercase">{{
-                                title
-                                }}</h1>
+                        <a :href="`index.html?hotelId=${hotelId}`"
+                            class="navbar-brand d-block d-lg-none d-flex align-items-center">
+                            <img v-if="logo" :src="logo" alt="Logo"
+                                style="max-width: 40px; max-height: 40px; object-fit: contain; margin-right: 10px;" />
+                            <h1 class="m-0 text-primary text-uppercase">{{title}}</h1>
                         </a>
                         <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
                             data-bs-target="#navbarCollapse">
@@ -161,7 +181,7 @@
                                 <a :href="`gallery.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Gallery</a>
                                 <a :href="`attraction.html?hotelId=${hotelId}`"
                                     class="nav-item nav-link ms-3">Attractions</a>
-                                <a :href="`booking.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Bookings</a>
+
                                 <a :href="`contact.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Contact</a>
 
                                 <!-- <div class="nav-item dropdown">
@@ -173,6 +193,8 @@
                                     </div> -->
 
                             </div>
+                            <a :href="`booking.html?hotelId=${hotelId}`" class="btn btn-primary py-2 px-4 ms-3"
+                                style="text-decoration: none; color: white;">Book Now</a>
                         </div>
                     </nav>
 
@@ -192,40 +214,49 @@
 
                         <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                             <div v-if="!isEditingCarouselImages" class="p-3"
-                                style="max-width: 700px; position: relative;">
-                                <h6 v-if="!editCarouselText[0].isEditingCarouselTitle"
-                                    class="section-title text-white text-uppercase mb-3 animated slideInDown"
-                                    @click="editClickCarouselTitle(0)">
-                                    {{carouselImages[0].carouselTitle}}
-                                </h6>
-                                <input v-if="editCarouselText[0].isEditingCarouselTitle"
-                                    v-model="editCarouselImages[0].carouselTitle" @keyup.enter="updateCarouselTitle(0)"
-                                    placeholder="Edit Carousel Title">
-
-                                <h3 v-if="!editCarouselText[0].isEditingCarouselDescription"
-                                    class="text-white mb-4 animated slideInDown"
-                                    @click="editClickCarouselDescription(0)">
-                                    {{carouselImages[0].carouselDescription}}
-                                </h3>
+                                style="max-width: 700px; position: relative; border: 2px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                <span
+                                    style="background: rgb(23, 93, 158); position: absolute; top: -10px; left: 50%; transform: translateX(-50%);  padding: 2px 10px; font-size: 10px; color: white; border-radius: 4px;">
+                                    Template
+                                    editable</span>
                                 <div>
+                                    <h6 v-if="!editCarouselText[0].isEditingCarouselTitle"
+                                        class="section-title text-white text-uppercase mb-3 animated slideInDown">
+                                        {{carouselImages[0].carouselTitle}}</h6>
+                                    <br />
+                                    <button v-if="!editCarouselText[0].isEditingCarouselTitle"
+                                        @click="editClickCarouselTitle(0)">Edit Title</button>
+                                    <input v-if="editCarouselText[0].isEditingCarouselTitle"
+                                        v-model="editCarouselImages[0].carouselTitle" placeholder="Edit Carousel Title">
+                                    <br />
+                                    <button v-if="editCarouselText[0].isEditingCarouselTitle"
+                                        @click="updateCarouselTitle(0)" class="btn btn-success">Save Title</button>
+                                </div>
+
+                                <div>
+                                    <h3 v-if="!editCarouselText[0].isEditingCarouselDescription"
+                                        class="text-white mb-4 animated slideInDown">
+                                        {{carouselImages[0].carouselDescription}}</h3>
+                                    <button v-if="!editCarouselText[0].isEditingCarouselDescription"
+                                        @click="editClickCarouselDescription(0)">Edit Description</button>
                                     <textarea cols="30" rows="5" v-if="editCarouselText[0].isEditingCarouselDescription"
                                         v-model="editCarouselImages[0].carouselDescription"
-                                        @keyup.enter="updateCarouselDescription(0)"
                                         placeholder="Edit Carousel Description">
-                                </textarea>
+                                                                                                </textarea>
+                                    <button v-if="editCarouselText[0].isEditingCarouselDescription"
+                                        @click="updateCarouselDescription(0)" class="btn btn-success">Save
+                                        Description</button>
                                 </div>
 
-                                <div class="">
-                                    <span style="color: wheat; font-size: 10px;">
-                                        (template editable. click text to edit)
-                                    </span>
-                                </div>
 
-                                <button style="top: 10px; right: 10px; position: absolute; color: red; z-index: 9999;"
-                                    @click="editClickCarouselImage(1)">
-                                    <i class="fa fa-edit"></i>
-                                </button>
+
                             </div>
+                            <button v-if="!isEditingCarouselImages"
+                                style="bottom: 10px; left: 50%; transform: translateX(-50%); position: absolute; z-index: 9999; padding: 5px; background: white; color: black; border: 1px solid black;"
+                                @click="editClickCarouselImage(1)">
+
+                                Edit Slider Image
+                            </button>
 
                             <div style="display: flex; flex-direction: column;" v-if="isEditingCarouselImages"
                                 class="p-3" style="max-width: 700px;">
@@ -233,6 +264,8 @@
                                     <i class="fa fa-upload"></i>
                                     <input type="file" @change="handleFileUploadCarouselImage($event, 0)"
                                         accept="image/*" :ref="'fileInput' + 0" class="d-none" />
+                                    <span class="mr-5">upload
+                                        Image</span>
                                 </span>
                                 <button @click="saveCarouselChanges(0)" class="btn btn-success mt-3">Save
                                     Changes</button>
@@ -247,42 +280,65 @@
                         <img class="w-100" :src="carouselImages[1].src" :alt="carouselImages[1].alt">
 
                         <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                            <div v-if="!isEditingCarouselImages" class="p-3"
-                                style="max-width: 700px; position: relative;">
-                                <h6 v-if="!editCarouselText[1].isEditingCarouselTitle"
-                                    class="section-title text-white text-uppercase mb-3 animated slideInDown"
-                                    @click="editClickCarouselTitle(1)">{{carouselImages[1].carouselTitle}}</h6>
-                                <input v-if="editCarouselText[1].isEditingCarouselTitle"
-                                    v-model="this.editCarouselImages[1].carouselTitle"
-                                    @keyup.enter="updateCarouselTitle(1)" placeholder="Edit Carousel Title">
 
-                                <h3 v-if="!editCarouselText[1].isEditingCarouselDescription"
-                                    class="text-white mb-4 animated slideInDown"
-                                    @click="editClickCarouselDescription(1)">
-                                    {{carouselImages[1].carouselDescription}}</h3>
+                            <div v-if="!isEditingCarouselImages"
+                                class="w-full text-center border-t rounded-t-lg border-gray-600"
+                                style="line-height: 0.1">
+                                <span class=" px-6 text-sm font-medium bg-white "
+                                    style="color: black; font-size: 10px; z-index: 999;">
+                                    Template editable
+                                </span>
+                            </div>
+                            <div v-if="!isEditingCarouselImages" class="p-3 "
+                                style="max-width: 700px; position: relative; border: 2px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                <span
+                                    style="background: rgb(23, 93, 158); position: absolute; top: -10px; left: 50%; transform: translateX(-50%);  padding: 2px 10px; font-size: 10px; color: white; border-radius: 4px;">
+                                    Template
+                                    editable</span>
                                 <div>
+                                    <h6 v-if="!editCarouselText[1].isEditingCarouselTitle"
+                                        class="section-title text-white text-uppercase mb-3 animated slideInDown">
+                                        {{carouselImages[1].carouselTitle}}</h6>
+                                    <br />
+                                    <button v-if="!editCarouselText[1].isEditingCarouselTitle"
+                                        @click="editClickCarouselTitle(1)">Edit
+                                        Title</button>
+                                    <input v-if="editCarouselText[1].isEditingCarouselTitle"
+                                        v-model="this.editCarouselImages[1].carouselTitle"
+                                        placeholder="Edit Carousel Title"><br />
+                                    <button v-if="editCarouselText[1].isEditingCarouselTitle"
+                                        @click="updateCarouselTitle(1)" class="btn btn-success">Save Title</button>
+                                </div>
+
+                                <div>
+                                    <h3 v-if="!editCarouselText[1].isEditingCarouselDescription"
+                                        class="text-white mb-4 animated slideInDown">
+                                        {{carouselImages[1].carouselDescription}}</h3>
+                                    <button v-if="!editCarouselText[1].isEditingCarouselDescription"
+                                        @click="editClickCarouselDescription(1)">Edit Description</button>
                                     <textarea cols="30" rows="5" v-if="editCarouselText[1].isEditingCarouselDescription"
                                         v-model="this.editCarouselImages[1].carouselDescription"
-                                        @keyup.enter="updateCarouselDescription(1)"
                                         placeholder="Edit Carousel Description">
                                                                                                 </textarea>
+                                    <button v-if="editCarouselText[1].isEditingCarouselDescription"
+                                        @click="updateCarouselDescription(1)" class="btn btn-success">Save
+                                        Description</button>
                                 </div>
-                                <div class="">
-                                    <span style="color: wheat; font-size: 10px;">
-                                        (template editable. click text to edit)
-                                    </span>
-                                </div>
-                                <button style="top: 10px; right: 10px; position: absolute; color: red; z-index: 9999;"
-                                    @click="editClickCarouselImage(1)">
-                                    <i class="fa fa-edit"></i>
-                                </button>
+
                             </div>
+                            <button v-if="!isEditingCarouselImages"
+                                style="bottom: 10px; left: 50%; transform: translateX(-50%); position: absolute; z-index: 9999; padding: 5px; background: white; color: black; border: 1px solid black;"
+                                @click="editClickCarouselImage(1)">
+                                </i> Edit Slider Image
+                            </button>
                             <div style="display: flex; flex-direction: column;" v-if="isEditingCarouselImages"
                                 class="p-3" style="max-width: 700px;">
                                 <span @click="triggerCarouselImageFileInput(1)">
                                     <i class="fa fa-upload"></i>
                                     <input type="file" @change="handleFileUploadCarouselImage($event, 1)"
-                                        accept="image/*" :ref="'fileInput' + 1" class="d-none" />
+                                        accept="image/*" :ref="'fileInput' + 1" class="d-none" /> <span
+                                        class="mr-5">upload
+                                        Image</span>
                                 </span>
                                 <button @click="saveCarouselChanges" class="btn btn-success mt-3">Save
                                     Changes</button>
@@ -306,39 +362,162 @@
                 </button>
 
             </div>
-            <!-- Carousel End -->
+        </div>
+        <!-- Carousel End -->
+
+
+        <div class="container-xxl ">
+            <div class="mb-4">
+                <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                    <span class="px-6"
+                        style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                        system generated
+                    </span>
+                </div>
+
+                <div class="container px-5 pb-5 pt-4 border-b border-r border-l border-gray-600 rounded-md"
+                    style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="mb-3 mb-md-0"
+                            style="flex: 0 0 25%; border-right: 1px solid #e0e0e0; padding-right: 20px;">
+                            <h2 class="text-uppercase mb-1"
+                                style="font-family: 'Montserrat', serif; font-weight: 600; color: #333; letter-spacing: 2px;">
+                                {{ title }}</h2>
+                            <p class="text-muted mb-0"
+                                style="font-size: 14px; letter-spacing: 3px; text-transform: uppercase;">{{ city }}</p>
+                        </div>
+
+                        <div class="mb-3 mb-md-0 px-4" style="flex: 0 0 55%; border-right: 1px solid #e0e0e0;">
+                            <p class="mb-0" style="color: #888; font-size: 15px; line-height: 1.6;">{{
+                                locationdescription }}</p>
+                        </div>
+
+                        <div class="text-end" style="flex: 0 0 15%; padding-left: 20px;">
+                            <p class="mb-1" style="color: #666; font-size: 13px;">{{ email }}</p>
+                            <p class="mb-0" style="color: #333; font-size: 18px; font-weight: 600;">{{ phoneNumber }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-xxl py-5">
+            <div class="mb-4">
+                <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                    <span class="px-6"
+                        style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                        system generated
+                    </span>
+                </div>
+
+                <div class="container px-5 pb-5 pt-4 border-b border-r border-l border-gray-600 rounded-md"
+                    style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">With Us</h6>
+                        <h1 class="mb-3">Why Book <span class="text-primary text-uppercase">With Us</span>
+                        </h1>
+                    </div>
+                    <div class="d-flex justify-content-center flex-wrap gap-3 " style="margin-top: 50px;">
+                        <span v-for="(tag, index) in tags" :key="index" class="px-4 py-2"
+                            style="border: 1px solid #333; font-size: 14px; color: #333;">
+                            {{ tag.tag_name }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-xxl py-5">
+            <div class="mb-4">
+                <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                    <span class="px-6"
+                        style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                        system generated
+                    </span>
+                </div>
+
+                <div class="container px-5 pb-5 pt-4 border-b border-r border-l border-gray-600 rounded-md"
+                    style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Our Special Offers</h6>
+                        <h1 class="">Explore Our <span class="text-primary text-uppercase">offers</span></h1>
+                    </div>
+
+
+                    <div v-if="offers && offers.length > 0">
+                        <div class="d-flex justify-content-center align-items-center flex-wrap"
+                            style="margin-top: 30px;" v-for="(offer, index) in offers" :key="offer.id">
+
+                            <img v-if="offer.offerimage && !offer.imageError" :src="offer.offerimage" alt="Offer Image"
+                                class="img-fluid"
+                                style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;"
+                                @error="offer.imageError = true">
+                            <div v-else class="text-center p-4"
+                                style="max-width: 700px; min-width: 700px; border: 1px dashed #ccc; background: #f9f9f9;">
+                                <i class="fa fa-image fa-3x text-muted mb-2"></i>
+                                <p class="text-muted mb-0">No offer image available</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="text-center p-5" style="margin-top: 30px;">
+                        <i class="fa fa-tag fa-4x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Special Offers Available</h5>
+                        <p class="text-muted">Check back later for exciting offers and deals!</p>
+                    </div>
 
 
 
+                </div>
+            </div>
+        </div>
+        <!-- About Start -->
+        <!-- <div class="container-xxl py-5">
+            <div class="mb-4">
 
 
-            <!-- About Start -->
-            <div class="container-xxl py-5">
-                <div class="container">
+                <div class="container px-5 pb-5 pt-4 border-b border-r border-l border-gray-600 rounded-md">
                     <div class="row g-5 align-items-center">
-                        <div class="col-lg-6">
+                        <div class="col-lg-6" style="position: relative;">
                             <h6 class="section-title text-start text-primary text-uppercase">About Us</h6>
                             <h1 class="mb-4">Welcome to <span class="text-primary text-uppercase">{{title}}</span>
                             </h1>
-                            <div class="">
-                                <span style="color: gray; font-size: 10px;">
-                                    (template editable. click text to edit)
+
+                            <div class="w-full text-center border-t rounded-t-lg border-gray-600"
+                                style="line-height: 0.1; margin-bottom: -10px;">
+                                <span class=" px-6 "
+                                    style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                                    Template editable
                                 </span>
+
                             </div>
-                            <span v-html="description" v-if="!isEditingDescription" @click="editDescriptionClick">
-                            </span>
 
-                            <div style="display: flex; flex-direction: column;">
-                                <textarea maxlength="1000" cols="50" rows="20" v-if="isEditingDescription"
-                                    v-model="editDescription"></textarea>
-                                <span style="font-size: 10px; color: red;"
-                                    v-if="isEditingDescription && editDescription.length >= 1000">
-                                    description cannot be longer than 1000 characters ...
+                            <div
+                                style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+
+                                <span v-html="description" v-if="!isEditingDescription" @click="editDescriptionClick"
+                                    style="cursor: pointer;">
                                 </span>
 
-                                <button @click="updateDescription" v-if="isEditingDescription">Save Changes</button>
-                                <button @click="cancelEditingDescription" v-if="isEditingDescription">Cancel</button>
+                                <div style="display: flex; flex-direction: column;">
+                                    <textarea maxlength="1000" cols="50" rows="20" v-if="isEditingDescription"
+                                        v-model="editDescription"></textarea>
+                                    <span style="font-size: 10px; color: red;"
+                                        v-if="isEditingDescription && editDescription.length >= 1000">
+                                        description cannot be longer than 1000 characters ...
+                                    </span>
 
+                                    <button @click="updateDescription" v-if="isEditingDescription"
+                                        class="btn btn-success">Save
+                                        Changes</button>
+                                    <button @click="cancelEditingDescription" v-if="isEditingDescription"
+                                        class="btn btn-danger">Cancel</button>
+                                    <button style=" background: white; color: black; border: 1px solid black;"
+                                        @click="editDescriptionClick" class="btn btn-light btn-sm"
+                                        v-if="!isEditingDescription">
+
+                                        Edit Description
+                                    </button>
+
+                                </div>
                             </div>
                             <div class="row g-3 pb-4">
                                 <div class="col-sm-4 wow fadeIn" data-wow-delay="0.1s">
@@ -373,7 +552,16 @@
                                 More</a>
                         </div>
                         <div class="col-lg-6">
-                            <div class="row g-3">
+                            <div class="w-full text-center border-t rounded-t-lg border-gray-600"
+                                style="padding: 5px 0; line-height: 1; display: flex; justify-content: center; align-items: center;">
+                                <span class="px-6 "
+                                    style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                                    Template editable
+                                </span>
+
+                            </div>
+                            <div class="row g-3 "
+                                style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
                                 <div class="col-6" v-for="(image, index) in aboutUsImages" :key="index">
                                     <div :class="aboutImgStyle[index].end">
                                         <img class="img-fluid rounded  wow zoomIn" :class="aboutImgStyle[index].width"
@@ -384,17 +572,20 @@
                                             accept="image/*" :ref="'fileInput' + index" class="d-none" />
                                         <label @click="triggerFileInput(index)" class="upload-icon"
                                             style="cursor: pointer;">
-                                            <i class="fas fa-upload"></i>
+                                            <i class="fas fa-upload"></i> Upload Image
                                         </label>
                                     </div>
                                 </div>
                             </div>
                             <div v-if="isEditingAboutUsImages">
-                                <button @click="saveEditedImages">Save Changes</button>
-                                <button @click="cancelEditing">Cancel</button>
+                                <button @click="saveEditedImages" class="btn btn-success">Save Changes</button>
+                                <button @click="cancelEditing" class="btn btn-danger">Cancel</button>
                             </div>
-                            <button @click="editAboutUsImage">
-                                Edit Image
+                            <button @click="editAboutUsImage"
+                                style="background: white; color: black; border: 1px solid black;"
+                                class="btn btn-light btn-sm" v-if="!isEditingAboutUsImages">
+
+                                Edit Images
                             </button>
                         </div>
 
@@ -402,10 +593,15 @@
 
                     </div>
                 </div>
-                <!-- About End -->
+
+            </div>
+
+        </div> -->
+
+        <!-- About End -->
 
 
-                <!-- Room Start 
+        <!-- Room Start 
             <div class="container-xxl py-5">
                 <div class="container">
                     <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
@@ -505,407 +701,495 @@
             </div>
              Room End -->
 
+        <style>
+            @media (max-width: 768px) {
+                .btnrooms {
+                    margin-left: 8px;
+                }
+            }
+
+            .carousel-item img {
+                height: 600px;
+                object-fit: cover;
+                object-position: center;
+            }
+
+            @media (max-width: 1200px) {
+                .carousel-item img {
+                    height: 500px;
+                }
+            }
+
+            @media (max-width: 992px) {
+                .carousel-item img {
+                    height: 450px;
+                }
+
+                .carousel-caption {
+                    padding: 1rem !important;
+                }
+
+                .carousel-caption h6 {
+                    font-size: 1rem;
+                }
+
+                .carousel-caption h3 {
+                    font-size: 1.5rem;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .carousel-item img {
+                    height: 350px;
+                }
+
+                .carousel-caption {
+                    padding: 0.5rem !important;
+                }
+
+                .carousel-caption .p-3 {
+                    padding: 1rem !important;
+                    max-width: 90% !important;
+                }
+
+                .carousel-caption h6 {
+                    font-size: 0.9rem;
+                    margin-bottom: 0.5rem !important;
+                }
+
+                .carousel-caption h3 {
+                    font-size: 1.25rem;
+                    margin-bottom: 1rem !important;
+                }
+
+                .carousel-caption textarea {
+                    width: 100%;
+                    font-size: 0.9rem;
+                }
+
+                .carousel-caption input {
+                    width: 100%;
+                    font-size: 0.9rem;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .carousel-item img {
+                    height: 280px;
+                }
+
+                .carousel-caption .p-3 {
+                    padding: 0.5rem !important;
+                    max-width: 95% !important;
+                }
+
+                .carousel-caption h6 {
+                    font-size: 0.8rem;
+                }
+
+                .carousel-caption h3 {
+                    font-size: 1.1rem;
+                }
+
+                .carousel-caption textarea {
+                    font-size: 0.8rem;
+                    min-height: 60px;
+                }
+
+                .carousel-caption .btn {
+                    font-size: 0.8rem;
+                    padding: 0.375rem 0.75rem;
+                }
+            }
+
+            /* Ensure carousel controls are properly positioned */
+            .carousel-control-prev,
+            .carousel-control-next {
+                width: 5%;
+            }
+
+            @media (max-width: 768px) {
+
+                .carousel-control-prev,
+                .carousel-control-next {
+                    width: 8%;
+                }
+            }
+        </style>
+
+        <div class="container-xxl py-5">
+            <div class="mb-4">
+                <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                    <span class="px-6"
+                        style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                        system generated
+                    </span>
+                </div>
+
+                <div class="container px-5 pb-5 pt-4 border-b border-r border-l border-gray-600 rounded-md"
+                    style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Our Rooms</h6>
+                        <h1 class="mb-3">Explore Our <span class="text-primary text-uppercase">Rooms</span>
+                        </h1>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" v-for="(room, index) in roomsDetails" :key="index"
+                            :data-wow-delay="`${0.1 * index}s`">
+                            <div class="room-item shadow rounded overflow-hidden">
+                                <div class="position-relative">
+                                    <!-- Room Image Carousel -->
+                                    <div v-if="room.images && room.images.length > 0 && room.images[0] !== null"
+                                        :id="'roomCarousel' + index" class="carousel slide" data-bs-ride="carousel">
+                                        <div class="carousel-inner">
+                                            <div v-for="(image, imgIndex) in room.images.filter(img => img !== null)"
+                                                :key="imgIndex" :class="['carousel-item', { active: imgIndex === 0 }]">
+                                                <img class="img-fluid w-100" style="height: 250px; object-fit: cover;"
+                                                    :src="image" :alt="'Room image ' + (imgIndex + 1)"
+                                                    onerror="this.src='img/room4.jpg'">
+                                            </div>
+                                        </div>
+                                        <template v-if="room.images.filter(img => img !== null).length > 1">
+                                            <button class="carousel-control-prev" type="button"
+                                                :data-bs-target="'#roomCarousel' + index" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Previous</span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button"
+                                                :data-bs-target="'#roomCarousel' + index" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Next</span>
+                                            </button>
+                                            <div class="carousel-indicators">
+                                                <button
+                                                    v-for="(image, imgIndex) in room.images.filter(img => img !== null)"
+                                                    :key="imgIndex" type="button"
+                                                    :data-bs-target="'#roomCarousel' + index"
+                                                    :data-bs-slide-to="imgIndex" :class="{ active: imgIndex === 0 }"
+                                                    :aria-current="imgIndex === 0 ? 'true' : 'false'"
+                                                    :aria-label="'Slide ' + (imgIndex + 1)">
+                                                </button>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <img v-else class="img-fluid w-100" style="height: 250px; object-fit: cover;"
+                                        :src="room.imagename ? room.imagename : 'img/room4.jpg'" alt="Room image"
+                                        onerror="this.src='img/room4.jpg'">
+
+                                    <small
+                                        class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
+                                        Rs {{ room.roprice.toLocaleString('en-US') }} / lowest price
+                                    </small>
+                                </div>
+                                <div class="p-4 mt-2">
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h6 class="mb-0"><b>{{ room.custom_name }} / {{room.roomview}}</b>
+                                        </h6>
+                                        <div class="ps-2">
+                                            <small v-for="star in 5" :key="star"
+                                                class="fa fa-star text-primary"></small>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="d-flex align-items-center mb-3">
+                                                <i class="fa fa-h-square text-primary me-2"></i>
+    
+                                                <div class="d-flex flex-wrap align-items-center">
+                                                    <span class="me-2">Room No:</span>
+    
+                                                    <template v-for="(roomNo, index) in Array.isArray(room.room_numbers) 
+                                          ? room.room_numbers 
+                                          : (typeof room.room_numbers === 'string' 
+                                            ? room.room_numbers.split(',') 
+                                            : ['N/A'])" :key="index">
+    
+                                                        <small class="border-end me-2 pe-2">
+                                                            {{ roomNo.trim ? roomNo.trim() : roomNo }}
+                                                        </small>
+                                                    </template>
+                                                </div>
+                                            </div> -->
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="fa fa-h-square text-primary me-2"></i>
+                                        <div class="d-flex flex-wrap align-items-center">
+                                            <span class="me-2">No of Rooms:</span>
+                                            <small>{{ room.room_numbers.length }}</small>
+                                        </div>
+                                    </div>
+                                    <div v-if="room.amenities && room.amenities.length > 0"
+                                        class="d-flex flex-wrap gap-2 mb-3">
+                                        <small v-for="(amenity, i) in room.amenities" :key="i">
+                                            <span class="badge bg-dark text-light "
+                                                style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">{{
+                                                amenity }}</span>
+                                        </small>
+                                    </div>
+
+                                    <p class="text-body mb-3">Recommended for {{ room.maxadultcount }}
+                                        adults
+                                    </p>
+                                    <div class="d-flex justify-content-center">
+                                        <a class="btn btn-sm btn-dark rounded py-2 px-4"
+                                            :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`">Book
+                                            Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Room End -->
+        <div class="container-xxl py-5">
+            <div class="mb-4">
+                <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                    <span class="px-6"
+                        style="background: rgb(23, 93, 158);font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                        template editable
+                    </span>
+                </div>
+
+                <div class="container px-5 pb-5 pt-4 border-b border-r border-l border-gray-600 rounded-md"
+                    style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Services</h6>
+                        <h1 class="">Other <span class="text-primary text-uppercase">Services</span></h1>
+                    </div>
+
+                    <div class="mb-4 text-end">
+                        <button @click="addNewServiceRow" class="btn btn-primary">
+                            <i class="fa fa-plus"></i> Add Service
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+
+                            <tbody>
+                                <tr v-for="(service, index) in otherServices" :key="index">
+                                    <template v-if="!service.isEditing">
+                                        <td class="fw-bold fs-6 text-center">{{ service.serviceType }}</td>
+                                        <td class="fs-6 text-center">{{ service.serviceDescription }}</td>
+
+                                        <td class="text-center">
+                                            <button @click="editService(index)" class="btn btn-sm btn-primary me-1">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteService(index)" class="btn btn-sm btn-danger">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </template>
+                                    <template v-else>
+                                        <td>
+                                            <input v-model="service.serviceType" type="text"
+                                                class="form-control form-control-sm" placeholder="Enter service type"
+                                                required>
+                                        </td>
+                                        <td>
+                                            <textarea v-model="service.serviceDescription"
+                                                class="form-control form-control-sm" rows="2"
+                                                placeholder="Enter service description" required></textarea>
+                                        </td>
+                                        <td class="text-center">
+                                            <button @click="saveService(index)" class="btn btn-sm btn-success me-1">
+                                                <i class="fa fa-check"></i>
+                                            </button>
+                                            <button @click="cancelEditService(index)" class="btn btn-sm btn-secondary">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Start -->
+        <div class="container-xxl py-5 px-0 wow zoomIn" data-wow-delay="0.1s">
+            <div class="row g-0">
+                <div class="col-md-6 bg-dark d-flex align-items-center">
+                    <div class="p-5">
+                        <h6 class="section-title text-start text-white text-uppercase mb-3">Luxury Living
+                        </h6>
+                        <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                        </div>
+                        <div
+                            style="position: relative; border: 2px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 10px;">
+                            <span class="px-6 text-sm font-medium"
+                                style="background: rgb(23, 93, 158); position: absolute; top: -10px; left: 50%; transform: translateX(-50%);  padding: 2px 10px; font-size: 10px; color: white; border-radius: 4px;">
+                                Template editable
+                            </span>
+                            <h1 v-if="!isEditingSubContainerTitle" class="text-white mb-4"
+                                @click="editClickSubContainerTitle">
+                                {{subContainerTitle}}
+                            </h1>
+                            <button v-if="!isEditingSubContainerTitle" @click="editClickSubContainerTitle"
+                                class="btn btn-light btn-sm ">Edit Title</button>
+                            <div>
+                                <input
+                                    style="background-color: transparent; border: 2px solid whitesmoke; color: black; font-size: 1.5rem; background: white;"
+                                    class=" mb-4" v-if="isEditingSubContainerTitle" v-model="editSubContainerTitle"
+                                    @keyup.enter="updateSubContainerTitle" />
+                            </div>
+                            <button v-if="isEditingSubContainerTitle" @click="updateSubContainerTitle"
+                                class="btn btn-success btn-sm">Save Title</button>
+
+                            <p style="max-width: 100%;" class="text-white mb-4 mt-3"
+                                v-if="!isEditingSubContainerDescription" @click="editClickSubContainerDescription">
+                                {{subContainerDescription}}
+                            </p>
+                            <button v-if="!isEditingSubContainerDescription" @click="editClickSubContainerDescription"
+                                class="btn btn-light btn-sm">Edit
+                                Description</button>
+                            <div>
+                                <textarea cols="50" rows="5" v-if="isEditingSubContainerDescription"
+                                    v-model="editSubContainerDescription"
+                                    @keyup.enter="updateSubContainerDescription"></textarea>
+                            </div>
+                            <button v-if="isEditingSubContainerDescription" @click="updateSubContainerDescription"
+                                class="btn btn-success btn-sm">Save Description</button>
+                        </div>
+
+                        <a :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`"
+                            class="btn btn-primary py-md-3 px-md-5 me-3">Our Rooms</a>
+                        <a :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`"
+                            class="btn btn-light py-md-3 px-md-5 btnroom">Book A Room</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="image-container"
+                        style="position: relative; width: 100%; height: 400px; overflow: hidden;">
+                        <img :src="subContainerImage" alt="" class="responsive-img"
+                            style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                        <i class="fa fa-upload" @click="triggerUploadSubContainerImage"
+                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; color: #e2e60f; font-size: 2rem; z-index: 10; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 50%;"></i>
+                        <input ref="fileInputSubContainer" type="file" accept="image/*" style="display: none;"
+                            @change="handleSubContainerFileSelect">
+                        <span
+                            style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; font-size: 0.9rem; cursor: pointer;">
+                            Upload Image
+                        </span>
+                    </div>
+                </div>
                 <style>
-                    @media (max-width: 768px) {
-                        .btnrooms {
-                            margin-left: 8px;
-                        }
+                    .image-container {
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                     }
 
-                    .carousel-item img {
-                        height: 600px;
-                        object-fit: cover;
-                        object-position: center;
+                    .responsive-img {
+                        transition: transform 0.3s ease;
                     }
 
-                    @media (max-width: 1200px) {
-                        .carousel-item img {
-                            height: 500px;
-                        }
-                    }
-
-                    @media (max-width: 992px) {
-                        .carousel-item img {
-                            height: 450px;
-                        }
-
-                        .carousel-caption {
-                            padding: 1rem !important;
-                        }
-
-                        .carousel-caption h6 {
-                            font-size: 1rem;
-                        }
-
-                        .carousel-caption h3 {
-                            font-size: 1.5rem;
-                        }
+                    .responsive-img:hover {
+                        transform: scale(1.05);
                     }
 
                     @media (max-width: 768px) {
-                        .carousel-item img {
-                            height: 350px;
+                        .image-container {
+                            height: 300px;
                         }
 
-                        .carousel-caption {
-                            padding: 0.5rem !important;
+                        .btnroom {
+                            margin-top: 8px;
                         }
 
-                        .carousel-caption .p-3 {
-                            padding: 1rem !important;
-                            max-width: 90% !important;
-                        }
-
-                        .carousel-caption h6 {
-                            font-size: 0.9rem;
-                            margin-bottom: 0.5rem !important;
-                        }
-
-                        .carousel-caption h3 {
-                            font-size: 1.25rem;
-                            margin-bottom: 1rem !important;
-                        }
-
-                        .carousel-caption textarea {
-                            width: 100%;
-                            font-size: 0.9rem;
-                        }
-
-                        .carousel-caption input {
-                            width: 100%;
-                            font-size: 0.9rem;
+                        .fa-upload {
+                            font-size: 1.5rem !important;
+                            padding: 10px !important;
                         }
                     }
 
                     @media (max-width: 576px) {
-                        .carousel-item img {
-                            height: 280px;
-                        }
-
-                        .carousel-caption .p-3 {
-                            padding: 0.5rem !important;
-                            max-width: 95% !important;
-                        }
-
-                        .carousel-caption h6 {
-                            font-size: 0.8rem;
-                        }
-
-                        .carousel-caption h3 {
-                            font-size: 1.1rem;
-                        }
-
-                        .carousel-caption textarea {
-                            font-size: 0.8rem;
-                            min-height: 60px;
-                        }
-
-                        .carousel-caption .btn {
-                            font-size: 0.8rem;
-                            padding: 0.375rem 0.75rem;
+                        .image-container {
+                            height: 250px;
                         }
                     }
 
-                    /* Ensure carousel controls are properly positioned */
-                    .carousel-control-prev,
-                    .carousel-control-next {
-                        width: 5%;
+                    /* Image Crop Modal Styles */
+                    .crop-container {
+                        background: #f8f9fa;
+                        border-radius: 8px;
+                        padding: 20px;
+                        border: 2px dashed #dee2e6;
+                    }
+
+                    .cropper-container {
+                        max-width: 100% !important;
+                        max-height: 400px !important;
+                    }
+
+                    .modal-lg {
+                        max-width: 900px;
+                    }
+
+                    #imageCropModal .modal-body {
+                        padding: 1.5rem;
+                    }
+
+                    #imageCropModal .alert-info {
+                        background-color: #e7f3ff;
+                        border-color: #b3d9ff;
+                        color: #0c5460;
+                    }
+
+                    .cropper-point {
+                        background-color: #007bff !important;
+                    }
+
+                    .cropper-line {
+                        background-color: #007bff !important;
+                    }
+
+                    .cropper-view-box {
+                        outline-color: #007bff !important;
                     }
 
                     @media (max-width: 768px) {
+                        .modal-lg {
+                            max-width: 95%;
+                            margin: 10px auto;
+                        }
 
-                        .carousel-control-prev,
-                        .carousel-control-next {
-                            width: 8%;
+                        .crop-container {
+                            padding: 10px;
+                        }
+
+                        #imageCropModal .modal-body {
+                            padding: 1rem;
                         }
                     }
                 </style>
+            </div>
+        </div>
 
-                <div class="container-xxl py-5">
-                    <div class="container">
-
-                        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                            <h6 class="section-title text-center text-primary text-uppercase">Our Rooms</h6>
-                            <h1 class="">Explore Our <span class="text-primary text-uppercase">Rooms</span></h1>
-                            <div class="mb-5">
-                                <span style="color: gray; font-size: 10px;">
-                                    (system generated)
-                                </span>
-                            </div>
-                        </div>
-                        <div class="row g-4">
-                            <div class="col-lg-4 col-md-6 wow fadeInUp" v-for="(room, index) in roomsDetails"
-                                :key="index" :data-wow-delay="`${0.1 * index}s`">
-                                <div class="room-item shadow rounded overflow-hidden">
-                                    <div class="position-relative">
-                                        <!-- Room Image Carousel -->
-                                        <div v-if="room.images && room.images.length > 0 && room.images[0] !== null"
-                                            :id="'roomCarousel' + index" class="carousel slide" data-bs-ride="carousel">
-                                            <div class="carousel-inner">
-                                                <div v-for="(image, imgIndex) in room.images.filter(img => img !== null)"
-                                                    :key="imgIndex"
-                                                    :class="['carousel-item', { active: imgIndex === 0 }]">
-                                                    <img class="img-fluid w-100"
-                                                        style="height: 250px; object-fit: cover;" :src="image"
-                                                        :alt="'Room image ' + (imgIndex + 1)"
-                                                        onerror="this.src='img/room4.jpg'">
-                                                </div>
-                                            </div>
-                                            <template v-if="room.images.filter(img => img !== null).length > 1">
-                                                <button class="carousel-control-prev" type="button"
-                                                    :data-bs-target="'#roomCarousel' + index" data-bs-slide="prev">
-                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Previous</span>
-                                                </button>
-                                                <button class="carousel-control-next" type="button"
-                                                    :data-bs-target="'#roomCarousel' + index" data-bs-slide="next">
-                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                    <span class="visually-hidden">Next</span>
-                                                </button>
-                                                <div class="carousel-indicators">
-                                                    <button
-                                                        v-for="(image, imgIndex) in room.images.filter(img => img !== null)"
-                                                        :key="imgIndex" type="button"
-                                                        :data-bs-target="'#roomCarousel' + index"
-                                                        :data-bs-slide-to="imgIndex" :class="{ active: imgIndex === 0 }"
-                                                        :aria-current="imgIndex === 0 ? 'true' : 'false'"
-                                                        :aria-label="'Slide ' + (imgIndex + 1)">
-                                                    </button>
-                                                </div>
-                                            </template>
-                                        </div>
-                                        <img v-else class="img-fluid w-100" style="height: 250px; object-fit: cover;"
-                                            :src="room.imagename ? room.imagename : 'img/room4.jpg'" alt="Room image"
-                                            onerror="this.src='img/room4.jpg'">
-
-                                        <small
-                                            class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                                            Rs {{ room.roprice }} / lowest price
-                                        </small>
-                                    </div>
-                                    <div class="p-4 mt-2">
-                                        <div class="d-flex justify-content-between mb-3">
-                                            <h6 class="mb-0"><b>{{ room.custom_name }} / {{room.roomview}}</b></h6>
-                                            <div class="ps-2">
-                                                <small v-for="star in 5" :key="star"
-                                                    class="fa fa-star text-primary"></small>
-                                            </div>
-                                        </div>
-                                        <!-- <div class="d-flex align-items-center mb-3">
-                                            <i class="fa fa-h-square text-primary me-2"></i>
-
-                                            <div class="d-flex flex-wrap align-items-center">
-                                                <span class="me-2">Room No:</span>
-
-                                                <template v-for="(roomNo, index) in Array.isArray(room.room_numbers) 
-                                      ? room.room_numbers 
-                                      : (typeof room.room_numbers === 'string' 
-                                        ? room.room_numbers.split(',') 
-                                        : ['N/A'])" :key="index">
-
-                                                    <small class="border-end me-2 pe-2">
-                                                        {{ roomNo.trim ? roomNo.trim() : roomNo }}
-                                                    </small>
-                                                </template>
-                                            </div>
-                                        </div> -->
-                                        <div class="d-flex align-items-center mb-3">
-                                            <i class="fa fa-h-square text-primary me-2"></i>
-                                            <div class="d-flex flex-wrap align-items-center">
-                                                <span class="me-2">No of Rooms:</span>
-                                                <small>{{ room.room_numbers.length }}</small>
-                                            </div>
-                                        </div>
-                                        <div v-if="room.amenities && room.amenities.length > 0"
-                                            class="d-flex flex-wrap gap-2 mb-3">
-                                            <small v-for="(amenity, i) in room.amenities" :key="i">
-                                                <span class="badge bg-dark text-light "
-                                                    style="border-radius: 12px; font-size: 0.8rem; margin: 2px; display: inline-block;">{{
-                                                    amenity }}</span>
-                                            </small>
-                                        </div>
-
-                                        <p class="text-body mb-3">Recommended for {{ room.maxadultcount }} adults</p>
-                                        <div class="d-flex justify-content-center">
-                                            <a class="btn btn-sm btn-dark rounded py-2 px-4"
-                                                :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`">Book
-                                                Now</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
+        <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-0">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 16:9 aspect ratio -->
+                        <div class="ratio ratio-16x9">
+                            <iframe class="embed-responsive-item" src="" id="video" allowfullscreen
+                                allowscriptaccess="always" allow="autoplay"></iframe>
                         </div>
                     </div>
                 </div>
-                <!-- Room End -->
+            </div>
+        </div>
+        <!-- Video Start -->
 
 
-                <!-- Video Start -->
-                <div class="container-xxl py-5 px-0 wow zoomIn" data-wow-delay="0.1s">
-                    <div class="row g-0">
-                        <div class="col-md-6 bg-dark d-flex align-items-center">
-                            <div class="p-5">
-                                <h6 class="section-title text-start text-white text-uppercase mb-3">Luxury Living
-                                </h6>
-                                <div class="">
-                                    <span style="color: gray; font-size: 10px;">
-                                        (template editable)
-                                    </span>
-                                </div>
-                                <h1 v-if="!isEditingSubContainerTitle" class="text-white mb-4"
-                                    @click="editClickSubContainerTitle">
-                                    {{subContainerTitle}}
-                                </h1>
-                                <div>
-                                    <input
-                                        style="background-color: transparent; border: 2px solid whitesmoke; color: black; font-size: 1.5rem; background: white;"
-                                        class=" mb-4" v-if="isEditingSubContainerTitle" v-model="editSubContainerTitle"
-                                        @keyup.enter="updateSubContainerTitle" />
-                                </div>
-
-                                <p style="max-width: 40%;" class="text-white mb-4"
-                                    v-if="!isEditingSubContainerDescription" @click="editClickSubContainerDescription">
-                                    {{subContainerDescription}}
-                                </p>
-                                <div>
-                                    <textarea cols="50" rows="5" v-if="isEditingSubContainerDescription"
-                                        v-model="editSubContainerDescription"
-                                        @keyup.enter="updateSubContainerDescription"></textarea>
-                                </div>
-
-                                <a :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`"
-                                    class="btn btn-primary py-md-3 px-md-5 me-3">Our Rooms</a>
-                                <a :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`"
-                                    class="btn btn-light py-md-3 px-md-5 btnroom">Book A Room</a>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="image-container"
-                                style="position: relative; width: 100%; height: 400px; overflow: hidden;">
-                                <img :src="subContainerImage" alt="" class="responsive-img"
-                                    style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
-                                <i class="fa fa-upload" @click="triggerUploadSubContainerImage"
-                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; color: #e2e60f; font-size: 2rem; z-index: 10; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 50%;"></i>
-                                <input ref="fileInputSubContainer" type="file" accept="image/*" style="display: none;"
-                                    @change="handleSubContainerFileSelect">
-                            </div>
-                        </div>
-                        <style>
-                            .image-container {
-                                border-radius: 8px;
-                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                            }
-
-                            .responsive-img {
-                                transition: transform 0.3s ease;
-                            }
-
-                            .responsive-img:hover {
-                                transform: scale(1.05);
-                            }
-
-                            @media (max-width: 768px) {
-                                .image-container {
-                                    height: 300px;
-                                }
-
-                                .btnroom {
-                                    margin-top: 8px;
-                                }
-
-                                .fa-upload {
-                                    font-size: 1.5rem !important;
-                                    padding: 10px !important;
-                                }
-                            }
-
-                            @media (max-width: 576px) {
-                                .image-container {
-                                    height: 250px;
-                                }
-                            }
-
-                            /* Image Crop Modal Styles */
-                            .crop-container {
-                                background: #f8f9fa;
-                                border-radius: 8px;
-                                padding: 20px;
-                                border: 2px dashed #dee2e6;
-                            }
-
-                            .cropper-container {
-                                max-width: 100% !important;
-                                max-height: 400px !important;
-                            }
-
-                            .modal-lg {
-                                max-width: 900px;
-                            }
-
-                            #imageCropModal .modal-body {
-                                padding: 1.5rem;
-                            }
-
-                            #imageCropModal .alert-info {
-                                background-color: #e7f3ff;
-                                border-color: #b3d9ff;
-                                color: #0c5460;
-                            }
-
-                            .cropper-point {
-                                background-color: #007bff !important;
-                            }
-
-                            .cropper-line {
-                                background-color: #007bff !important;
-                            }
-
-                            .cropper-view-box {
-                                outline-color: #007bff !important;
-                            }
-
-                            @media (max-width: 768px) {
-                                .modal-lg {
-                                    max-width: 95%;
-                                    margin: 10px auto;
-                                }
-
-                                .crop-container {
-                                    padding: 10px;
-                                }
-
-                                #imageCropModal .modal-body {
-                                    padding: 1rem;
-                                }
-                            }
-                        </style>
-                    </div>
-                </div>
-
-                <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content rounded-0">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <!-- 16:9 aspect ratio -->
-                                <div class="ratio ratio-16x9">
-                                    <iframe class="embed-responsive-item" src="" id="video" allowfullscreen
-                                        allowscriptaccess="always" allow="autoplay"></iframe>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Video Start -->
-
-
-                <!-- Service Start 
+        <!-- Service Start 
             <div class="container-xxl py-5">
                 <div class="container">
                     <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
@@ -985,7 +1269,7 @@
             Service End -->
 
 
-                <!-- Testimonial Start 
+        <!-- Testimonial Start 
             <div class="container-xxl testimonial my-5 py-5 bg-dark wow zoomIn" data-wow-delay="0.1s">
                 <div class="container">
                     <div class="owl-carousel testimonial-carousel py-5">
@@ -1028,7 +1312,7 @@
             Testimonial End -->
 
 
-                <!-- Team Start 
+        <!-- Team Start 
             <div class="container-xxl py-5">
                 <div class="container">
                     <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
@@ -1104,323 +1388,395 @@
                 </div>
             </div>
             Team End -->
-                <style>
-                    @media (max-width: 768px) {
-                        .newsletterup {
-                            width: 800px;
+        <style>
+            @media (max-width: 768px) {
+                .newsletterup {
+                    width: 800px;
 
-                        }
-                    }
-                </style>
+                }
+            }
+        </style>
 
 
-                <!-- Newsletter Start -->
+        <!-- Newsletter Start -->
 
-                <!-- Newsletter end -->
+        <!-- Newsletter end -->
 
-                <!-- Social Links Modal Start -->
-                <div class="modal fade" id="socialLinksModal" tabindex="-1" aria-labelledby="socialLinksModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="socialLinksModalLabel">Edit {{ currentSocialPlatform }} Link
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label :for="'socialLink'" class="form-label">{{ currentSocialPlatform }}
-                                        URL</label>
-                                    <input type="url" class="form-control" id="socialLink" v-model="currentSocialLink"
-                                        :placeholder="'Enter ' + currentSocialPlatform + ' link'">
-                                    <div class="form-text">Enter the complete URL (e.g., https://facebook.com/yourpage)
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-primary" @click="saveSocialLink">Save Link</button>
+        <!-- Social Links Modal Start -->
+        <div class="modal fade" id="socialLinksModal" tabindex="-1" aria-labelledby="socialLinksModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="socialLinksModalLabel">Edit {{ currentSocialPlatform }}
+                            Link
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label :for="'socialLink'" class="form-label">{{ currentSocialPlatform }}
+                                URL</label>
+                            <input type="url" class="form-control" id="socialLink" v-model="currentSocialLink"
+                                :placeholder="'Enter ' + currentSocialPlatform + ' link'">
+                            <div class="form-text">Enter the complete URL (e.g.,
+                                https://facebook.com/yourpage)
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Social Links Modal End -->
-
-                <!-- Image Crop Modal Start -->
-                <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="imageCropModalLabel">Crop Image</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="alert alert-info mb-3">
-                                    <i class="fa fa-info-circle me-2"></i>
-                                    <small>
-                                        <span v-if="cropAspectRatio === 16/9">Cropping for wide banner (16:9
-                                            ratio)</span>
-                                        <span v-else-if="cropAspectRatio === 1">Cropping for square image (1:1
-                                            ratio)</span>
-                                        <span v-else>Cropping image</span>
-                                        - Drag to move, use corners to resize the crop area.
-                                    </small>
-                                </div>
-                                <div class="crop-container" style="max-height: 400px; overflow: hidden;">
-                                    <img ref="cropImage" id="cropImage" style="max-width: 100%; display: block;">
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    <i class="fa fa-times me-1"></i>Cancel
-                                </button>
-                                <button type="button" class="btn btn-primary" @click="applyCrop">
-                                    <i class="fa fa-crop me-1"></i>Apply Crop
-                                </button>
-                            </div>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" @click="saveSocialLink">Save
+                            Link</button>
                     </div>
                 </div>
-                <!-- Image Crop Modal End -->
+            </div>
+        </div>
+        <!-- Social Links Modal End -->
 
-                <!-- Footer Start -->
-                <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"
-                    data-wow-delay="0.1s">
-                    <div class="container  ">
-                        <div class="row g-5">
-                            <div class="col-md-6 col-lg-4 col-sm-4">
-                                <div class="bg-primary rounded p-4">
-                                    <span style="color: gainsboro; font-size: 10px;">
-                                        (system generated)
-                                    </span>
-                                    <a :href="`index.html?hotelId=${hotelId}`">
-                                        <h1 class="text-white text-uppercase mb-3">
-                                            {{title}}
-                                        </h1>
-                                    </a>
-                                    <span style="color: gainsboro; font-size: 10px;">
-                                        (template editable)
-                                    </span>
-                                    <p v-if="!isEditingFooterDescription" @click="editClickFooterDescription"
-                                        class="text-white mb-0" style="text-align: justify;">
-                                        {{
-                                        footerDescription
-                                        }}
-                                    </p>
-                                    <textarea v-if="isEditingFooterDescription" v-model="editFooterDescription"
-                                        @keyup.enter="updateFooterDescription" style="width: 100%;"></textarea>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="">
-                                    <span style="color: gainsboro; font-size: 10px;">
-                                        (system generated)
-                                    </span>
-                                </div>
-                                <h6 class="section-title text-start text-primary text-uppercase ">Contact</h6>
-                                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>
-                                    {{address}}
-                                </p>
-                                <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>
-                                    {{phoneNumber}}
-                                </p>
-                                <p class="mb-2"><i class="fa fa-envelope me-3"></i>
-                                    {{email}}
-                                </p>
-                                <div class="d-flex pt-2">
-                                    <a class="btn btn-outline-light btn-social" :href="youtubeLink"><i
-                                            class="fab fa-youtube"></i></a>
-                                    <a class="btn btn-outline-light btn-social" :href="facebookLink"><i
-                                            class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-outline-light btn-social" :href="bookingcomLink" target="_blank"
-                                        rel="noopener noreferrer">
-                                        <i class="fas fa-bed"></i> <!-- Example icon for Booking.com -->
-                                    </a>
-                                    <a class="btn btn-outline-light btn-social" :href="tripadvisorLink" target="_blank"
-                                        rel="noopener noreferrer">
-
-                                        <i class="fab fa-tripadvisor"></i> <!-- TripAdvisor icon -->
-                                    </a>
-
-                                </div>
-                            </div>
-                            <div class="col-lg-5 col-md-12 ">
-                                <div class="row  g-4">
-                                    <div class="col-md-6" style="margin-left:10%;">
-                                        <h6 class="section-title text-start text-primary text-uppercase mb-4">
-                                            Company
-                                        </h6>
-                                        <a class="btn btn-link" href="">About Us</a>
-                                        <a class="btn btn-link" href="">Contact Us</a>
-                                        <a class="btn btn-link" href="">Privacy Policy</a>
-                                        <a class="btn btn-link" href="">Terms & Condition</a>
-                                        <a class="btn btn-link" href="">Support</a>
-                                    </div>
-
-                                </div>
-                            </div>
+        <!-- Image Crop Modal Start -->
+        <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imageCropModalLabel">Crop Image</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info mb-3">
+                            <i class="fa fa-info-circle me-2"></i>
+                            <small>
+                                <span v-if="cropAspectRatio === 16/9">Cropping for wide banner (16:9
+                                    ratio)</span>
+                                <span v-else-if="cropAspectRatio === 1">Cropping for square image (1:1
+                                    ratio)</span>
+                                <span v-else>Cropping image</span>
+                                - Drag to move, use corners to resize the crop area.
+                            </small>
                         </div>
+                        <div class="crop-container" style="max-height: 400px; overflow: hidden;">
+                            <img ref="cropImage" id="cropImage" style="max-width: 100%; display: block;">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-1"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" @click="applyCrop">
+                            <i class="fa fa-crop me-1"></i>Apply Crop
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Image Crop Modal End -->
 
-                        <div class="container">
-                            <div class="copyright">
-                                <div class="row">
-                                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                                        &copy; <a class="border-bottom" href="#">{{
-                                            title
-                                            }}</a>, All Right Reserved.
+        <!-- Privacy Policy Modal Start -->
+        <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="privacyModalLabel">Edit Privacy Policy</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea v-model="privacyPolicy" rows="10" class="form-control"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" @click="savePrivacyPolicy">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Privacy Policy Modal End -->
 
-                                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                                        Designed By <a class="border-bottom" href="https://ceyinfo.com/">Ceyinfo
-                                            Solutions
-                                            (pvt)
-                                            Ltd. </a>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="footer-menu">
-                                            <a href="">Home</a>
-                                            <a href="">Cookies</a>
-                                            <a href="">Help</a>
-                                            <a href="">FQAs</a>
-                                        </div>
-                                        <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
-                                                class="bi bi-arrow-up"></i></a>
-                                    </div>
+        <!-- Terms & Condition Modal Start -->
+        <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="termsModalLabel">Edit Terms & Condition</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea v-model="termsCondition" rows="10" class="form-control"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" @click="saveTermsCondition">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Terms & Condition Modal End -->
+
+        <!-- Footer Start -->
+        <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"
+            data-wow-delay="0.1s">
+            <div class="container  ">
+                <div class="row g-5">
+                    <div class="col-md-6 col-lg-4 col-sm-4">
+                        <div class="bg-primary rounded p-4">
+                            <div
+                                style="position: relative; border: 2px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px;">
+                                <span class=" px-6 text-sm font-medium "
+                                    style="background: rgb(23, 93, 158); position: absolute; top: -10px; left: 50%; transform: translateX(-50%);  padding: 2px 10px; font-size: 10px; color: white; border-radius: 4px;">
+
+                                    system generated
+                                </span>
+                                <a :href="`index.html?hotelId=${hotelId}`">
+                                    <h1 class="text-white text-uppercase mb-3">
+                                        {{title}}
+                                    </h1>
+                                </a>
+                            </div>
+                            <div
+                                style="position: relative; border: 2px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px; margin-top: 10px;">
+                                <span class=" px-6 text-sm font-medium"
+                                    style="background: rgb(23, 93, 158); position: absolute; top: -10px; left: 50%; transform: translateX(-50%);  padding: 2px 10px; font-size: 10px; color: white; border-radius: 4px;">
+
+                                    template editable
+                                </span>
+                                <p v-if="!isEditingFooterDescription" @click="editClickFooterDescription"
+                                    class="text-white mb-0" style="text-align: justify;">
+                                    {{
+                                    footerDescription
+                                    }}
+                                </p>
+                                <textarea v-if="isEditingFooterDescription" v-model="editFooterDescription"
+                                    @keyup.enter="updateFooterDescription" style="width: 100%;"></textarea>
+                                <button v-if="!isEditingFooterDescription" @click="editClickFooterDescription"
+                                    class="btn btn-light btn-sm mt-2">Edit Description</button>
+                                <div v-if="isEditingFooterDescription">
+                                    <button @click="updateFooterDescription" class="btn btn-success btn-sm mt-2">Save
+                                        Description</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div
+                            style="position: relative; border: 2px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px;">
+                            <span class="px-6 text-sm font-medium"
+                                style="background: rgb(23, 93, 158); position: absolute; top: -10px; left: 50%; transform: translateX(-50%);  padding: 2px 10px; font-size: 10px; color: white; border-radius: 4px;">
+
+                                system generated
+                            </span>
+                            <h6 class="section-title text-start text-primary text-uppercase ">Contact</h6>
+                            <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>
+                                {{address}}
+                            </p>
+                            <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>
+                                {{phoneNumber}}
+                            </p>
+                            <p class="mb-2"><i class="fa fa-envelope me-3"></i>
+                                {{email}}
+                            </p>
+                        </div>
+                        <div class="d-flex pt-2">
+                            <a class="btn btn-outline-light btn-social" :href="youtubeLink"><i
+                                    class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-light btn-social" :href="facebookLink"><i
+                                    class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" :href="bookingcomLink" target="_blank"
+                                rel="noopener noreferrer">
+                                <i class="fas fa-bed"></i> <!-- Example icon for Booking.com -->
+                            </a>
+                            <a class="btn btn-outline-light btn-social" :href="tripadvisorLink" target="_blank"
+                                rel="noopener noreferrer">
+
+                                <i class="fab fa-tripadvisor"></i> <!-- TripAdvisor icon -->
+                            </a>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-12 ">
+                        <div class="row  g-4">
+                            <div class="col-md-6" style="margin-left:10%;">
+                                <div
+                                    style="position: relative; border: 2px solid #e0e0e0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px;">
+                                    <span class="px-6 text-sm font-medium"
+                                        style="background: rgb(23, 93, 158); position: absolute; top: -10px; left: 50%; transform: translateX(-50%);  padding: 2px 10px; font-size: 10px; color: white; border-radius: 4px;">
+                                        template editable
+
+                                    </span>
+                                    <h6 class="section-title text-start text-primary text-uppercase mb-4">
+                                        Company
+                                    </h6>
+                                    <a class="btn btn-link" href="/about.html">About Us</a>
+                                    <a class="btn btn-link" href="/contact.html">Contact Us</a>
+                                    <span class="">
+                                        <a class="btn btn-link" href="">Privacy Policy</a> <button
+                                            class="btn btn-light btn-sm mt-2" @click="openPrivacyModal">
+                                            Add Privacy Policy
+                                        </button>
+                                    </span>
+                                    <span>
+                                        <a class="btn btn-link" href="">Terms & Condition</a><button
+                                            class="btn btn-light btn-sm mt-2" @click="openTermsModal">
+                                            Add Terms & Condition
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
-                <!-- Footer End -->
-                <style>
-                    /* General container and spacing adjustments */
+
+                <div class="container">
+                    <div class="copyright">
+                        <div class="row">
+                            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                                &copy; <a class="border-bottom" href="#">{{
+                                    title
+                                    }}</a>, All Right Reserved.
+
+                                <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                                Designed By <a class="border-bottom" href="https://ceyinfo.com/">Ceyinfo
+                                    Solutions
+                                    (pvt)
+                                    Ltd. </a>
+                            </div>
+                            <div class="col-md-6">
+
+                                <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
+                                        class="bi bi-arrow-up"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>
+                /* General container and spacing adjustments */
+                .footer {
+                    padding: 40px 0;
+                }
+
+                .footer .container-fluid {
+                    padding: 0 15px;
+                }
+
+                .footer .row {
+                    margin: 0 auto;
+                }
+
+                /* Styling for smaller screens */
+                @media (max-width: 768px) {
                     .footer {
-                        padding: 40px 0;
+                        padding: 0 40px;
+                        width: 100%;
+                        margin-top: -15px;
                     }
 
-                    .footer .container-fluid {
-                        padding: 0 15px;
+                    .newsletterup {
+                        width: 100%;
                     }
 
-                    .footer .row {
-                        margin: 0 auto;
+                    /* Adjust columns stacking for mobile */
+                    .footer .col-md-6,
+                    .footer .col-lg-4,
+                    .footer .col-lg-5 {
+                        flex: 0 0 100%;
+                        max-width: 100%;
+                        margin-bottom: 20px;
                     }
 
-                    /* Styling for smaller screens */
-                    @media (max-width: 768px) {
-                        .footer {
-                            padding: 0 40px;
-                            width: 100%;
-                            margin-top: -15px;
-                        }
-
-                        .newsletterup {
-                            width: 100%;
-                        }
-
-                        /* Adjust columns stacking for mobile */
-                        .footer .col-md-6,
-                        .footer .col-lg-4,
-                        .footer .col-lg-5 {
-                            flex: 0 0 100%;
-                            max-width: 100%;
-                            margin-bottom: 20px;
-                        }
-
-                        /* Centralize text for mobile */
-                        .footer .text-md-start {
-                            text-align: center !important;
-                        }
-
-                        .footer .btn-social {
-                            margin: 0 5px;
-                        }
-
-                        /* Adjust the padding and size of social buttons */
-                        .footer .btn-social {
-                            width: 40px;
-                            height: 40px;
-                            font-size: 14px;
-                        }
-
-                        /* Footer links alignment */
-                        .footer .btn-link {
-                            display: block;
-                            margin-bottom: 5px;
-                            text-align: center;
-                        }
-
-                        .footer .copyright .row {
-                            flex-direction: column;
-                            align-items: center;
-                        }
-
-                        .footer .footer-menu {
-                            text-align: center;
-                            margin-top: 10px;
-                        }
-
-                        .footer .footer-menu a {
-                            margin: 0 10px;
-                        }
-
-                        /* Adjust scroll to top button */
-                        .footer .btn-lg-square {
-                            display: block;
-                            margin: 20px auto;
-                            width: 50px;
-                            height: 50px;
-                        }
+                    /* Centralize text for mobile */
+                    .footer .text-md-start {
+                        text-align: center !important;
                     }
 
-                    /* Styling for extra small screens (below 576px) */
-                    @media (max-width: 576px) {
-                        .footer .col-md-6 {
-                            margin-bottom: 10px;
-                        }
-
-                        .footer .btn-social {
-                            width: 36px;
-                            height: 36px;
-                        }
-
-                        .footer h6 {
-                            font-size: 16px;
-                        }
-
-                        .footer p,
-                        .footer .btn-link {
-                            font-size: 14px;
-                        }
+                    .footer .btn-social {
+                        margin: 0 5px;
                     }
-                </style>
 
-                <!-- Back to Top -->
+                    /* Adjust the padding and size of social buttons */
+                    .footer .btn-social {
+                        width: 40px;
+                        height: 40px;
+                        font-size: 14px;
+                    }
 
-                <!-- JavaScript Libraries -->
-                <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-                <!-- Cropper.js -->
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-                <script src="lib/wow/wow.min.js"></script>
-                <script src="lib/easing/easing.min.js"></script>
-                <script src="lib/waypoints/waypoints.min.js"></script>
-                <script src="lib/counterup/counterup.min.js"></script>
-                <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-                <script src="lib/tempusdominus/js/moment.min.js"></script>
-                <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-                <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+                    /* Footer links alignment */
+                    .footer .btn-link {
+                        display: block;
+                        margin-bottom: 5px;
+                        text-align: center;
+                    }
 
-                <!-- Template Javascript -->
-                <script src="js/config.js"></script>
-                <script src="js/main.js"></script>
-                <script src="js/index.js"></script>
+                    .footer .copyright .row {
+                        flex-direction: column;
+                        align-items: center;
+                    }
 
-                <!-- <script>
+                    .footer .footer-menu {
+                        text-align: center;
+                        margin-top: 10px;
+                    }
+
+                    .footer .footer-menu a {
+                        margin: 0 10px;
+                    }
+
+                    /* Adjust scroll to top button */
+                    .footer .btn-lg-square {
+                        display: block;
+                        margin: 20px auto;
+                        width: 50px;
+                        height: 50px;
+                    }
+                }
+
+                /* Styling for extra small screens (below 576px) */
+                @media (max-width: 576px) {
+                    .footer .col-md-6 {
+                        margin-bottom: 10px;
+                    }
+
+                    .footer .btn-social {
+                        width: 36px;
+                        height: 36px;
+                    }
+
+                    .footer h6 {
+                        font-size: 16px;
+                    }
+
+                    .footer p,
+                    .footer .btn-link {
+                        font-size: 14px;
+                    }
+                }
+            </style>
+        </div>
+        <!-- Footer End -->
+
+        <!-- Back to Top -->
+
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Cropper.js -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+        <script src="lib/wow/wow.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/waypoints/waypoints.min.js"></script>
+        <script src="lib/counterup/counterup.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <script src="lib/tempusdominus/js/moment.min.js"></script>
+        <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+        <!-- Template Javascript -->
+        <script src="js/config.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/index.js"></script>
+
+        <!-- <script>
                     const app = Vue.createApp({
                         data() {
                             return {
@@ -1443,6 +1799,7 @@
                     })
                     app.mount('#app')
                 </script> -->
+    </div>
 </body>
 
 </html>

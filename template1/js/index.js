@@ -9,6 +9,29 @@ const app = Vue.createApp({
       phoneNumber: "Site phone number",
       address: "Site address",
       realImages: [],
+      //new fields
+      logo: "",
+      tags: [],
+      locationdescription: "",
+      city: "",
+      otherServices: [
+        {
+          serviceType: "Event & Functions",
+          serviceDescription: "birthdays, anniversaries or family gatherings",
+        },
+        {
+          serviceType: "Wellness & Recreation",
+          serviceDescription: "Swimming pool, gym, and yoga",
+        },
+        {
+          serviceType: "Transport",
+          serviceDescription:
+            "Airport transport (pick up and drop off with a fee) ",
+        },
+      ],
+      newServiceType: "",
+      newServiceDescription: "",
+      tempService: {},
 
       mapIframeHtml: `<div style="max-width:100%;overflow:hidden;color:red;height:400px;"><div id="display-google-map" style="height:100%; width:100%;max-width:100%;"><iframe style="height:100%;width:100%;border:0;" frameborder="0" src="https://www.google.com/maps/embed/v1/place?q=hillroost&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe></div><a class="from-embedmap-code" href="https://www.bootstrapskins.com/themes" id="auth-map-data">premium bootstrap themes</a><style>#display-google-map img.text-marker{max-width:none!important;background:none!important;}img{max-width:none}</style></div>`,
 
@@ -42,6 +65,9 @@ const app = Vue.createApp({
       subContainerDescription: "Click to Edit  Description",
       subContainerImage: "img/hotel3.jpg",
       footerDescription: "Edit Footer Description",
+
+      privacyPolicy: "",
+      termsCondition: "",
 
       attractionList: [],
       roomsDetails: [],
@@ -141,6 +167,47 @@ const app = Vue.createApp({
       const date = new Date(dateString);
       return date.toLocaleDateString(undefined, options);
     },
+    addNewServiceRow() {
+      this.otherServices.push({
+        serviceType: "",
+        serviceDescription: "",
+        isEditing: true,
+      });
+    },
+    editService(index) {
+      this.tempService = {
+        serviceType: this.otherServices[index].serviceType,
+        serviceDescription: this.otherServices[index].serviceDescription,
+      };
+      this.otherServices[index].isEditing = true;
+      this.saveDetails();
+    },
+    saveService(index) {
+      if (
+        !this.otherServices[index].serviceType ||
+        !this.otherServices[index].serviceDescription
+      ) {
+        alert("Please fill in both Service Type and Service Description");
+        return;
+      }
+      this.otherServices[index].isEditing = false;
+      this.saveDetails();
+      this.tempService = {};
+
+    },
+    cancelEditService(index) {
+      this.otherServices[index].serviceType = this.tempService.serviceType;
+      this.otherServices[index].serviceDescription =
+        this.tempService.serviceDescription;
+      this.otherServices[index].isEditing = false;
+      this.tempService = {};
+    },
+    deleteService(index) {
+      if (confirm("Are you sure you want to delete this service?")) {
+        this.otherServices.splice(index, 1);
+        this.saveDetails();
+      }
+    },
     async loadSiteDetails() {
       this.isLoading = "Loading site data...";
 
@@ -189,6 +256,14 @@ const app = Vue.createApp({
           this.youtubeLink =
             siteDetails?.details?.youtubeLink || this.youtubeLink;
 
+          this.privacyPolicy =
+            siteDetails?.details?.privacyPolicy || this.privacyPolicy;
+          this.termsCondition =
+            siteDetails?.details?.termsCondition || this.termsCondition;
+
+          this.otherServices =
+            siteDetails?.details?.otherServices || this.otherServices;
+
           this.isLoading = null;
           this.isSuccess = "Site details loaded successfully";
           setTimeout(() => {
@@ -224,6 +299,15 @@ const app = Vue.createApp({
         bookingcomLink: this.bookingcomLink,
         tripadvisorLink: this.tripadvisorLink,
         youtubeLink: this.youtubeLink,
+        privacyPolicy: this.privacyPolicy,
+        termsCondition: this.termsCondition,
+        otherServices: this.otherServices,
+        //new fields
+        logo: this.logo,
+        tags: this.tags,
+        locationdescription: this.locationdescription,
+        city: this.city,
+        otherServices: this.otherServices,
       };
 
       try {
@@ -335,6 +419,10 @@ const app = Vue.createApp({
             this.address = result.data.address1;
             this.hotelId = result.data.id;
             this.orgId = result.data.orgId;
+            this.logo = result.data.logo;
+            this.tags = result.data.tags;
+            this.locationdescription = result.data.locationdescription;
+            this.city = result.data.city;
           }
         }
       } catch (error) {
@@ -759,6 +847,7 @@ const app = Vue.createApp({
       this.description = this.editDescription.replace(/\n/g, "<br>");
       this.isEditingDescription = false;
 
+      this.saveDetails();
       console.log(this.editDescription);
     },
 
@@ -812,6 +901,24 @@ const app = Vue.createApp({
         }, 3000);
       }
     },
+
+    openPrivacyModal() {
+      $("#privacyModal").modal("show");
+    },
+
+    savePrivacyPolicy() {
+      this.saveDetails();
+      $("#privacyModal").modal("hide");
+    },
+
+    openTermsModal() {
+      $("#termsModal").modal("show");
+    },
+
+    saveTermsCondition() {
+      this.saveDetails();
+      $("#termsModal").modal("hide");
+    },
   },
   mounted() {
     this.loadRoomDetails();
@@ -819,11 +926,12 @@ const app = Vue.createApp({
     this.hotelInfo();
     this.hotelOffers();
 
-    document
-      .getElementById("imageCropModal")
-      .addEventListener("hidden.bs.modal", () => {
+    const modal = document.getElementById("imageCropModal");
+    if (modal) {
+      modal.addEventListener("hidden.bs.modal", () => {
         this.closeCropModal();
       });
+    }
   },
 
   beforeUnmount() {

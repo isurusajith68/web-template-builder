@@ -48,12 +48,19 @@
         <!-- Header Start -->
         <div class="container-fluid bg-dark px-0">
             <div class="row gx-0">
-                <div class="col-lg-3 bg-dark d-none d-lg-flex">
+                <div class="col-lg-3  d-none d-lg-flex align-items-center justify-content-center px-4">
+                    <a href="index.html" class="navbar-brand d-flex align-items-center justify-content-center gap-3 "
+                        style="height: 90px;">
 
-                    <a href="index.html"
-                        class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
-                        <h1 class="m-0 text-primary text-uppercase">#siteTitle</h1>
+                        <img src="#siteLogo" alt="Logo" class="d-block align-self-center"
+                            style="max-width: 60px; max-height: 60px; object-fit: contain;  " />
+
+                        <h3 class="m-0 text-primary text-uppercase ms-2 text-break"
+                            style="white-space: normal; line-height: 1;">
+                            #siteTitle
+                        </h3>
                     </a>
+
                 </div>
                 <div class="col-lg-9">
                     <div class="row gx-0 bg-white d-none d-lg-flex">
@@ -93,12 +100,10 @@
                                 <a href="specialOffers.html" class="nav-item nav-link ms-3">Special Offers</a>
                                 <a href="gallery.html" class="nav-item nav-link ms-3">Gallery</a>
                                 <a href="attraction.html" class="nav-item nav-link ms-3">Attractions</a>
-                                <a href="booking.html" class="nav-item nav-link ms-3">Bookings</a>
                                 <a href="contact.html" class="nav-item nav-link ms-3">Contact</a>
-
-
-
                             </div>
+                            <a href="booking.html" class="btn btn-primary py-2 px-4 ms-3"
+                                style="text-decoration: none; color: white;">Book Now</a>
                         </div>
                     </nav>
 
@@ -211,7 +216,8 @@
 
         <!-- Newsletter end -->
 
-
+        #privacyModal
+        #termsCondition
         <!-- Footer Start -->
         <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"
             data-wow-delay="0.1s">
@@ -235,8 +241,10 @@
                             #siteEmail
                         </p>
                         <div class="d-flex pt-2">
-                            <a class="btn btn-outline-light btn-social" href="#youtubeLink"><i class="fab fa-youtube"></i></a>
-                            <a class="btn btn-outline-light btn-social" href="#facebookLink"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" href="#youtubeLink"><i
+                                    class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-light btn-social" href="#facebookLink"><i
+                                    class="fab fa-facebook-f"></i></a>
                             <a class="btn btn-outline-light btn-social" href="#bookingcomLink" target="_blank"
                                 rel="noopener noreferrer">
                                 <i class="fas fa-bed"></i> <!-- Example icon for Booking.com -->
@@ -252,11 +260,12 @@
                         <div class="row  g-4">
                             <div class="col-md-6" style="margin-left:10%;">
                                 <h6 class="section-title text-start text-primary text-uppercase mb-4">Company</h6>
-                                <a class="btn btn-link" href="">About Us</a>
-                                <a class="btn btn-link" href="">Contact Us</a>
-                                <a class="btn btn-link" href="">Privacy Policy</a>
-                                <a class="btn btn-link" href="">Terms & Condition</a>
-                                <a class="btn btn-link" href="">Support</a>
+                                <a class="btn btn-link" href="/about.html">About Us</a>
+                                <a class="btn btn-link" href="/contact.html">Contact Us</a>
+                                <button class="btn btn-link" data-bs-toggle="modal"
+                                    data-bs-target="#privacyPolicyModalOpen">Privacy Policy</button>
+                                <button class="btn btn-link" data-bs-toggle="modal"
+                                    data-bs-target="#termsConditionModalOpen">Terms & Condition</button>
                             </div>
 
                         </div>
@@ -276,12 +285,7 @@
                                     Ltd. </a>
                             </div>
                             <div class="col-md-6">
-                                <div class="footer-menu">
-                                    <a href="">Home</a>
-                                    <a href="">Cookies</a>
-                                    <a href="">Help</a>
-                                    <a href="">FQAs</a>
-                                </div>
+
                                 <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
                                         class="bi bi-arrow-up"></i></a>
                             </div>

@@ -8,6 +8,7 @@ const gallery = Vue.createApp({
       email: "Site email",
       phoneNumber: "Site phone number",
       address: "Site address",
+      logo : "",
 
       images: [],
       footerDescription: "Click to Edit Footer Description",
@@ -439,6 +440,7 @@ const gallery = Vue.createApp({
             this.address = result.data.address1;
             this.hotelId = result.data.id;
             this.orgId = result.data.orgId;
+            this.logo = result.data.logo;
           }
         }
       } catch (error) {

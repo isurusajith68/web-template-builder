@@ -457,7 +457,7 @@ router.get("/build-template", async (req, res) => {
     for (const tempId of tempIds) {
       try {
         const alreadyPublish = await pool.query(
-          "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateId = $2",
+          "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
           [hotelId, tempId]
         );
 
