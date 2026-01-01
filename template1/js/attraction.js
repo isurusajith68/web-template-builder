@@ -43,7 +43,8 @@ const app = Vue.createApp({
       footerDescription: "Edit Footer Description",
       newAttractionTitle: "",
       newAttractionDescription: "",
-      newAttractionImage: null,
+      newAttractionImageFile: null,
+      newAttractionImagePreview: "",
 
       isLoading: null,
       isError: null,
@@ -118,34 +119,76 @@ const app = Vue.createApp({
     async handleFileUpload(event) {
       const file = event.target.files[0];
       if (file) {
-        this.newAttractionImage = await this.convertToBase64(file);
+        if (this.newAttractionImagePreview) {
+          URL.revokeObjectURL(this.newAttractionImagePreview);
+        }
+        this.newAttractionImageFile = file;
+        this.newAttractionImagePreview = URL.createObjectURL(file);
       }
     },
 
-    async convertToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
+    async uploadAttractionImage(file) {
+      const formData = new FormData();
+      formData.append("images", file);
+
+      const response = await fetch(
+        `${window.API_BASE}/temp1/upload-images?hotelId=${this.hotelId}&templateId=${this.templateId}`,
+        {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Image upload failed");
+      }
+
+      const result = await response.json();
+      const uploadedFiles = result?.images?.filePaths || [];
+      const lastFile = uploadedFiles[uploadedFiles.length - 1];
+      if (!lastFile) {
+        throw new Error("Image upload response missing file path");
+      }
+      return lastFile;
     },
 
     async addAttraction() {
       if (
         this.newAttractionTitle &&
         this.newAttractionDescription &&
-        this.newAttractionImage
+        this.newAttractionImageFile
       ) {
+        this.isLoading = "Uploading image...";
+        let imageUrl = "";
+        try {
+          imageUrl = await this.uploadAttractionImage(
+            this.newAttractionImageFile
+          );
+        } catch (error) {
+          console.error("Error uploading attraction image:", error);
+          this.isLoading = null;
+          this.isError = "Error uploading image";
+          setTimeout(() => {
+            this.isError = null;
+          }, 5000);
+          return;
+        }
+
         this.attractionList.push({
           title: this.newAttractionTitle,
           description: this.newAttractionDescription,
-          image: this.newAttractionImage,
+          image: imageUrl,
         });
 
         this.newAttractionTitle = "";
         this.newAttractionDescription = "";
-        this.newAttractionImage = null;
+        this.newAttractionImageFile = null;
+        if (this.newAttractionImagePreview) {
+          URL.revokeObjectURL(this.newAttractionImagePreview);
+        }
+        this.newAttractionImagePreview = "";
         document.getElementById("file").value = "";
 
         await this.saveDetails();

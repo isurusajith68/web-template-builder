@@ -814,29 +814,41 @@ temp1.get("/rooms-info", async (req, res) => {
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    MIN(orp.roprice) as roprice,
+    orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
     ARRAY_AGG(DISTINCT orci.imagename) AS images
 FROM operation_rooms op
-JOIN core_data.core_view cv ON op.view_id = cv.id
-JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
-JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
-LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
-LEFT JOIN operation_room_prices_web orpw ON orpw.schedule_id = ohps.id
+JOIN core_data.core_view cv 
+    ON op.view_id = cv.id
+JOIN operation_roomreclass orc 
+    ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp 
+    ON orp.roomclass_id = op.roomclass_id
+   AND orp.view_id = op.view_id
+JOIN operation_hotelroompriceshedules ohps 
+    ON orp.shedule_id = ohps.id
+JOIN operation_room_prices_web orpw 
+    ON orpw.schedule_id = ohps.id
+   AND orpw.property_id = op.property_id
+   AND CURRENT_DATE BETWEEN orpw.from_date AND orpw.to_date
+LEFT JOIN operation_roomclass_amenities orca 
+    ON orca.room_class_id = op.roomclass_id
+LEFT JOIN operation_roomclass_images orci 
+    ON orci.room_class_id = orc.id
 WHERE 
     op.property_id = $1
-    AND CURRENT_DATE BETWEEN orpw.from_date AND orpw.to_date
 GROUP BY 
     op.view_id, 
     op.roomclass_id, 
     cv.roomview, 
     orc.custom_name, 
     orc.maxadultcount,
-    orc.maxchildcount
-ORDER BY op.view_id, op.roomclass_id;
+    orc.maxchildcount,
+    orp.roprice
+ORDER BY 
+    op.view_id, 
+    op.roomclass_id;
 `,
       [hotelId]
     );
@@ -845,7 +857,8 @@ ORDER BY op.view_id, op.roomclass_id;
 
     if (result.rows.length === 0) {
       return res.status(404).send({
-        message: "No rooms add to this hotel please add rooms",
+        message:
+          "No rooms or prices found. Please add room prices in the Front Desk module → Web Prices page.",
       });
     }
 
@@ -880,35 +893,46 @@ const buildTemplate = async (
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    MIN(orp.roprice) as roprice,
+    orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
     ARRAY_AGG(DISTINCT orci.imagename) AS images
 FROM operation_rooms op
-JOIN core_data.core_view cv ON op.view_id = cv.id
-JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
-JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
-LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
-LEFT JOIN operation_room_prices_web orpw ON orpw.schedule_id = ohps.id
+JOIN core_data.core_view cv 
+    ON op.view_id = cv.id
+JOIN operation_roomreclass orc 
+    ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp 
+    ON orp.roomclass_id = op.roomclass_id
+   AND orp.view_id = op.view_id
+JOIN operation_hotelroompriceshedules ohps 
+    ON orp.shedule_id = ohps.id
+JOIN operation_room_prices_web orpw 
+    ON orpw.schedule_id = ohps.id
+   AND orpw.property_id = op.property_id
+   AND CURRENT_DATE BETWEEN orpw.from_date AND orpw.to_date
+LEFT JOIN operation_roomclass_amenities orca 
+    ON orca.room_class_id = op.roomclass_id
+LEFT JOIN operation_roomclass_images orci 
+    ON orci.room_class_id = orc.id
 WHERE 
     op.property_id = $1
-    AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
 GROUP BY 
     op.view_id, 
     op.roomclass_id, 
     cv.roomview, 
     orc.custom_name, 
     orc.maxadultcount,
-    orc.maxchildcount
-ORDER BY op.view_id, op.roomclass_id;
+    orc.maxchildcount,
+    orp.roprice
+ORDER BY 
+    op.view_id, 
+    op.roomclass_id;
 `,
       [hotelId]
     );
-
+    console.log(rooms, "rooms");
     const limitedRooms = rooms.rows.slice(0, 3);
-    console.log("Roomsddd :", limitedRooms);
 
     const roomsHtml = limitedRooms
       .map((room, index) => {
@@ -986,7 +1010,7 @@ ORDER BY op.view_id, op.roomclass_id;
           <div class="position-relative">
             ${imageHtml}
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                 Rs ${room.roprice.toLocaleString('en-US')} / lowest price
+                 Rs ${room.roprice.toLocaleString("en-US")} / lowest price
             </small>
           </div>
           <div class="p-4 mt-2">
@@ -1414,29 +1438,42 @@ const buildTemplateHotelRooms = async (
     orc.custom_name, 
     orc.maxadultcount,
     orc.maxchildcount,
-    MIN(orp.roprice) as roprice,
+    orp.roprice,
     ARRAY_AGG(DISTINCT op.roomno_text) AS room_numbers,
     ARRAY_AGG(DISTINCT orca.amenity_label) AS amenities,
     ARRAY_AGG(DISTINCT orci.imagename) AS images
 FROM operation_rooms op
-JOIN core_data.core_view cv ON op.view_id = cv.id
-JOIN operation_roomreclass orc ON op.roomclass_id = orc.id
-JOIN operation_roomprices orp ON orp.roomclass_id = op.roomclass_id
-JOIN operation_hotelroompriceshedules ohps ON orp.shedule_id = ohps.id
-LEFT JOIN operation_roomclass_amenities orca ON orca.room_class_id = op.roomclass_id
-LEFT JOIN operation_roomclass_images orci ON orci.room_class_id = orc.id
-LEFT JOIN operation_room_prices_web orpw ON orpw.schedule_id = ohps.id
+JOIN core_data.core_view cv 
+    ON op.view_id = cv.id
+JOIN operation_roomreclass orc 
+    ON op.roomclass_id = orc.id
+JOIN operation_roomprices orp 
+    ON orp.roomclass_id = op.roomclass_id
+   AND orp.view_id = op.view_id
+JOIN operation_hotelroompriceshedules ohps 
+    ON orp.shedule_id = ohps.id
+JOIN operation_room_prices_web orpw 
+    ON orpw.schedule_id = ohps.id
+   AND orpw.property_id = op.property_id
+   AND CURRENT_DATE BETWEEN orpw.from_date AND orpw.to_date
+LEFT JOIN operation_roomclass_amenities orca 
+    ON orca.room_class_id = op.roomclass_id
+LEFT JOIN operation_roomclass_images orci 
+    ON orci.room_class_id = orc.id
 WHERE 
     op.property_id = $1
-    AND CURRENT_DATE BETWEEN ohps.startdate AND ohps.enddate
 GROUP BY 
     op.view_id, 
     op.roomclass_id, 
     cv.roomview, 
     orc.custom_name, 
     orc.maxadultcount,
-    orc.maxchildcount
-ORDER BY op.view_id, op.roomclass_id;`,
+    orc.maxchildcount,
+    orp.roprice
+ORDER BY 
+    op.view_id, 
+    op.roomclass_id;
+`,
       [hotelId]
     );
 
@@ -1547,7 +1584,7 @@ ORDER BY op.view_id, op.roomclass_id;`,
           <div class="position-relative">
             ${imageHtml}
             <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                Rs ${room.roprice.toLocaleString('en-US')} / lowest price
+                Rs ${room.roprice.toLocaleString("en-US")} / lowest price
             </small>
           </div>
           <div class="p-4 mt-2">
