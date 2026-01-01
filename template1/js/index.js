@@ -932,6 +932,7 @@ const app = Vue.createApp({
         this.closeCropModal();
       });
     }
+
   },
 
   beforeUnmount() {

@@ -435,24 +435,6 @@
             <script src="js/main.js"></script>
             <script src="js/index.js"></script>
 
-            <!-- Date Validation Script -->
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const today = new Date().toISOString().split('T')[0];
-                    const checkin = document.getElementById('checkin');
-                    const checkout = document.getElementById('checkout');
-
-                    checkin.min = today;
-                    checkout.min = today;
-
-                    checkin.addEventListener('change', function () {
-                        checkout.min = this.value;
-                        if (checkout.value && checkout.value < this.value) {
-                            checkout.value = this.value;
-                        }
-                    });
-                });
-            </script>
         </div>
     </div>
 

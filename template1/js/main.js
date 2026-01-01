@@ -97,6 +97,62 @@
             }
         }
     });
+
+    const initDateValidation = function () {
+        const checkin = document.getElementById("checkin");
+        const checkout = document.getElementById("checkout");
+
+        if (!checkin || !checkout) {
+            return;
+        }
+
+        const pad = function (value) {
+            return String(value).padStart(2, "0");
+        };
+        const now = new Date();
+        const today = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+
+        checkin.min = today;
+        checkout.min = today;
+
+        const addDays = function (dateString, daysToAdd) {
+            if (!dateString) {
+                return "";
+            }
+            const parts = dateString.split("-");
+            if (parts.length !== 3) {
+                return "";
+            }
+            const year = Number(parts[0]);
+            const month = Number(parts[1]) - 1;
+            const day = Number(parts[2]);
+            const date = new Date(year, month, day);
+            if (Number.isNaN(date.getTime())) {
+                return "";
+            }
+            date.setDate(date.getDate() + daysToAdd);
+            return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate());
+        };
+
+        const syncCheckoutMin = function () {
+            const checkinValue = checkin.value;
+            const minCheckout = checkinValue ? addDays(checkinValue, 1) : today;
+            checkout.min = minCheckout;
+
+            if (checkinValue && (!checkout.value || checkout.value < minCheckout)) {
+                checkout.value = minCheckout;
+            }
+        };
+
+        checkin.addEventListener("change", syncCheckoutMin);
+        syncCheckoutMin();
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initDateValidation);
+    } else {
+        initDateValidation();
+    }
     
 })(jQuery);
 
