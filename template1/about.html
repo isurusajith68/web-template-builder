@@ -51,13 +51,13 @@
             <div class="row gx-0">
                 <div class="col-lg-3  d-none d-lg-flex align-items-center justify-content-center px-4">
                     <a :href="`index.html?hotelId=${hotelId}`"
-                        class="navbar-brand d-flex align-items-center justify-content-center gap-3 " style="height: 90px;">
+                        class="navbar-brand d-flex align-items-center justify-content-center gap-3 "
+                        style="height: 90px;">
 
                         <img :src="logo" alt="Logo" style="max-width: 60px; max-height: 60px; object-fit: contain; " />
 
 
-                        <h3 class="m-0 text-primary text-uppercase"
-                            style="white-space: normal; line-height: 1;">
+                        <h3 class="m-0 text-primary text-uppercase" style="white-space: normal; line-height: 1;">
                             {{ title }}
                         </h3>
                     </a>
@@ -126,7 +126,7 @@
                                 <a :href="`contact.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Contact</a>
 
                             </div>
-                            <a :href="`booking.html?hotelId=${hotelId}`" class="btn btn-primary py-2 px-4 ms-3"
+                            <a href="#" @click.prevent="openBookingModal" class="btn btn-primary py-2 px-4 ms-3"
                                 style="text-decoration: none; color: white;">Book Now</a>
                         </div>
                     </nav>
@@ -532,6 +532,36 @@
         <script src="lib/tempusdominus/js/moment.min.js"></script>
         <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
         <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+        <!-- Booking Options Modal Start -->
+        <div class="modal fade" id="bookingOptionsModal" tabindex="-1" aria-labelledby="bookingOptionsModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="bookingOptionsModalLabel">Choose Booking Platform</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="mb-4">Please select your preferred booking platform:</p>
+                        <div class="d-grid gap-3">
+                            <a :href="`${bookingUrl}?org_id=${orgId}&p_id=${hotelId}`"
+                                class="btn btn-primary btn-lg py-3">
+                                <i class="fas fa-calendar-check me-2"></i>Book via Platform 1
+                            </a>
+                            <a :href="`${bookingUrl2}?org_id=${orgId}&p_id=${hotelId}`"
+                                class="btn btn-outline-primary btn-lg py-3">
+                                <i class="fas fa-calendar-alt me-2"></i>Book via Platform 2
+                            </a>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Booking Options Modal End -->
 
         <!-- Template Javascript -->
         <script src="js/config.js"></script>

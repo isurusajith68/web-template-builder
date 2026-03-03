@@ -26,7 +26,7 @@ temp1.get("/site-details", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [propertyId, templateId]
+      [propertyId, templateId],
     );
     if (result.rows.length === 0) {
       console.log("No site details found");
@@ -57,7 +57,7 @@ temp1.get("/real-images", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [propertyId, templateId]
+      [propertyId, templateId],
     );
     if (result.rows.length === 0) {
       console.log("No site details found");
@@ -75,7 +75,7 @@ temp1.get("/real-images", async (req, res) => {
         try {
           const fullPath = path.join(
             `/var/www/template${templateId}/organization${organization_id}/property${propertyId}`,
-            imagePath
+            imagePath,
           );
 
           const imageBuffer = await fs.readFile(fullPath);
@@ -85,8 +85,8 @@ temp1.get("/real-images", async (req, res) => {
             ext === ".png"
               ? "image/png"
               : ext === ".jpg" || ext === ".jpeg"
-              ? "image/jpeg"
-              : "image/jpg";
+                ? "image/jpeg"
+                : "image/jpg";
 
           return {
             path: imagePath,
@@ -100,7 +100,7 @@ temp1.get("/real-images", async (req, res) => {
             error: "Failed to read image",
           };
         }
-      })
+      }),
     );
 
     console.log("Images converted to base64");
@@ -138,7 +138,7 @@ temp1.get("/hotel-info", async (req, res) => {
       LEFT JOIN core_data.core_province cp ON op."Province_id" = cp.id
       LEFT JOIN core_data.core_country cco ON op.country_id = cco.id
       WHERE op.id = $1`,
-      [propertyId]
+      [propertyId],
     );
 
     if (result.rows.length === 0) {
@@ -211,7 +211,7 @@ temp1.post("/save-site-details", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM operation_property WHERE id = $1",
-      [propertyId]
+      [propertyId],
     );
     console.log(result.rows);
     if (result.rows.length === 0) {
@@ -222,7 +222,7 @@ temp1.post("/save-site-details", async (req, res) => {
 
     const existingResult = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [propertyId, templateId]
+      [propertyId, templateId],
     );
 
     if (existingResult.rows.length > 0) {
@@ -259,7 +259,7 @@ temp1.post("/save-site-details", async (req, res) => {
           }),
           propertyId,
           templateId,
-        ]
+        ],
       );
 
       if (updateResult.rows.length === 0) {
@@ -303,7 +303,7 @@ temp1.post("/save-site-details", async (req, res) => {
             tags,
             otherServices,
           }),
-        ]
+        ],
       );
 
       if (insertResult.rows.length === 0) {
@@ -352,7 +352,7 @@ temp1.get("/build-template", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [hotelId, templateId],
     );
 
     if (result.rows.length === 0) {
@@ -367,7 +367,7 @@ temp1.get("/build-template", async (req, res) => {
         console.log("Checking if template is already published");
         const alreadyPublish = await pool.query(
           "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
-          [hotelId, tempId]
+          [hotelId, tempId],
         );
 
         if (alreadyPublish.rows.length > 0) {
@@ -388,7 +388,7 @@ temp1.get("/build-template", async (req, res) => {
 
     const resultOffer = await pool.query(
       "SELECT * FROM operation_hoteloffers WHERE property_id = $1 AND CURRENT_DATE BETWEEN startdate AND enddate",
-      [hotelId]
+      [hotelId],
     );
     if (resultOffer.rows?.length === 0) {
       offerHtml = [`<div class="text-center">No special offers found</div>`];
@@ -398,7 +398,7 @@ temp1.get("/build-template", async (req, res) => {
         <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;">
           <img src="${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
           </div>
-        `
+        `,
       );
     }
 
@@ -466,7 +466,7 @@ temp1.get("/build-template", async (req, res) => {
                                         <td class="fw-bold fs-6 text-center">${service.serviceType}</td>
                                         <td class="fs-6 text-center">${service.serviceDescription}</td>\
                                     </tr>
-                                `
+                                `,
                                   )
                                   .join("\n")}
                             </tbody>\
@@ -526,7 +526,7 @@ temp1.get("/build-template", async (req, res) => {
 
     const getSiteName = await pool.query(
       "SELECT url FROM operation_property WHERE id = $1",
-      [hotelId]
+      [hotelId],
     );
     console.log(getSiteName);
 
@@ -548,49 +548,49 @@ temp1.get("/build-template", async (req, res) => {
         hotelId,
         templateId,
         pool,
-        organization_id
+        organization_id,
       );
       await buildTemplateGallery(
         result,
         hotelId,
         templateId,
         pool,
-        organization_id
+        organization_id,
       );
       await buildTemplateContactUs(
         data,
         hotelId,
         templateId,
         pool,
-        organization_id
+        organization_id,
       );
       await buildTemplateAttraction(
         result,
         hotelId,
         templateId,
         pool,
-        organization_id
+        organization_id,
       );
       await buildTemplateHotelRooms(
         result,
         hotelId,
         templateId,
         pool,
-        organization_id
+        organization_id,
       );
       await buildTemplateBooking(
         data,
         hotelId,
         templateId,
         pool,
-        organization_id
+        organization_id,
       );
       await buildTemplateSpecialOffers(
         data,
         hotelId,
         templateId,
         pool,
-        organization_id
+        organization_id,
       );
     } catch (buildError) {
       console.error("Error building templates:", buildError);
@@ -623,7 +623,7 @@ temp1.get("/hotel-offers", async (req, res) => {
 
     const result = await pool.query(
       "SELECT * FROM operation_hoteloffers WHERE property_id = $1 AND CURRENT_DATE BETWEEN startdate AND enddate",
-      [hotelId]
+      [hotelId],
     );
 
     if (result.rows.length === 0) {
@@ -651,7 +651,7 @@ const ensureDirectoryExistence2 = async (
   dir,
   templateId,
   hotelId,
-  organization_id
+  organization_id,
 ) => {
   if (!fssync.existsSync(dir)) {
     fssync.mkdirSync(dir, { recursive: true });
@@ -665,7 +665,7 @@ const storage = multer.diskStorage({
     const organization_id = req.organization_id;
 
     const uploadDir = path.join(
-      `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`
+      `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/img`,
     );
     ensureDirectoryExistence2(uploadDir, templateId, hotelId, organization_id);
 
@@ -681,7 +681,7 @@ const storage = multer.diskStorage({
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname),
     );
   },
 });
@@ -696,7 +696,7 @@ temp1.post("/upload-images", upload.array("images", 10), async (req, res) => {
 
     const dbGetResult = await pool.query(
       "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [hotelId, templateId],
     );
 
     let previousFiles = [];
@@ -714,7 +714,7 @@ temp1.post("/upload-images", upload.array("images", 10), async (req, res) => {
     });
 
     const filePaths = req.files.map(
-      (file) => `./build/template/temp${templateId}/img/${file.filename}`
+      (file) => `./build/template/temp${templateId}/img/${file.filename}`,
     );
 
     const getRealPath = (filePath) => {
@@ -754,13 +754,13 @@ temp1.delete("/remove-image", async (req, res) => {
       "templateId",
       templateId,
       "imageName",
-      imageName
+      imageName,
     );
     const filePathTemp = path.join(
-      `/var/www/vue-temp${templateId}/${imageName}`
+      `/var/www/vue-temp${templateId}/${imageName}`,
     );
     const filePath = path.join(
-      `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/${imageName}`
+      `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/${imageName}`,
     );
     console.log(filePath, filePathTemp);
     if (fssync.existsSync(filePath) && fssync.existsSync(filePathTemp)) {
@@ -770,7 +770,7 @@ temp1.delete("/remove-image", async (req, res) => {
 
       const dbGetResult = await pool.query(
         "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-        [hotelId, templateId]
+        [hotelId, templateId],
       );
 
       let previousFiles = [];
@@ -850,7 +850,7 @@ ORDER BY
     op.view_id, 
     op.roomclass_id;
 `,
-      [hotelId]
+      [hotelId],
     );
 
     console.log("result", result.rows);
@@ -879,7 +879,7 @@ const buildTemplate = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   try {
     const templatePath = `./template/temp${templateId}/index.html`;
@@ -929,7 +929,7 @@ ORDER BY
     op.view_id, 
     op.roomclass_id;
 `,
-      [hotelId]
+      [hotelId],
     );
     console.log(rooms, "rooms");
     const limitedRooms = rooms.rows.slice(0, 3);
@@ -965,7 +965,7 @@ ORDER BY
                          alt="Room image ${imgIndex + 1}"
                          onerror="this.src='./img/room-1.jpg'">
                   </div>
-                `
+                `,
                   )
                   .join("")}
               </div>
@@ -991,7 +991,7 @@ ORDER BY
                                 : ""
                             } 
                             aria-label="Slide ${imgIndex + 1}"></button>
-                  `
+                  `,
                     )
                     .join("")}
                 </div>
@@ -1015,9 +1015,12 @@ ORDER BY
           </div>
           <div class="p-4 mt-2">
             <div class="d-flex justify-content-between mb-3">
-              <h6 class="mb-0"><b>${room.custom_name} / ${
-          room.roomview
-        }</b></h6>
+              <h6 class="mb-0">
+  <b>
+    ${room.custom_name}
+    ${room.roomview && room.roomview !== "N/A" ? ` / ${room.roomview}` : ""}
+  </b>
+</h6>
               <div class="ps-2">
                 ${[...Array(5)]
                   .map(() => `<small class="fa fa-star text-primary"></small>`)
@@ -1051,7 +1054,7 @@ ORDER BY
 `
                           }
                           </small>
-                        `
+                        `,
                       )
                       .join("")}
                   </div>`
@@ -1075,7 +1078,7 @@ ORDER BY
 
     const result = template.replace(
       /#\w+/g,
-      (placeholder) => data2[placeholder] || ""
+      (placeholder) => data2[placeholder] || "",
     );
 
     const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/index.html`;
@@ -1092,19 +1095,19 @@ const buildTemplateAboutUs = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   const template = await fs.readFile(`./template/temp1/about.html`, "utf8");
 
   const result = template.replace(
     /#\w+/g,
-    (placeholder) => data[placeholder] || ""
+    (placeholder) => data[placeholder] || "",
   );
 
   await fs.writeFile(
     `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/about.html`,
     result,
-    "utf8"
+    "utf8",
   );
 
   console.log("Template built successfully");
@@ -1115,7 +1118,7 @@ const buildTemplateGallery = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   if (
     !result.rows[0].details.realImages.filePaths ||
@@ -1124,7 +1127,9 @@ const buildTemplateGallery = async (
     console.log("No images found");
     return;
   }
+  const webBookingURL = process.env.WEB_BOOKING_URL;
 
+  const hotelURL = `${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}`;
   const images = result.rows[0].details.realImages.filePaths;
 
   const imageRows = [];
@@ -1193,6 +1198,7 @@ const buildTemplateGallery = async (
     "#termsCondition": termsConditionModel,
     "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
     "#termsConditionModalOpen": "#termsConditionModalOpen",
+    "#hotelURL": hotelURL,
     "#siteLogo": result.rows[0].details.logo || "",
   };
 
@@ -1201,7 +1207,7 @@ const buildTemplateGallery = async (
 
   const outputHtml = template.replace(
     /#\w+/g,
-    (placeholder) => data[placeholder] || ""
+    (placeholder) => data[placeholder] || "",
   );
 
   const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/gallery.html`;
@@ -1215,19 +1221,19 @@ const buildTemplateContactUs = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   const template = await fs.readFile(`./template/temp1/contact.html`, "utf8");
 
   const result = template.replace(
     /#\w+/g,
-    (placeholder) => data[placeholder] || ""
+    (placeholder) => data[placeholder] || "",
   );
 
   await fs.writeFile(
     `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/contact.html`,
     result,
-    "utf8"
+    "utf8",
   );
 
   console.log("Template built successfully");
@@ -1238,7 +1244,7 @@ const buildTemplateBooking = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   const template = await fs.readFile(`./template/temp1/booking.html`, "utf8");
 
@@ -1279,13 +1285,13 @@ const buildTemplateBooking = async (
 
   const result = template.replace(
     /#\w+/g,
-    (placeholder) => data2[placeholder] || ""
+    (placeholder) => data2[placeholder] || "",
   );
 
   await fs.writeFile(
     `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/booking.html`,
     result,
-    "utf8"
+    "utf8",
   );
 
   console.log("Template built successfully");
@@ -1296,14 +1302,16 @@ const buildTemplateAttraction = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   try {
     const template = await fs.readFile(
       `./template/temp1/attraction.html`,
-      "utf8"
+      "utf8",
     );
+    const webBookingURL = process.env.WEB_BOOKING_URL;
 
+    const hotelURL = `${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}`;
     const attractionList = result.rows[0]?.details?.attractionList || [];
 
     if (!Array.isArray(attractionList)) {
@@ -1360,12 +1368,12 @@ const buildTemplateAttraction = async (
             <h4>${attraction.title}</h4>
             <p>${attraction.description}</p>
             <button onclick="window.location.href='https://en.wikipedia.org/wiki/${encodeURIComponent(
-              attraction.title
+              attraction.title,
             )}'">More</button>
           </div>
         </div>
       </div>
-    `
+    `,
             )
             .join("")
         : "<p>No attractions available</p>";
@@ -1384,17 +1392,18 @@ const buildTemplateAttraction = async (
       "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
       "#termsConditionModalOpen": "#termsConditionModalOpen",
       "#siteLogo": result.rows[0].details.logo || "",
+      "#hotelURL": hotelURL,
     };
 
     const result1 = template.replace(
       /#\w+/g,
-      (placeholder) => data[placeholder] || ""
+      (placeholder) => data[placeholder] || "",
     );
 
     await fs.writeFile(
       `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/attraction.html`,
       result1,
-      "utf8"
+      "utf8",
     );
 
     console.log("Template built successfully");
@@ -1407,7 +1416,7 @@ const updateDataBase = async (hotelId, templateId, filePaths, pool) => {
   try {
     const result = await pool.query(
       "SELECT details FROM webtemplatedata WHERE hotelId = $1 AND templateId = $2",
-      [hotelId, templateId]
+      [hotelId, templateId],
     );
 
     const newResult = {
@@ -1417,7 +1426,7 @@ const updateDataBase = async (hotelId, templateId, filePaths, pool) => {
 
     await pool.query(
       "UPDATE webtemplatedata SET details = $1 WHERE hotelId = $2 AND templateId = $3",
-      [JSON.stringify(newResult), hotelId, templateId]
+      [JSON.stringify(newResult), hotelId, templateId],
     );
   } catch (error) {}
 };
@@ -1427,9 +1436,12 @@ const buildTemplateHotelRooms = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   try {
+    const webBookingURL = process.env.WEB_BOOKING_URL;
+
+    const hotelURL = `${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}`;
     const rooms = await pool.query(
       `SELECT 
     op.view_id, 
@@ -1474,7 +1486,7 @@ ORDER BY
     op.view_id, 
     op.roomclass_id;
 `,
-      [hotelId]
+      [hotelId],
     );
 
     console.log("Rooms ss:", rooms.rows);
@@ -1539,7 +1551,7 @@ ORDER BY
                          alt="Room image ${imgIndex + 1}"
                          onerror="this.src='./img/room-1.jpg'">
                   </div>
-                `
+                `,
                   )
                   .join("")}
               </div>
@@ -1565,7 +1577,7 @@ ORDER BY
                                 : ""
                             } 
                             aria-label="Slide ${imgIndex + 1}"></button>
-                  `
+                  `,
                     )
                     .join("")}
                 </div>
@@ -1589,9 +1601,12 @@ ORDER BY
           </div>
           <div class="p-4 mt-2">
             <div class="d-flex justify-content-between mb-3">
-              <h6 class="mb-0"><b>${room.custom_name} / ${
-          room.roomview
-        }</b></h6>
+              <h6 class="mb-0">
+                <b>
+                  ${room.custom_name}
+                  ${room.roomview && room.roomview !== "N/A" ? ` / ${room.roomview}` : ""}
+                </b>
+              </h6>
               <div class="ps-2">
                 ${[...Array(5)]
                   .map(() => `<small class="fa fa-star text-primary"></small>`)
@@ -1624,7 +1639,7 @@ ORDER BY
 `
                           }
                           </small>
-                        `
+                        `,
                       )
                       .join("")}
                   </div>`
@@ -1641,6 +1656,7 @@ ORDER BY
       .join("");
 
     const data = {
+      "#hotelURL": hotelURL,
       "#siteTitle": result.rows[0].details.title,
       "#siteEmail": result.rows[0].details.email,
       "#sitePhoneNumber": result.rows[0].details.phoneNumber,
@@ -1662,7 +1678,7 @@ ORDER BY
 
     const outputHtml = template.replace(
       /#\w+/g,
-      (placeholder) => data[placeholder] || ""
+      (placeholder) => data[placeholder] || "",
     );
 
     const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/room.html`;
@@ -1697,7 +1713,7 @@ const buildTemplateSpecialOffers = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   try {
     const templatePath = `./template/temp${templateId}/specialOffers.html`;
@@ -1705,7 +1721,7 @@ const buildTemplateSpecialOffers = async (
 
     const result = await pool.query(
       "SELECT * FROM operation_hoteloffers WHERE property_id = $1 AND CURRENT_DATE BETWEEN startdate AND enddate",
-      [hotelId]
+      [hotelId],
     );
 
     if (result.rows.length === 0) {
@@ -1733,7 +1749,7 @@ const buildTemplateSpecialOffers = async (
       <div class="d-flex justify-content-center align-items-center flex-wrap" style="margin-top: 30px;">
         <img src="${offer.offerimage}" alt="Offer Image" class="img-fluid" style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
         </div>
-      `
+      `,
     );
 
     const data2 = {
@@ -1743,7 +1759,7 @@ const buildTemplateSpecialOffers = async (
 
     const outputHtml = template.replace(
       /#\w+/g,
-      (placeholder) => data2[placeholder] || ""
+      (placeholder) => data2[placeholder] || "",
     );
 
     const outputPath = `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/specialOffers.html`;
@@ -1758,12 +1774,12 @@ const generateNginxConfig = async (
   hotelId,
   templateId,
   pool,
-  organization_id
+  organization_id,
 ) => {
   try {
     const { rows } = await pool.query(
       "SELECT url FROM operation_property WHERE id = $1",
-      [hotelId]
+      [hotelId],
     );
 
     if (!rows.length || !rows[0].url) {
@@ -1781,7 +1797,7 @@ const generateNginxConfig = async (
         templateId,
         domain,
         pool,
-        organization_id
+        organization_id,
       );
       await addSslCertificate(hotelId, templateId, domain);
       return;
@@ -1815,7 +1831,7 @@ const exec2 = util.promisify(require("child_process").exec);
 const addSslCertificate = async (hotelId, templateId, domain) => {
   try {
     const { stdout } = await exec2(
-      `sudo certbot certificates --domain ${domain}`
+      `sudo certbot certificates --domain ${domain}`,
     );
     if (stdout.includes(`Certificate Name: ${domain}`)) {
       console.log("SSL certificate already exists.");
@@ -1836,7 +1852,7 @@ const addPublishDetails = async (
   templateId,
   domain,
   pool,
-  organization_id
+  organization_id,
 ) => {
   const publishDetails = {
     hotelId,
@@ -1846,14 +1862,14 @@ const addPublishDetails = async (
   try {
     const addedAlredy = await pool.query(
       "SELECT * FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
-      [hotelId, templateId]
+      [hotelId, templateId],
     );
 
     if (!addedAlredy.rows.length > 0) {
       // console.log("Publish details already added");
       const data = await pool.query(
         "INSERT INTO webtemplates (hotelid, templateid, website) VALUES ($1, $2, $3)",
-        [hotelId, templateId, domain]
+        [hotelId, templateId, domain],
       );
       console.log("Publish details added successfully");
     } else {
@@ -1876,7 +1892,7 @@ temp1.post("/remove-site", async (req, res) => {
     // );
     await pool.query(
       "DELETE FROM webtemplates WHERE hotelid = $1 AND templateid = $2",
-      [hotelId, temp.templateid]
+      [hotelId, temp.templateid],
     );
 
     const nginxConfigPath = `/etc/nginx/sites-available/${temp.website}.conf`;
@@ -1898,7 +1914,7 @@ temp1.post("/remove-site", async (req, res) => {
     }
 
     await exec(
-      `sudo rm -rf /var/www/template${temp.templateid}/organization${organization_id}/property${hotelId}`
+      `sudo rm -rf /var/www/template${temp.templateid}/organization${organization_id}/property${hotelId}`,
     );
 
     await exec(`sudo certbot delete --cert-name ${temp.website}`);

@@ -3,6 +3,9 @@ const app = Vue.createApp({
     return {
       hotelId: null,
       orgId: null,
+      // bookingUrl is set from js/config.js and is globally available
+      bookingUrl: window.BOOKING_URL,
+      bookingUrl2: window.BOOKING_URL_2,
       templateId: 1,
       title: "Site Name",
       email: "Site email",
@@ -158,6 +161,7 @@ const app = Vue.createApp({
       currentSocialPlatform: "",
       currentSocialLink: "",
       socialModalInstance: null,
+      bookingModalInstance: null,
     };
   },
 
@@ -193,7 +197,6 @@ const app = Vue.createApp({
       this.otherServices[index].isEditing = false;
       this.saveDetails();
       this.tempService = {};
-
     },
     cancelEditService(index) {
       this.otherServices[index].serviceType = this.tempService.serviceType;
@@ -216,7 +219,7 @@ const app = Vue.createApp({
           `${window.API_BASE}/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -320,7 +323,7 @@ const app = Vue.createApp({
             },
             credentials: "include",
             body: JSON.stringify(details),
-          }
+          },
         );
 
         if (!response.ok) {
@@ -359,7 +362,7 @@ const app = Vue.createApp({
           `${window.API_BASE}/temp1/build-template?templateId=${this.templateId}`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -569,7 +572,7 @@ const app = Vue.createApp({
           (croppedData) => {
             this.subContainerImage = croppedData;
           },
-          16 / 9
+          16 / 9,
         );
       }
     },
@@ -584,7 +587,7 @@ const app = Vue.createApp({
         cropImage.src = e.target.result;
 
         this.cropModalInstance = new bootstrap.Modal(
-          document.getElementById("imageCropModal")
+          document.getElementById("imageCropModal"),
         );
         this.cropModalInstance.show();
 
@@ -611,7 +614,7 @@ const app = Vue.createApp({
               minCropBoxHeight: 100,
             });
           },
-          { once: true }
+          { once: true },
         );
       };
       reader.readAsDataURL(file);
@@ -713,7 +716,7 @@ const app = Vue.createApp({
             this.carouselImages[index].src = croppedData;
             console.log("Carousel image cropped and uploaded successfully");
           },
-          16 / 9
+          16 / 9,
         );
       }
     },
@@ -788,7 +791,7 @@ const app = Vue.createApp({
             this.aboutUsImages[index].src = croppedData;
             console.log("About us image cropped and uploaded successfully");
           },
-          1
+          1,
         );
       }
     },
@@ -859,6 +862,15 @@ const app = Vue.createApp({
       return this.mapIframeHtml;
     },
 
+    openBookingModal() {
+      if (!this.bookingModalInstance) {
+        this.bookingModalInstance = new bootstrap.Modal(
+          document.getElementById("bookingOptionsModal"),
+        );
+      }
+      this.bookingModalInstance.show();
+    },
+
     openSocialLinkModal(platform) {
       const platformMap = {
         facebook: { name: "Facebook", link: this.facebookLink },
@@ -875,7 +887,7 @@ const app = Vue.createApp({
 
         if (!this.socialModalInstance) {
           this.socialModalInstance = new bootstrap.Modal(
-            document.getElementById("socialLinksModal")
+            document.getElementById("socialLinksModal"),
           );
         }
         this.socialModalInstance.show();
@@ -932,7 +944,6 @@ const app = Vue.createApp({
         this.closeCropModal();
       });
     }
-
   },
 
   beforeUnmount() {

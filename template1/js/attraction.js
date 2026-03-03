@@ -3,6 +3,8 @@ const app = Vue.createApp({
     return {
       hotelId: null,
       orgId: null,
+      bookingUrl: window.BOOKING_URL,
+      bookingUrl2: window.BOOKING_URL_2,
       templateId: 1,
       title: "Site Name",
       email: "Site email",
@@ -54,9 +56,18 @@ const app = Vue.createApp({
       bookingcomLink: "",
       tripadvisorLink: "",
       youtubeLink: "",
+      bookingModalInstance: null,
     };
   },
   methods: {
+    openBookingModal() {
+      if (!this.bookingModalInstance) {
+        this.bookingModalInstance = new bootstrap.Modal(
+          document.getElementById("bookingOptionsModal"),
+        );
+      }
+      this.bookingModalInstance.show();
+    },
     async loadSiteDetails() {
       this.isLoading = "Loading site data...";
 
@@ -65,7 +76,7 @@ const app = Vue.createApp({
           `${window.API_BASE}/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -137,7 +148,7 @@ const app = Vue.createApp({
           method: "POST",
           body: formData,
           credentials: "include",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -164,7 +175,7 @@ const app = Vue.createApp({
         let imageUrl = "";
         try {
           imageUrl = await this.uploadAttractionImage(
-            this.newAttractionImageFile
+            this.newAttractionImageFile,
           );
         } catch (error) {
           console.error("Error uploading attraction image:", error);
@@ -224,7 +235,7 @@ const app = Vue.createApp({
             },
             body: JSON.stringify(details),
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {

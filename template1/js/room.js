@@ -4,12 +4,14 @@ const app = Vue.createApp({
       hotelId: null,
       orgId: null,
       templateId: 1,
+      bookingUrl: window.BOOKING_URL,
+      bookingUrl2: window.BOOKING_URL_2,
       title: "Site Name",
       email: "Site email",
       phoneNumber: "Site phone number",
       address: "Site address",
       realImages: [],
-      logo : "",
+      logo: "",
 
       mapIframeHtml: `<div style="max-width:100%;overflow:hidden;color:red;height:400px;"><div id="display-google-map" style="height:100%; width:100%;max-width:100%;"><iframe style="height:100%;width:100%;border:0;" frameborder="0" src="https://www.google.com/maps/embed/v1/place?q=hillroost&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe></div><a class="from-embedmap-code" href="https://www.bootstrapskins.com/themes" id="auth-map-data">premium bootstrap themes</a><style>#display-google-map img.text-marker{max-width:none!important;background:none!important;}img{max-width:none}</style></div>`,
 
@@ -53,9 +55,18 @@ const app = Vue.createApp({
       youtubeLink: "",
       privacyPolicy: "",
       termsCondition: "",
+      bookingModalInstance: null,
     };
   },
   methods: {
+    openBookingModal() {
+      if (!this.bookingModalInstance) {
+        this.bookingModalInstance = new bootstrap.Modal(
+          document.getElementById("bookingOptionsModal"),
+        );
+      }
+      this.bookingModalInstance.show();
+    },
     getAmenityIcon(amenity) {
       if (!amenity) return null;
 
@@ -114,7 +125,7 @@ const app = Vue.createApp({
           `${window.API_BASE}/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {

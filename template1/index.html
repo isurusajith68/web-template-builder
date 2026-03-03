@@ -113,14 +113,14 @@
                                     generated</span>
                                 <div class="h-100 d-inline-flex align-items-center py-2 me-4">
                                     <i class="fa fa-envelope text-primary me-2"></i>
-                                    <p v-if="!isEditingEmail"  class="mb-0">
+                                    <p v-if="!isEditingEmail" class="mb-0">
                                         {{email}}
                                     </p>
                                     <input v-if="isEditingEmail" v-model="editEmail" @keyup.enter="updateEmail" />
                                 </div>
                                 <div class="h-100 d-inline-flex align-items-center py-2">
                                     <i class="fa fa-phone-alt text-primary me-2"></i>
-                                    <p v-if="!isEditingPhoneNumber"  class="mb-0">
+                                    <p v-if="!isEditingPhoneNumber" class="mb-0">
                                         {{phoneNumber}}</p>
                                     <input v-if="isEditingPhoneNumber" v-model="editPhoneNumber"
                                         @keyup.enter="updatePhoneNumber" />
@@ -193,8 +193,9 @@
                                     </div> -->
 
                             </div>
-                            <a :href="`booking.html?hotelId=${hotelId}`" class="btn btn-primary py-2 px-4 ms-3"
-                                style="text-decoration: none; color: white;">Book Now</a>
+                            <a href="#" @click.prevent="openBookingModal" class="btn btn-primary py-2 px-4 ms-3"
+                                style="text-decoration: none; color: white;">Book
+                                Now</a>
                         </div>
                     </nav>
 
@@ -633,7 +634,7 @@
                                     </div>
                                     <p class="text-body mb-3">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
                                     <div class="d-flex justify-content-between">
-                                        <a class="btn btn-sm btn-dark rounded py-2 px-4" href="">Book Now</a>
+                                        <a class="btn btn-sm btn-dark rounded py-2 px-4" href="#" @click.prevent="openBookingModal">Book Now</a>
                                     </div>
                                 </div>
                             </div>
@@ -662,7 +663,7 @@
                                     </div>
                                     <p class="text-body mb-3">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
                                     <div class="d-flex justify-content-between">
-                                        <a class="btn btn-sm btn-dark rounded py-2 px-4" href="">Book Now</a>
+                                        <a class="btn btn-sm btn-dark rounded py-2 px-4" href="#" @click.prevent="openBookingModal">Book Now</a>
                                     </div>
                                 </div>
                             </div>
@@ -691,7 +692,7 @@
                                     </div>
                                     <p class="text-body mb-3">Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.</p>
                                     <div class="d-flex justify-content-between">
-                                        <a class="btn btn-sm btn-dark rounded py-2 px-4" href="">Book Now</a>
+                                        <a class="btn btn-sm btn-dark rounded py-2 px-4" href="#" @click.prevent="openBookingModal">Book Now</a>
                                     </div>
                                 </div>
                             </div>
@@ -883,7 +884,10 @@
                                 </div>
                                 <div class="p-4 mt-2">
                                     <div class="d-flex justify-content-between mb-3">
-                                        <h6 class="mb-0"><b>{{ room.custom_name }} / {{room.roomview}}</b>
+                                        <h6 class="mb-0"><b>{{ room.custom_name }} <span
+                                                    v-if="room.roomview && room.roomview !== 'N/A'">
+                                                    / {{ room.roomview }}
+                                                </span></b>
                                         </h6>
                                         <div class="ps-2">
                                             <small v-for="star in 5" :key="star"
@@ -1433,6 +1437,36 @@
             </div>
         </div>
         <!-- Social Links Modal End -->
+
+        <!-- Booking Options Modal Start -->
+        <div class="modal fade" id="bookingOptionsModal" tabindex="-1" aria-labelledby="bookingOptionsModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="bookingOptionsModalLabel">Choose Booking Platform</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="mb-4">Please select your preferred booking platform:</p>
+                        <div class="d-grid gap-3">
+                            <a :href="`${bookingUrl}?org_id=${orgId}&p_id=${hotelId}`"
+                                class="btn btn-primary btn-lg py-3">
+                                <i class="fas fa-calendar-check me-2"></i>Book via Platform 1
+                            </a>
+                            <a :href="`${bookingUrl2}?org_id=${orgId}&p_id=${hotelId}`"
+                                class="btn btn-outline-primary btn-lg py-3">
+                                <i class="fas fa-calendar-alt me-2"></i>Book via Platform 2
+                            </a>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Booking Options Modal End -->
 
         <!-- Image Crop Modal Start -->
         <div class="modal fade" id="imageCropModal" tabindex="-1" aria-labelledby="imageCropModalLabel"

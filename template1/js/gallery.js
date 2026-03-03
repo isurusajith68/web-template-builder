@@ -3,12 +3,14 @@ const gallery = Vue.createApp({
     return {
       hotelId: null,
       orgId: null,
+      bookingUrl: window.BOOKING_URL,
+      bookingUrl2: window.BOOKING_URL_2,
       templateId: 1,
       title: "Site Name",
       email: "Site email",
       phoneNumber: "Site phone number",
       address: "Site address",
-      logo : "",
+      logo: "",
 
       images: [],
       footerDescription: "Click to Edit Footer Description",
@@ -46,10 +48,19 @@ const gallery = Vue.createApp({
       bookingcomLink: "",
       tripadvisorLink: "",
       youtubeLink: "",
+      bookingModalInstance: null,
     };
   },
 
   methods: {
+    openBookingModal() {
+      if (!this.bookingModalInstance) {
+        this.bookingModalInstance = new bootstrap.Modal(
+          document.getElementById("bookingOptionsModal"),
+        );
+      }
+      this.bookingModalInstance.show();
+    },
     handleFileChange(event) {
       const files = Array.from(event.target.files);
 
@@ -81,7 +92,7 @@ const gallery = Vue.createApp({
       if (this.selectedFiles.length === 0) return;
 
       this.cropModalInstance = new bootstrap.Modal(
-        document.getElementById("imageCropModal")
+        document.getElementById("imageCropModal"),
       );
       this.cropModalInstance.show();
 
@@ -91,7 +102,7 @@ const gallery = Vue.createApp({
         () => {
           this.initializeCropper();
         },
-        { once: true }
+        { once: true },
       );
     },
 
@@ -180,7 +191,7 @@ const gallery = Vue.createApp({
           this.isCropping = false;
         },
         "image/jpeg",
-        0.8
+        0.8,
       );
     },
 
@@ -291,7 +302,7 @@ const gallery = Vue.createApp({
 
         if (response.ok && result.success) {
           this.realImages = this.realImages.filter(
-            (image) => image !== imageName
+            (image) => image !== imageName,
           );
 
           this.isLoading = null;
@@ -327,7 +338,7 @@ const gallery = Vue.createApp({
             method: "POST",
             body: formData,
             credentials: "include",
-          }
+          },
         );
 
         if (response.ok) {
@@ -384,7 +395,7 @@ const gallery = Vue.createApp({
               images: this.realImages,
             }),
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -455,7 +466,7 @@ const gallery = Vue.createApp({
           `${window.API_BASE}/temp1/site-details?templateId=${this.templateId}`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -472,7 +483,7 @@ const gallery = Vue.createApp({
           if (siteDetails?.details?.realImages?.filePaths?.length > 0) {
             this.userUseRealImages = true;
             this.realImages.push(
-              ...siteDetails?.details?.realImages?.filePaths
+              ...siteDetails?.details?.realImages?.filePaths,
             );
             this.carouselImages = siteDetails?.details?.carouselImages;
             this.footerDescription =
