@@ -10,6 +10,38 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const webBookingURL = process.env.WEB_BOOKING_URL;
+const webBookingURL2 = process.env.WEB_BOOKING_URL_2;
+
+const generateBookingModal = (organization_id, hotelId) => {
+  return `
+<!-- Booking Options Modal Start -->
+<div class="modal fade" id="bookingOptionsModal" tabindex="-1" aria-labelledby="bookingOptionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingOptionsModalLabel">Choose Booking Platform</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-4">Please select your preferred booking platform:</p>
+                <div class="d-grid gap-3">
+                    <a href="${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}" class="btn btn-primary btn-lg py-3">
+                        <i class="fas fa-calendar-check me-2"></i>Book via integrated Platform
+                    </a>
+                    <a href="${webBookingURL2}?org_id=${organization_id}&p_id=${hotelId}" class="btn btn-outline-primary btn-lg py-3">
+                        <i class="fas fa-calendar-alt me-2"></i>Book via Inquiry Platform
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Booking Options Modal End -->
+`;
+};
 
 temp1.get("/site-details", async (req, res) => {
   const pool = req.tenantPool;
@@ -513,8 +545,10 @@ temp1.get("/build-template", async (req, res) => {
       "#youtubeLink": details.youtubeLink || "#",
       "#privacyModal": privacyPolicyModel,
       "#termsCondition": termsConditionModel,
+      "#bookingModal": generateBookingModal(organization_id, hotelId),
       "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
       "#termsConditionModalOpen": "#termsConditionModalOpen",
+      "#bookingOptionsModal": "#bookingOptionsModal",
       "#siteLogo": details.logo || "",
       "#siteLocationDescription": details.locationdescription || "",
       "#siteCity": details.city || "",
@@ -1061,7 +1095,7 @@ ORDER BY
              }
             <p class="text-body mb-3">Recommended for 2 adults</p>
             <div class="d-flex justify-content-center">
-              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
+              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="#" data-bs-toggle="modal" data-bs-target="#bookingOptionsModal">Book Now</a>
             </div>
           </div>
         </div>
@@ -1196,8 +1230,10 @@ const buildTemplateGallery = async (
     "#navbarCollapse": "#navbarCollapse",
     "#privacyModal": privacyPolicyModel,
     "#termsCondition": termsConditionModel,
+    "#bookingModal": generateBookingModal(organization_id, hotelId),
     "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
     "#termsConditionModalOpen": "#termsConditionModalOpen",
+    "#bookingOptionsModal": "#bookingOptionsModal",
     "#hotelURL": hotelURL,
     "#siteLogo": result.rows[0].details.logo || "",
   };
@@ -1389,8 +1425,10 @@ const buildTemplateAttraction = async (
       "#navbarCollapse": "#navbarCollapse",
       "#privacyModal": privacyPolicyModel,
       "#termsCondition": termsConditionModel,
+      "#bookingModal": generateBookingModal(organization_id, hotelId),
       "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
       "#termsConditionModalOpen": "#termsConditionModalOpen",
+      "#bookingOptionsModal": "#bookingOptionsModal",
       "#siteLogo": result.rows[0].details.logo || "",
       "#hotelURL": hotelURL,
     };
@@ -1646,7 +1684,7 @@ ORDER BY
             }
             <p class="text-body mb-3">Recommended for 2 adults</p>
             <div class="d-flex justify-content-center">
-              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="${webBookingURL}?org_id=${organization_id}&p_id=${hotelId}">Book Now</a>
+              <a class="btn btn-sm btn-dark rounded py-2 px-4" href="#" data-bs-toggle="modal" data-bs-target="#bookingOptionsModal">Book Now</a>
             </div>
           </div>
         </div>
@@ -1667,8 +1705,10 @@ ORDER BY
       "#navbarCollapse": "#navbarCollapse",
       "#privacyModal": privacyPolicyModel,
       "#termsCondition": termsConditionModel,
+      "#bookingModal": generateBookingModal(organization_id, hotelId),
       "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
       "#termsConditionModalOpen": "#termsConditionModalOpen",
+      "#bookingOptionsModal": "#bookingOptionsModal",
       "#siteLogo": result.rows[0].details.logo || "",
     };
 

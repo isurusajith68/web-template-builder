@@ -932,8 +932,8 @@
                                         adults
                                     </p>
                                     <div class="d-flex justify-content-center">
-                                        <a class="btn btn-sm btn-dark rounded py-2 px-4"
-                                            :href="`https://web-booking.ceyinfo.com/?org_id=${orgId}&p_id=${hotelId}`">Book
+                                        <a class="btn btn-sm btn-dark rounded py-2 px-4" href="#"
+                                            @click.prevent="openBookingModal">Book
                                             Now</a>
                                     </div>
                                 </div>
@@ -1452,11 +1452,11 @@
                         <div class="d-grid gap-3">
                             <a :href="`${bookingUrl}?org_id=${orgId}&p_id=${hotelId}`"
                                 class="btn btn-primary btn-lg py-3">
-                                <i class="fas fa-calendar-check me-2"></i>Book via Platform 1
+                                <i class="fas fa-calendar-check me-2"></i>Book via integrated Platform
                             </a>
                             <a :href="`${bookingUrl2}?org_id=${orgId}&p_id=${hotelId}`"
                                 class="btn btn-outline-primary btn-lg py-3">
-                                <i class="fas fa-calendar-alt me-2"></i>Book via Platform 2
+                                <i class="fas fa-calendar-alt me-2"></i>Book via Inquiry Platform
                             </a>
                         </div>
                     </div>
