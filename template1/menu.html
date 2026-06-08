@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Hill Roost</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3.0.2"></script>
+
+</head>
+
+<body>
+    <div id="menu" class="container-xxl bg-white p-0">
+        <!-- Spinner Start -->
+        <div id="spinner"
+            class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+
+        <div v-if="isSuccess" id="successMessage"
+            style="position: fixed; z-index: 20; border-radius: 10; color: white; top: 0; left: 50%; background: #05f318; transform: translateX(-50%); width: 20%; text-align: center; padding: 10px;">
+            <i class="fa fa-check"></i>
+            {{ isSuccess }}
+        </div>
+
+        <div v-if="isLoading" id="loadingMessage"
+            style="position: fixed; z-index: 20; border-radius: 10; top: 0; color: white; left: 50%; background: #e2e60f; transform: translateX(-50%); width: 20%; text-align: center; padding: 10px;">
+            <i class="fa fa-spinner fa-spin"></i>
+            {{ isLoading }}
+        </div>
+
+        <div v-if="isError" id="errorMessage"
+            style="position: fixed; z-index: 20; border-radius: 10; top: 0; color: white; left: 50%; background: #f00505; transform: translateX(-50%); width: 20%; text-align: center; padding: 10px;">
+            <i class="fa fa-times"></i>
+            {{ isError }}
+        </div>
+
+        <!-- Header Start -->
+        <div class="container-fluid bg-dark px-0">
+            <div class="row gx-0">
+                <div class="col-lg-3 d-none d-lg-flex align-items-center justify-content-center px-4">
+                    <a :href="`index.html?hotelId=${hotelId}`"
+                        class="navbar-brand d-flex align-items-center justify-content-center gap-3"
+                        style="height: 90px;">
+                        <img :src="logo" alt="Logo" style="max-width: 60px; max-height: 60px; object-fit: contain;" />
+                        <h3 class="m-0 text-primary text-uppercase" style="white-space: normal; line-height: 1;">
+                            {{ title }}
+                        </h3>
+                    </a>
+                </div>
+                <div class="col-lg-9">
+                    <div class="row gx-0 bg-white d-none d-lg-flex">
+                        <div class="col-lg-7 px-5 text-start">
+                            <div class="h-100 d-inline-flex align-items-center py-2 me-4">
+                                <i class="fa fa-envelope text-primary me-2"></i>
+                                <p class="mb-0">{{email}}</p>
+                            </div>
+                            <div class="h-100 d-inline-flex align-items-center py-2">
+                                <i class="fa fa-phone-alt text-primary me-2"></i>
+                                <p class="mb-0">{{phoneNumber}}</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 px-5 text-end">
+                            <div class="h-100 d-inline-flex align-items-center px-2">
+                                <a href="/" style="
+                                    color: gray;
+                                    font-size: 10px;
+                                    background: #f1f1f1;
+                                    border-radius: 4px;
+                                    padding: 2px 8px;
+                                    text-decoration: none;
+                                    transition: background 0.2s;">
+                                    edit
+                                </a>
+                            </div>
+                            <div class="d-inline-flex align-items-center py-2">
+                                <a class="me-3" :href="facebookLink"><i class="fab fa-facebook-f"></i></a>
+                                <a class="me-3" :href="bookingcomLink"><i class="fas fa-bed"></i></a>
+                                <a class="me-3" :href="tripadvisorLink" target="_blank" rel="noopener noreferrer"><i
+                                        class="fab fa-tripadvisor"></i></a>
+                                <a class="" :href="youtubeLink"><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0" style="margin-left: 0;">
+                        <a :href="`index.html?hotelId=${hotelId}`" class="navbar-brand d-block d-lg-none">
+                            <h1 class="m-0 text-primary text-uppercase">{{title}}</h1>
+                        </a>
+                        <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
+                            data-bs-target="#navbarCollapse">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                            <div class="navbar-nav mr-auto py-0">
+                                <a :href="`index.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Home</a>
+                                <a :href="`about.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">About</a>
+                                <a :href="`room.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Rooms</a>
+                                <a :href="`specialOffers.html?hotelId=${hotelId}`"
+                                    class="nav-item nav-link ms-3">Special Offers</a>
+                                <a :href="`gallery.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Gallery</a>
+                                <a :href="`attraction.html?hotelId=${hotelId}`"
+                                    class="nav-item nav-link ms-3">Attractions</a>
+                                <a :href="`menu.html?hotelId=${hotelId}`" class="nav-item nav-link active ms-3">Menu</a>
+                                <a :href="`contact.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Contact</a>
+                            </div>
+                            <a :href="`${bookingUrl}?org_id=${orgId}&p_id=${hotelId}`"
+                                class="btn btn-primary py-2 px-4 ms-3" style="text-decoration: none; color: white;">Book
+                                Now</a>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- Header End -->
+
+        <!-- Page Header Start -->
+        <div class="container-fluid page-header mb-5 p-0" :style="{ backgroundImage: `url(${carouselImages[0].src})` }">
+            <div class="container-fluid page-header-inner py-5">
+                <div class="container text-center pb-5">
+                    <h1 class="display-3 text-white mb-3 animated slideInDown">Menu</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center text-uppercase">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Menu</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- Page Header End -->
+
+        <!-- Menu Start -->
+        <div class="container-xxl py-5">
+            <div class="mb-4">
+                <div class="w-full text-center border-t rounded-t-lg border-gray-600" style="line-height: 0.1">
+                    <span class="px-6"
+                        style="background: rgb(23, 93, 158); font-size: 13px; border-radius: 4px; color: white; padding: 3px;">
+                        system generated
+                    </span>
+                </div>
+
+                <div class="container px-5 pb-5 pt-4"
+                    style="border: 2px solid #e0e0e0; padding:25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+
+                    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Our Menu</h6>
+                        <h1 class="">Explore Our <span class="text-primary text-uppercase">Menu</span></h1>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="mt-3 mb-4">
+
+                        <!-- Order Type Filter -->
+                        <div v-if="priceTypes.length > 0" class="mb-2">
+                            <small class="text-muted text-uppercase fw-bold me-2"
+                                style="font-size:0.7rem; letter-spacing:0.05em;">Order Type:</small>
+                            <div class="d-inline-flex flex-wrap gap-2">
+                                <button v-for="pt in priceTypes" :key="pt.price_type_id" class="btn btn-sm"
+                                    :class="selectedPriceType === pt.price_type_id ? 'btn-dark' : 'btn-outline-dark'"
+                                    @click="selectedPriceType = pt.price_type_id">
+                                    {{ pt.price_type_name }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Menu Type Filter -->
+                        <div v-if="menuTypes.length > 0" class="mb-2">
+                            <small class="text-muted text-uppercase fw-bold me-2"
+                                style="font-size:0.7rem; letter-spacing:0.05em;">Menu Time:</small>
+                            <div class="d-inline-flex flex-wrap gap-2">
+                                <button v-for="mt in menuTypes" :key="mt.menu_type_id" class="btn btn-sm"
+                                    :class="selectedMenuType === mt.menu_type_id ? 'btn-secondary' : 'btn-outline-secondary'"
+                                    @click="selectedMenuType = mt.menu_type_id">
+                                    {{ mt.menu_type_name }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div v-if="menuCategories.length > 0">
+                            <small class="text-muted text-uppercase fw-bold me-2"
+                                style="font-size:0.7rem; letter-spacing:0.05em;">Category:</small>
+                            <div class="d-inline-flex flex-wrap gap-2">
+                                <button class="btn btn-sm"
+                                    :class="selectedCategory === null ? 'btn-primary' : 'btn-outline-primary'"
+                                    @click="selectedCategory = null">
+                                    All
+                                </button>
+                                <button v-for="cat in menuCategories" :key="cat.fb_category_id" class="btn btn-sm"
+                                    :class="selectedCategory === cat.fb_category_id ? 'btn-primary' : 'btn-outline-primary'"
+                                    @click="selectedCategory = cat.fb_category_id">
+                                    {{ cat.fb_category_name }}
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Menu Items Grid -->
+                    <div class="row g-4">
+                        <div v-if="filteredItems.length === 0" class="col-12 text-center text-muted py-5">
+                            <i class="fa fa-utensils fa-3x mb-3 d-block"></i>
+                            <p>No menu items available</p>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" v-for="(item, index) in filteredItems"
+                            :key="item.menu_item_id" :data-wow-delay="`${0.1 * (index % 6)}s`">
+                            <div class="h-100 shadow rounded overflow-hidden" style="border: 1px solid #f0f0f0;">
+                                <!-- Item Image -->
+                                <div class="position-relative">
+                                    <img v-if="item.image_url" :src="item.image_url" :alt="item.menu_name"
+                                        class="img-fluid w-100" style="height: 200px; object-fit: cover;"
+                                        onerror="this.src='img/carousel-1.jpg'">
+                                    <div v-else class="bg-light d-flex align-items-center justify-content-center"
+                                        style="height: 200px;">
+                                        <i class="fa fa-utensils fa-3x text-muted"></i>
+                                    </div>
+                                    <!-- Veg / Non-veg indicator -->
+                                    <div class="position-absolute" style="top: 8px; left: 8px;">
+                                            <span v-if="item.is_veg"
+                                                style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1.5px solid green;border-radius:4px;background:white;">
+                                                <span style="display:block;width:9px;height:9px;background:green;border-radius:50%;flex-shrink:0;"></span>
+                                                <span style="font-size:0.72rem;font-weight:600;color:green;line-height:1;">Veg</span>
+                                            </span>
+                                            <span v-else
+                                                style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1.5px solid #e00;border-radius:4px;background:white;">
+                                                <span style="display:block;width:9px;height:9px;background:#e00;border-radius:50%;flex-shrink:0;"></span>
+                                                <span style="font-size:0.72rem;font-weight:600;color:#e00;line-height:1;">Non-Veg</span>
+                                            </span>
+                                    </div>
+                                    <!-- Spicy badge -->
+                                    <div v-if="item.is_spicy" class="position-absolute" style="top: 8px; right: 8px;">
+                                        <span class="badge bg-danger" style="font-size: 0.7rem;">
+                                            <i class="fa fa-fire me-1"></i>Spicy
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Item Details -->
+                                <div class="p-3">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+
+                                        <h6 class="mb-0 fw-bold">{{ item.menu_name }}</h6>
+                                    </div>
+                                    <p v-if="item.description" class="text-muted small mb-2" style="line-height: 1.4;">
+                                        {{ item.description }}</p>
+                                    <div class="d-flex gap-2 flex-wrap mb-2">
+                                        <span v-if="item.preparation_time" class="badge bg-light text-dark border"
+                                            style="font-size: 0.72rem;">
+                                            <i class="fa fa-clock me-1"></i>{{ item.preparation_time }} min
+                                        </span>
+                                        <span v-if="item.selling_mode" class="badge bg-light text-dark border"
+                                            style="font-size: 0.72rem;">
+                                            {{ item.selling_mode }}
+                                        </span>
+                                    </div>
+                                    <!-- Price Tiers (filtered) -->
+                                    <div v-if="getFilteredPrices(item).length > 0"
+                                        style="border-top: 1px solid #f0f0f0; padding-top: 8px;">
+                                        <!-- Order Type + Menu Time context -->
+                                        <div class="d-flex gap-1 flex-wrap mb-2">
+                                            <span
+                                                style="font-size: 0.68rem; background: #175d9e; color: #fff; border-radius: 4px; padding: 2px 7px;">
+                                                {{ selectedPriceType
+                                                ? priceTypes.find(p => p.price_type_id ===
+                                                selectedPriceType)?.price_type_name
+                                                : (getFilteredPrices(item)[0]?.price_type_name || 'All Order Types') }}
+                                            </span>
+                                            <span
+                                                style="font-size: 0.68rem; background: #555; color: #fff; border-radius: 4px; padding: 2px 7px;">
+                                                {{ selectedMenuType
+                                                ? menuTypes.find(m => m.menu_type_id ===
+                                                selectedMenuType)?.menu_type_name
+                                                : (getFilteredPrices(item)[0]?.menu_type_name || 'All Times') }}
+                                            </span>
+                                        </div>
+                                        <div v-for="p in getFilteredPrices(item)" :key="p.tier_id"
+                                            class="d-flex justify-content-between align-items-center py-1"
+                                            style="border-bottom: 1px solid #f8f8f8;">
+                                            <span style="font-size: 0.78rem; color: #666;">{{ p.tier_name }}</span>
+                                            <span style="font-size: 0.82rem; font-weight: 700; color: #175d9e;">
+                                                Rs {{ Number(p.price).toLocaleString('en-US') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p v-else class="text-muted small mt-1 mb-0">
+                                        <i class="fa fa-info-circle me-1"></i>
+                                        No prices for this selection
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Menu End -->
+
+        <!-- Privacy Policy Modal -->
+        <div class="modal fade" id="privacyPolicyModal" tabindex="-1" aria-labelledby="privacyPolicyModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" :value="privacyPolicy" rows="10" readonly></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms Modal -->
+        <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="termsModalLabel">Terms & Condition</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="form-control" v-model="termsCondition" rows="10" readonly></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Start -->
+        <div style="margin-top: 50px;" class="container-fluid bg-dark text-light footer wow fadeIn"
+            data-wow-delay="0.1s">
+            <div class="container mt-5">
+                <div class="row g-5">
+                    <div class="col-md-6 col-lg-4 col-sm-4">
+                        <div class="bg-primary rounded p-4">
+                            <a :href="`index.html?hotelId=${hotelId}`">
+                                <h1 class="text-white text-uppercase mb-3">{{ title }}</h1>
+                            </a>
+                            <p class="text-white mb-0" style="text-align: justify;">
+                                {{ footerDescription }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <h6 class="section-title text-start text-primary text-uppercase mb-4">Contact</h6>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>{{ address }}</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{ phoneNumber }}</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{ email }}</p>
+                        <div class="d-flex pt-2">
+                            <a class="btn btn-outline-light btn-social" :href="youtubeLink"><i
+                                    class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-light btn-social" :href="facebookLink"><i
+                                    class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" :href="bookingcomLink" target="_blank"
+                                rel="noopener noreferrer">
+                                <i class="fas fa-bed"></i>
+                            </a>
+                            <a class="btn btn-outline-light btn-social" :href="tripadvisorLink" target="_blank"
+                                rel="noopener noreferrer">
+                                <i class="fab fa-tripadvisor"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-12">
+                        <div class="row g-4">
+                            <div class="col-md-6" style="margin-left:10%;">
+                                <h6 class="section-title text-start text-primary text-uppercase mb-4">
+                                    Company
+                                </h6>
+                                <a class="btn btn-link" href="/about.html">About Us</a>
+                                <a class="btn btn-link" href="/contact.html">Contact Us</a>
+                                <button class="btn btn-link" @click="openPrivacyModal" style="cursor: pointer;">Privacy
+                                    Policy</button>
+                                <button class="btn btn-link" @click="openTermsModal" style="cursor: pointer;">Terms &
+                                    Condition</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="copyright">
+                        <div class="row">
+                            <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                                &copy; <a class="border-bottom" href="#">{{ title }}</a>, All Right Reserved.
+                                Designed By <a class="border-bottom" href="https://ceyinfo.com/">Ceyinfo
+                                    Solutions (pvt) Ltd.</a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="#" class="btn btn-lg btn-primary btn-lg-square"><i
+                                        class="bi bi-arrow-up"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/wow/wow.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/waypoints/waypoints.min.js"></script>
+        <script src="lib/counterup/counterup.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <script src="lib/tempusdominus/js/moment.min.js"></script>
+        <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+        <!-- Template Javascript -->
+        <script src="js/config.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/menu.js"></script>
+    </div>
+</body>
+
+</html>

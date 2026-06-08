@@ -695,6 +695,14 @@ temp1.get("/build-template", async (req, res) => {
         pool,
         organization_id,
       );
+      await buildTemplateMenu(
+        result,
+        result2,
+        hotelId,
+        templateId,
+        pool,
+        organization_id,
+      );
     } catch (buildError) {
       console.error("Error building templates:", buildError);
       return res.status(500).json({
@@ -741,6 +749,88 @@ temp1.get("/hotel-offers", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+  }
+});
+
+temp1.get("/menu-info", async (req, res) => {
+  const pool = req.tenantPool;
+  const hotelId = req.property_id;
+
+  try {
+    const categories = await pool.query(
+      `SELECT fb_category_id, fb_category_name, description, parent_fb_category_id, category_type, image_url
+       FROM operation_menu_food_beverage_categories
+       WHERE property_id = $1 AND is_active = true
+       ORDER BY fb_category_name`,
+      [hotelId],
+    );
+
+    const priceTypes = await pool.query(
+      `SELECT price_type_id, price_type_name
+       FROM operation_menu_price_types
+       WHERE property_id = $1 AND is_active = true
+       ORDER BY price_type_id`,
+      [hotelId],
+    );
+
+    const menuTypes = await pool.query(
+      `SELECT menu_type_id, menu_type_name
+       FROM operation_menu_types
+       WHERE property_id = $1 AND is_active = true
+       ORDER BY menu_type_id`,
+      [hotelId],
+    );
+
+    const items = await pool.query(
+      `SELECT
+         mi.menu_item_id, mi.menu_name, mi.menu_category_id, mi.menu_subcategory_id,
+         mi.description, mi.is_veg, mi.is_spicy, mi.image_url, mi.selling_mode,
+         mi.short_name, mi.preparation_time,
+         COALESCE(
+           (
+             SELECT JSON_AGG(
+               JSONB_BUILD_OBJECT(
+                 'tier_id',        ip.price_tier_id,
+                 'tier_name',      pt.tier_name,
+                 'price_type_id',  ip.price_type_id,
+                 'price_type_name',ptype.price_type_name,
+                 'menu_type_id',   ip.menu_type_id,
+                 'menu_type_name', mt.menu_type_name,
+                 'price',          ip.price
+               )
+               ORDER BY ip.menu_type_id, ip.price_type_id, ip.price_tier_id
+             )
+             FROM operation_menu_item_prices ip
+             LEFT JOIN operation_menu_price_tiers pt
+               ON pt.price_tier_id = ip.price_tier_id AND pt.property_id = $1 AND pt.is_active = true
+             LEFT JOIN operation_menu_price_types ptype
+               ON ptype.price_type_id = ip.price_type_id AND ptype.property_id = $1 AND ptype.is_active = true
+             LEFT JOIN operation_menu_types mt
+               ON mt.menu_type_id = ip.menu_type_id AND mt.property_id = $1 AND mt.is_active = true
+             WHERE ip.item_id = mi.menu_item_id
+               AND ip.property_id = $1
+               AND ip.price > 0
+           ),
+           '[]'::json
+         ) AS prices
+       FROM operation_menu_items mi
+       WHERE mi.property_id = $1 AND mi.is_active = true
+       ORDER BY mi.menu_category_id, mi.menu_name`,
+      [hotelId],
+    );
+
+    res.json({
+      data: {
+        categories: categories.rows,
+        priceTypes: priceTypes.rows,
+        menuTypes: menuTypes.rows,
+        items: items.rows,
+      },
+      message: "Menu info loaded successfully",
+    });
+  } catch (error) {
+    console.error("Error loading menu info:", error);
+    res.status(500).json({ message: "Error loading menu info" });
   }
 });
 
@@ -1907,6 +1997,228 @@ const buildTemplateSpecialOffers = async (
     console.error("Error building template:", error);
   }
 };
+const buildMenuItemHtml = (item) => {
+  const vegDot = item.is_veg
+    ? `<span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1.5px solid green;border-radius:4px;background:white;"><span style="display:block;width:9px;height:9px;background:green;border-radius:50%;flex-shrink:0;"></span><span style="font-size:0.72rem;font-weight:600;color:green;line-height:1;">Veg</span></span>`
+    : `<span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1.5px solid #e00;border-radius:4px;background:white;"><span style="display:block;width:9px;height:9px;background:#e00;border-radius:50%;flex-shrink:0;"></span><span style="font-size:0.72rem;font-weight:600;color:#e00;line-height:1;">Non-Veg</span></span>`;
+  const spicyBadge = item.is_spicy
+    ? `<span class="badge bg-danger" style="font-size:0.7rem;"><i class="fa fa-fire me-1"></i>Spicy</span>`
+    : "";
+  const imageHtml = item.image_url
+    ? `<img src="${item.image_url}" alt="${item.menu_name}" class="menu-card-img" onerror="this.src='img/carousel-1.jpg'">`
+    : `<div class="menu-card-img-placeholder"><i class="fa fa-utensils"></i></div>`;
+  const prepTimeHtml = item.preparation_time
+    ? `<span class="badge bg-light text-dark border" style="font-size:0.72rem;"><i class="fa fa-clock me-1"></i>${item.preparation_time} min</span>`
+    : "";
+  const sellingMode = item.selling_mode
+    ? `<span class="badge bg-light text-dark border" style="font-size:0.72rem;">${item.selling_mode}</span>`
+    : "";
+  const descHtml = item.description
+    ? `<p class="text-muted small mb-2" style="line-height:1.4;">${item.description}</p>`
+    : "";
+
+  const prices = Array.isArray(item.prices) ? item.prices : [];
+  const pricesHtml = prices.length > 0
+    ? `<div class="mt-2" style="border-top:1px solid #f0f0f0;padding-top:8px;">
+        ${prices.map((p) => `
+          <div class="d-flex justify-content-between align-items-center py-1" style="border-bottom:1px solid #f8f8f8;">
+            <span style="font-size:0.78rem;color:#666;">${p.tier_name}</span>
+            <span style="font-size:0.82rem;font-weight:700;color:var(--primary);">Rs ${Number(p.price).toLocaleString("en-US")}</span>
+          </div>
+        `).join("")}
+      </div>`
+    : `<p class="text-muted small mt-2 mb-0">Price not available</p>`;
+
+  return `
+    <div class="col-lg-4 col-md-6">
+      <div class="menu-card">
+        <div class="position-relative">
+          ${imageHtml}
+        </div>
+        <div class="p-3">
+          <div class="d-flex align-items-center mb-2">
+            ${vegDot}
+            <h6 class="mb-0 fw-bold">${item.menu_name}</h6>
+          </div>
+          ${descHtml}
+          <div class="d-flex gap-2 flex-wrap mb-1">
+            ${spicyBadge}
+            ${prepTimeHtml}
+            ${sellingMode}
+          </div>
+          ${pricesHtml}
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+const buildTemplateMenu = async (
+  result,
+  result2,
+  hotelId,
+  templateId,
+  pool,
+  organization_id,
+) => {
+  try {
+    const template = await fs.readFile(`./template/temp1/menu.html`, "utf8");
+    const webBookingURL = process.env.WEB_BOOKING_URL;
+    const webBookingURL2 = process.env.WEB_BOOKING_URL_2;
+    const hotelURL = `${
+      result2.rows[0]?.booking_platform === 1 ? webBookingURL : webBookingURL2
+    }?org_id=${organization_id}&p_id=${hotelId}`;
+
+    const categoriesResult = await pool.query(
+      `SELECT fb_category_id, fb_category_name
+       FROM operation_menu_food_beverage_categories
+       WHERE property_id = $1 AND is_active = true
+       ORDER BY fb_category_name`,
+      [hotelId],
+    );
+
+    const itemsResult = await pool.query(
+      `SELECT
+         mi.menu_item_id, mi.menu_name, mi.menu_category_id, mi.description,
+         mi.is_veg, mi.is_spicy, mi.image_url, mi.selling_mode, mi.preparation_time,
+         COALESCE(
+           (
+             SELECT JSON_AGG(
+               JSONB_BUILD_OBJECT('tier_name', pt.tier_name, 'price', tier_min.min_price)
+               ORDER BY pt.price_tier_id
+             )
+             FROM (
+               SELECT price_tier_id, MIN(price) AS min_price
+               FROM operation_menu_item_prices
+               WHERE item_id = mi.menu_item_id
+                 AND property_id = $1
+                 AND price > 0
+               GROUP BY price_tier_id
+             ) tier_min
+             JOIN operation_menu_price_tiers pt
+               ON pt.price_tier_id = tier_min.price_tier_id
+               AND pt.property_id = $1
+               AND pt.is_active = true
+           ),
+           '[]'::json
+         ) AS prices
+       FROM operation_menu_items mi
+       WHERE mi.property_id = $1 AND mi.is_active = true
+       ORDER BY mi.menu_category_id, mi.menu_name`,
+      [hotelId],
+    );
+
+    const groupedItems = {};
+    itemsResult.rows.forEach((item) => {
+      const key = item.menu_category_id || "uncategorized";
+      if (!groupedItems[key]) groupedItems[key] = [];
+      groupedItems[key].push(item);
+    });
+
+    let menuHtml = "";
+
+    categoriesResult.rows.forEach((cat) => {
+      const catItems = groupedItems[cat.fb_category_id] || [];
+      if (catItems.length === 0) return;
+      menuHtml += `
+        <div class="menu-category-section">
+          <h4 class="menu-category-title">${cat.fb_category_name}</h4>
+          <div class="row g-4">
+            ${catItems.map((item) => buildMenuItemHtml(item)).join("")}
+          </div>
+        </div>
+      `;
+    });
+
+    const uncategorized = groupedItems["uncategorized"] || [];
+    if (uncategorized.length > 0) {
+      menuHtml += `
+        <div class="menu-category-section">
+          <h4 class="menu-category-title">Other Items</h4>
+          <div class="row g-4">
+            ${uncategorized.map((item) => buildMenuItemHtml(item)).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    if (!menuHtml) {
+      menuHtml = `<p class="text-center text-muted py-5">No menu items available</p>`;
+    }
+
+    const privacyPolicyModel = `
+<div class="modal fade" id="privacyPolicyModalOpen" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyPolicyModalLabel">Privacy Policy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details.privacyPolicy || "No privacy policy available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>`;
+
+    const termsConditionModel = `
+<div class="modal fade" id="termsConditionModalOpen" tabindex="-1" aria-labelledby="termsConditionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsConditionModalLabel">Terms & Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea readonly style="width: 100%; height: 300px; resize: none; border: none;">${
+                  result.rows[0].details.termsCondition || "No terms and conditions available"
+                }</textarea>
+            </div>
+        </div>
+    </div>
+</div>`;
+
+    const data = {
+      "#siteTitle": result.rows[0].details.title,
+      "#siteEmail": result.rows[0].details.email,
+      "#sitePhoneNumber": result.rows[0].details.phoneNumber,
+      "#siteAddress": result.rows[0].details.address || "",
+      "#footerDescription": result.rows[0].details.footerDescription || "",
+      "#siteCarouselImages1": result.rows[0].details.carouselImages[0].src,
+      "#navbarCollapse": "#navbarCollapse",
+      "#privacyModal": privacyPolicyModel,
+      "#termsCondition": termsConditionModel,
+      "#privacyPolicyModalOpen": "#privacyPolicyModalOpen",
+      "#termsConditionModalOpen": "#termsConditionModalOpen",
+      "#bookingOptionsModal": "#bookingOptionsModal",
+      "#siteLogo": result.rows[0].details.logo || "",
+      "#hotelURL": hotelURL,
+      "#menuHtml": menuHtml,
+      "#facebookLink": result.rows[0].details.facebookLink || "#",
+      "#bookingcomLink": result.rows[0].details.bookingcomLink || "#",
+      "#tripadvisorLink": result.rows[0].details.tripadvisorLink || "#",
+      "#youtubeLink": result.rows[0].details.youtubeLink || "#",
+    };
+
+    const outputHtml = template.replace(
+      /#\w+/g,
+      (placeholder) => data[placeholder] || "",
+    );
+
+    await fs.writeFile(
+      `/var/www/template${templateId}/organization${organization_id}/property${hotelId}/menu.html`,
+      outputHtml,
+      "utf8",
+    );
+
+    console.log("Menu template built successfully");
+  } catch (error) {
+    console.error("Error building menu template:", error);
+  }
+};
+
 const generateNginxConfig = async (
   hotelId,
   templateId,

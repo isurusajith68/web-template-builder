@@ -11,9 +11,7 @@ const app = Vue.createApp({
       address: "Site address",
       logo: "",
 
-      carouselImages: [
-        { src: "img/carousel-1.jpg" },
-      ],
+      carouselImages: [{ src: "img/carousel-1.jpg" }],
 
       footerDescription: "Footer Description",
       facebookLink: "",
@@ -25,7 +23,12 @@ const app = Vue.createApp({
 
       menuCategories: [],
       menuItems: [],
+      priceTypes: [],
+      menuTypes: [],
+
       selectedCategory: null,
+      selectedPriceType: null,
+      selectedMenuType: null,
 
       isLoading: null,
       isError: null,
@@ -41,8 +44,50 @@ const app = Vue.createApp({
           item.menu_subcategory_id === this.selectedCategory,
       );
     },
+
+    getFilteredPrices() {
+      const selectedPriceType = this.selectedPriceType;
+      const selectedMenuType = this.selectedMenuType;
+
+      return (item) => {
+        let prices = Array.isArray(item.prices)
+          ? item.prices
+          : typeof item.prices === "string"
+          ? JSON.parse(item.prices)
+          : [];
+
+        if (selectedPriceType !== null) {
+          const specific = prices.filter(
+            (p) => Number(p.price_type_id) === selectedPriceType,
+          );
+          prices = specific.length > 0
+            ? specific
+            : prices.filter((p) => p.price_type_id === null);
+        }
+
+        if (selectedMenuType !== null) {
+          const specific = prices.filter(
+            (p) => Number(p.menu_type_id) === selectedMenuType,
+          );
+          prices = specific.length > 0
+            ? specific
+            : prices.filter((p) => p.menu_type_id === null);
+        }
+
+        const tierMap = {};
+        prices.forEach((p) => {
+          const key = Number(p.tier_id);
+          if (!tierMap[key] || Number(p.price) < Number(tierMap[key].price)) {
+            tierMap[key] = p;
+          }
+        });
+
+        return Object.values(tierMap).sort((a, b) => Number(a.tier_id) - Number(b.tier_id));
+      };
+    },
   },
   methods: {
+
     async hotelInfo() {
       try {
         const response = await fetch(`${window.API_BASE}/temp1/hotel-info`, {
@@ -128,7 +173,15 @@ const app = Vue.createApp({
         } else {
           const result = await response.json();
           this.menuCategories = result.data.categories;
+          this.priceTypes = result.data.priceTypes;
+          this.menuTypes = result.data.menuTypes;
           this.menuItems = result.data.items;
+          if (result.data.priceTypes.length > 0) {
+            this.selectedPriceType = result.data.priceTypes[0].price_type_id;
+          }
+          if (result.data.menuTypes.length > 0) {
+            this.selectedMenuType = result.data.menuTypes[0].menu_type_id;
+          }
           this.isLoading = null;
           this.isSuccess = "Menu loaded successfully";
           setTimeout(() => { this.isSuccess = null; }, 5000);
