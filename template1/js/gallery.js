@@ -3,7 +3,7 @@ const gallery = Vue.createApp({
     return {
       hotelId: null,
       orgId: null,
-      bookingUrl: window.BOOKING_URL,
+      bookingUrl: null,
       bookingUrl2: window.BOOKING_URL_2,
       templateId: 1,
       title: "Site Name",
@@ -48,19 +48,10 @@ const gallery = Vue.createApp({
       bookingcomLink: "",
       tripadvisorLink: "",
       youtubeLink: "",
-      bookingModalInstance: null,
     };
   },
 
   methods: {
-    openBookingModal() {
-      if (!this.bookingModalInstance) {
-        this.bookingModalInstance = new bootstrap.Modal(
-          document.getElementById("bookingOptionsModal"),
-        );
-      }
-      this.bookingModalInstance.show();
-    },
     handleFileChange(event) {
       const files = Array.from(event.target.files);
 
@@ -528,11 +519,36 @@ const gallery = Vue.createApp({
       }
       return rows;
     },
+
+    async templateDetails() {
+      try {
+        const response = await fetch(
+          `${window.API_BASE}/temp1/template-details?templateId=${this.templateId}`,
+          {
+            credentials: "include",
+          },
+        );
+        if (!response.ok) {
+          const err = await response.json();
+          console.error("Error fetching template details:", err);
+        } else {
+          const data = await response.json();
+          console.log(data?.booking_platform, "response");
+          this.bookingUrl =
+            data?.booking_platform === 1
+              ? window.BOOKING_URL
+              : window.BOOKING_URL_2;
+        }
+      } catch (error) {
+        console.error("Error fetching template details:", error);
+      }
+    },
   },
 
   mounted() {
     this.loadSiteDetails();
     this.hotelInfo();
+    this.templateDetails();
 
     // Handle modal cleanup on hide
     const modal = document.getElementById("imageCropModal");

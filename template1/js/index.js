@@ -4,8 +4,7 @@ const app = Vue.createApp({
       hotelId: null,
       orgId: null,
       // bookingUrl is set from js/config.js and is globally available
-      bookingUrl: window.BOOKING_URL,
-      bookingUrl2: window.BOOKING_URL_2,
+      bookingUrl: null,
       templateId: 1,
       title: "Site Name",
       email: "Site email",
@@ -161,8 +160,13 @@ const app = Vue.createApp({
       currentSocialPlatform: "",
       currentSocialLink: "",
       socialModalInstance: null,
-      bookingModalInstance: null,
     };
+  },
+
+  computed: {
+    activeOffers() {
+      return (this.offers || []).filter((offer) => !offer.cancel);
+    },
   },
 
   methods: {
@@ -506,6 +510,30 @@ const app = Vue.createApp({
         }
       } catch (error) {
         console.error("Error fetching hotel info:", error);
+      }
+    },
+
+    async templateDetails() {
+      try {
+        const response = await fetch(
+          `${window.API_BASE}/temp1/template-details?templateId=${this.templateId}`,
+          {
+            credentials: "include",
+          },
+        );
+        if (!response.ok) {
+          const err = await response.json();
+          console.error("Error fetching template details:", err);
+        } else {
+          const data = await response.json();
+          console.log(data?.booking_platform, "response");
+          this.bookingUrl =
+            data?.booking_platform === 1
+              ? window.BOOKING_URL
+              : window.BOOKING_URL_2;
+        }
+      } catch (error) {
+        console.error("Error fetching template details:", error);
       }
     },
 
@@ -862,15 +890,6 @@ const app = Vue.createApp({
       return this.mapIframeHtml;
     },
 
-    openBookingModal() {
-      if (!this.bookingModalInstance) {
-        this.bookingModalInstance = new bootstrap.Modal(
-          document.getElementById("bookingOptionsModal"),
-        );
-      }
-      this.bookingModalInstance.show();
-    },
-
     openSocialLinkModal(platform) {
       const platformMap = {
         facebook: { name: "Facebook", link: this.facebookLink },
@@ -937,6 +956,7 @@ const app = Vue.createApp({
     this.loadSiteDetails();
     this.hotelInfo();
     this.hotelOffers();
+    this.templateDetails();
 
     const modal = document.getElementById("imageCropModal");
     if (modal) {

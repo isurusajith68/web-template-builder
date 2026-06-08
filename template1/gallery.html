@@ -320,8 +320,9 @@
                                 <a :href="`contact.html?hotelId=${hotelId}`" class="nav-item nav-link ms-3">Contact</a>
 
                             </div>
-                            <a href="#" @click.prevent="openBookingModal" class="btn btn-primary py-2 px-4 ms-3"
-                                style="text-decoration: none; color: white;">Book Now</a>
+                            <a :href="`${bookingUrl}?org_id=${orgId}&p_id=${hotelId}`"
+                                class="btn btn-primary py-2 px-4 ms-3" style="text-decoration: none; color: white;">Book
+                                Now</a>
                         </div>
                     </nav>
 
@@ -702,36 +703,6 @@
             </div>
         </div>
         <!-- Footer End -->
-
-        <!-- Booking Options Modal Start -->
-        <div class="modal fade" id="bookingOptionsModal" tabindex="-1" aria-labelledby="bookingOptionsModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="bookingOptionsModalLabel">Choose Booking Platform</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <p class="mb-4">Please select your preferred booking platform:</p>
-                        <div class="d-grid gap-3">
-                            <a :href="`${bookingUrl}?org_id=${orgId}&p_id=${hotelId}`"
-                                class="btn btn-primary btn-lg py-3">
-                                <i class="fas fa-calendar-check me-2"></i>Book via integrated Platform
-                            </a>
-                            <a :href="`${bookingUrl2}?org_id=${orgId}&p_id=${hotelId}`"
-                                class="btn btn-outline-primary btn-lg py-3">
-                                <i class="fas fa-calendar-alt me-2"></i>Book via Inquiry Platform
-                            </a>
-                        </div>
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Booking Options Modal End -->
 
         <!-- JavaScript Libraries -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

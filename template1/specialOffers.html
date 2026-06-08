@@ -179,8 +179,9 @@
                                     </div>
                                 </div> -->
 
-                            </div><a href="#" @click.prevent="openBookingModal" class="btn btn-primary py-2 px-4 ms-3"
-                                style="text-decoration: none; color: white;">Book Now</a>
+                            </div><a :href="`${bookingUrl}?org_id=${orgId}&p_id=${hotelId}`"
+                                class="btn btn-primary py-2 px-4 ms-3" style="text-decoration: none; color: white;">Book
+                                Now</a>
                         </div>
                     </nav>
 
@@ -266,17 +267,38 @@
                     </div>
                 </div> -->
 
-                    <div v-if="offers && offers.length > 0">
-                        <div class="d-flex justify-content-center align-items-center flex-wrap"
-                            style="margin-top: 30px;" v-for="offer in offers" :key="offer.id">
-                            <img v-if="offer.offerimage" :src="offer.offerimage" alt="Offer Image" class="img-fluid"
-                                style="max-width: 700px; min-width: 700px; height: auto; object-fit: cover;">
-                            <div v-else class="text-center p-4"
-                                style="max-width: 700px; min-width: 700px; border: 1px dashed #ccc; background: #f9f9f9;">
-                                <i class="fa fa-image fa-3x text-muted mb-2"></i>
-                                <p class="text-muted mb-0">No offer image available</p>
+                    <div v-if="activeOffers && activeOffers.length > 0">
+                        <template v-for="(offer, index) in activeOffers" :key="offer.id">
+                            <div class="d-flex flex-column align-items-center" style="margin-top: 30px;">
+                                <div class="offer-block" style="width: 100%; max-width: 700px;">
+                                    <div style="padding: 14px 22px 6px;">
+                                        <h4 class="mb-0" style="font-weight: 700; color: #1a1a1a;">
+                                            {{ offer.offername }}
+                                            <span style="color: #e60000;"> - {{ offer.discount }}% off</span>
+                                        </h4>
+                                    </div>
+                                    <div style="padding: 8px 22px 18px;">
+                                        <p class="mb-2" style="color: #333;">{{ offer.description }}</p>
+                                        <p class="mb-0" style="font-style: italic; color: #555; font-size: 0.9rem;">
+                                            This offer is valid between {{ formatDate(offer.startdate) }} and {{
+                                            formatDate(offer.enddate) }}
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-center" style="margin-top: 18px;">
+                                        <img v-if="offer.offerimage" :src="offer.offerimage" alt="Offer Image"
+                                            class="img-fluid"
+                                            style="max-width: 700px; width: 100%; height: auto; object-fit: cover;">
+                                        <div v-else class="text-center p-4"
+                                            style="width: 100%; border: 1px dashed #ccc; background: #f9f9f9;">
+                                            <i class="fa fa-image fa-3x text-muted mb-2"></i>
+                                            <p class="text-muted mb-0">No offer image available</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            <hr v-if="index < activeOffers.length - 1"
+                                style="max-width: 700px; margin: 40px auto 0; border: 0; border-top: 1px solid #e0e0e0;">
+                        </template>
                     </div>
                     <div v-else class="text-center p-5" style="margin-top: 30px;">
                         <i class="fa fa-tag fa-4x text-muted mb-3"></i>
@@ -488,36 +510,6 @@
             </div>
         </div>
         <!-- Footer End -->
-
-        <!-- Booking Options Modal Start -->
-        <div class="modal fade" id="bookingOptionsModal" tabindex="-1" aria-labelledby="bookingOptionsModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="bookingOptionsModalLabel">Choose Booking Platform</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <p class="mb-4">Please select your preferred booking platform:</p>
-                        <div class="d-grid gap-3">
-                            <a :href="`${bookingUrl}?org_id=${orgId}&p_id=${hotelId}`"
-                                class="btn btn-primary btn-lg py-3">
-                                <i class="fas fa-calendar-check me-2"></i>Book via integrated Platform
-                            </a>
-                            <a :href="`${bookingUrl2}?org_id=${orgId}&p_id=${hotelId}`"
-                                class="btn btn-outline-primary btn-lg py-3">
-                                <i class="fas fa-calendar-alt me-2"></i>Book via Inquiry Platform
-                            </a>
-                        </div>
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Booking Options Modal End -->
 
         <!-- JavaScript Libraries -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

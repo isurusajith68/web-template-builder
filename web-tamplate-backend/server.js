@@ -27,6 +27,7 @@ app.use(
       "http://localhost:4008",
       "http://localhost:3000",
       "http://localhost:3010",
+      "http://localhost:4010",
       "http://127.0.0.1:5500",
       "https://temp1.ceyinfo.com",
       "https://temp2.ceyinfo.com",
@@ -41,9 +42,11 @@ app.use(
       "https://v2d.config.ceyinfo.com",
       "https://v2d.web.ceyinfo.com",
       "https://v2d.property.ceyinfo.com",
+      "https://v2d.fdesk.ceyinfo.com",
+      "https://fdesk.ceyinfo.com",
     ],
     credentials: true,
-  })
+  }),
 );
 
 app.use(

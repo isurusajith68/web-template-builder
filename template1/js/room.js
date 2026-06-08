@@ -4,7 +4,7 @@ const app = Vue.createApp({
       hotelId: null,
       orgId: null,
       templateId: 1,
-      bookingUrl: window.BOOKING_URL,
+      bookingUrl: null,
       bookingUrl2: window.BOOKING_URL_2,
       title: "Site Name",
       email: "Site email",
@@ -55,18 +55,9 @@ const app = Vue.createApp({
       youtubeLink: "",
       privacyPolicy: "",
       termsCondition: "",
-      bookingModalInstance: null,
     };
   },
   methods: {
-    openBookingModal() {
-      if (!this.bookingModalInstance) {
-        this.bookingModalInstance = new bootstrap.Modal(
-          document.getElementById("bookingOptionsModal"),
-        );
-      }
-      this.bookingModalInstance.show();
-    },
     getAmenityIcon(amenity) {
       if (!amenity) return null;
 
@@ -216,11 +207,36 @@ const app = Vue.createApp({
     openTermsModal() {
       $("#termsModal").modal("show");
     },
+
+    async templateDetails() {
+      try {
+        const response = await fetch(
+          `${window.API_BASE}/temp1/template-details?templateId=${this.templateId}`,
+          {
+            credentials: "include",
+          },
+        );
+        if (!response.ok) {
+          const err = await response.json();
+          console.error("Error fetching template details:", err);
+        } else {
+          const data = await response.json();
+          console.log(data?.booking_platform, "response");
+          this.bookingUrl =
+            data?.booking_platform === 1
+              ? window.BOOKING_URL
+              : window.BOOKING_URL_2;
+        }
+      } catch (error) {
+        console.error("Error fetching template details:", error);
+      }
+    },
   },
   mounted() {
     this.loadSiteDetails();
     this.loadRoomDetails();
     this.hotelInfo();
+    this.templateDetails();
   },
 });
 
