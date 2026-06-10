@@ -29,6 +29,7 @@ const app = Vue.createApp({
       selectedCategory: null,
       selectedPriceType: null,
       selectedMenuType: null,
+      viewMode: 'grid',
 
       isLoading: null,
       isError: null,

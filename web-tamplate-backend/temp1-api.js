@@ -2070,35 +2070,58 @@ const buildTemplateMenu = async (
     }?org_id=${organization_id}&p_id=${hotelId}`;
 
     const categoriesResult = await pool.query(
-      `SELECT fb_category_id, fb_category_name
+      `SELECT fb_category_id, fb_category_name, description, parent_fb_category_id, category_type, image_url
        FROM operation_menu_food_beverage_categories
        WHERE property_id = $1 AND is_active = true
        ORDER BY fb_category_name`,
       [hotelId],
     );
 
+    const priceTypesResult = await pool.query(
+      `SELECT price_type_id, price_type_name
+       FROM operation_menu_price_types
+       WHERE property_id = $1 AND is_active = true
+       ORDER BY price_type_id`,
+      [hotelId],
+    );
+
+    const menuTypesResult = await pool.query(
+      `SELECT menu_type_id, menu_type_name
+       FROM operation_menu_types
+       WHERE property_id = $1 AND is_active = true
+       ORDER BY menu_type_id`,
+      [hotelId],
+    );
+
     const itemsResult = await pool.query(
       `SELECT
-         mi.menu_item_id, mi.menu_name, mi.menu_category_id, mi.description,
-         mi.is_veg, mi.is_spicy, mi.image_url, mi.selling_mode, mi.preparation_time,
+         mi.menu_item_id, mi.menu_name, mi.menu_category_id, mi.menu_subcategory_id,
+         mi.description, mi.is_veg, mi.is_spicy, mi.image_url, mi.selling_mode,
+         mi.short_name, mi.preparation_time,
          COALESCE(
            (
              SELECT JSON_AGG(
-               JSONB_BUILD_OBJECT('tier_name', pt.tier_name, 'price', tier_min.min_price)
-               ORDER BY pt.price_tier_id
+               JSONB_BUILD_OBJECT(
+                 'tier_id',        ip.price_tier_id,
+                 'tier_name',      pt.tier_name,
+                 'price_type_id',  ip.price_type_id,
+                 'price_type_name',ptype.price_type_name,
+                 'menu_type_id',   ip.menu_type_id,
+                 'menu_type_name', mt.menu_type_name,
+                 'price',          ip.price
+               )
+               ORDER BY ip.menu_type_id, ip.price_type_id, ip.price_tier_id
              )
-             FROM (
-               SELECT price_tier_id, MIN(price) AS min_price
-               FROM operation_menu_item_prices
-               WHERE item_id = mi.menu_item_id
-                 AND property_id = $1
-                 AND price > 0
-               GROUP BY price_tier_id
-             ) tier_min
-             JOIN operation_menu_price_tiers pt
-               ON pt.price_tier_id = tier_min.price_tier_id
-               AND pt.property_id = $1
-               AND pt.is_active = true
+             FROM operation_menu_item_prices ip
+             LEFT JOIN operation_menu_price_tiers pt
+               ON pt.price_tier_id = ip.price_tier_id AND pt.property_id = $1 AND pt.is_active = true
+             LEFT JOIN operation_menu_price_types ptype
+               ON ptype.price_type_id = ip.price_type_id AND ptype.property_id = $1 AND ptype.is_active = true
+             LEFT JOIN operation_menu_types mt
+               ON mt.menu_type_id = ip.menu_type_id AND mt.property_id = $1 AND mt.is_active = true
+             WHERE ip.item_id = mi.menu_item_id
+               AND ip.property_id = $1
+               AND ip.price > 0
            ),
            '[]'::json
          ) AS prices
@@ -2108,43 +2131,14 @@ const buildTemplateMenu = async (
       [hotelId],
     );
 
-    const groupedItems = {};
-    itemsResult.rows.forEach((item) => {
-      const key = item.menu_category_id || "uncategorized";
-      if (!groupedItems[key]) groupedItems[key] = [];
-      groupedItems[key].push(item);
-    });
+    const menuData = {
+      categories: categoriesResult.rows,
+      priceTypes: priceTypesResult.rows,
+      menuTypes: menuTypesResult.rows,
+      items: itemsResult.rows,
+    };
 
-    let menuHtml = "";
-
-    categoriesResult.rows.forEach((cat) => {
-      const catItems = groupedItems[cat.fb_category_id] || [];
-      if (catItems.length === 0) return;
-      menuHtml += `
-        <div class="menu-category-section">
-          <h4 class="menu-category-title">${cat.fb_category_name}</h4>
-          <div class="row g-4">
-            ${catItems.map((item) => buildMenuItemHtml(item)).join("")}
-          </div>
-        </div>
-      `;
-    });
-
-    const uncategorized = groupedItems["uncategorized"] || [];
-    if (uncategorized.length > 0) {
-      menuHtml += `
-        <div class="menu-category-section">
-          <h4 class="menu-category-title">Other Items</h4>
-          <div class="row g-4">
-            ${uncategorized.map((item) => buildMenuItemHtml(item)).join("")}
-          </div>
-        </div>
-      `;
-    }
-
-    if (!menuHtml) {
-      menuHtml = `<p class="text-center text-muted py-5">No menu items available</p>`;
-    }
+    const menuDataScript = `<script>window.MENU_DATA = ${JSON.stringify(menuData)};<\/script>`;
 
     const privacyPolicyModel = `
 <div class="modal fade" id="privacyPolicyModalOpen" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
@@ -2195,7 +2189,7 @@ const buildTemplateMenu = async (
       "#bookingOptionsModal": "#bookingOptionsModal",
       "#siteLogo": result.rows[0].details.logo || "",
       "#hotelURL": hotelURL,
-      "#menuHtml": menuHtml,
+      "#menuData": menuDataScript,
       "#facebookLink": result.rows[0].details.facebookLink || "#",
       "#bookingcomLink": result.rows[0].details.bookingcomLink || "#",
       "#tripadvisorLink": result.rows[0].details.tripadvisorLink || "#",
@@ -2204,7 +2198,7 @@ const buildTemplateMenu = async (
 
     const outputHtml = template.replace(
       /#\w+/g,
-      (placeholder) => data[placeholder] || "",
+      (placeholder) => Object.prototype.hasOwnProperty.call(data, placeholder) ? data[placeholder] : placeholder,
     );
 
     await fs.writeFile(

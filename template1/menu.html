@@ -227,17 +227,33 @@
 
                     </div>
 
-                    <!-- Menu Items Grid -->
-                    <div class="row g-4">
-                        <div v-if="filteredItems.length === 0" class="col-12 text-center text-muted py-5">
-                            <i class="fa fa-utensils fa-3x mb-3 d-block"></i>
-                            <p>No menu items available</p>
+                    <!-- View Toggle -->
+                    <div class="d-flex justify-content-end mb-3">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn"
+                                :class="viewMode === 'grid' ? 'btn-dark' : 'btn-outline-dark'"
+                                @click="viewMode = 'grid'" title="Grid View">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                            </button>
+                            <button type="button" class="btn"
+                                :class="viewMode === 'list' ? 'btn-dark' : 'btn-outline-dark'"
+                                @click="viewMode = 'list'" title="List View">
+                                <i class="bi bi-list-ul"></i>
+                            </button>
                         </div>
+                    </div>
 
+                    <!-- Empty state -->
+                    <div v-if="filteredItems.length === 0" class="text-center text-muted py-5">
+                        <i class="fa fa-utensils fa-3x mb-3 d-block"></i>
+                        <p>No menu items available</p>
+                    </div>
+
+                    <!-- ── GRID VIEW ── -->
+                    <div v-else-if="viewMode === 'grid'" class="row g-4">
                         <div class="col-lg-4 col-md-6 wow fadeInUp" v-for="(item, index) in filteredItems"
                             :key="item.menu_item_id" :data-wow-delay="`${0.1 * (index % 6)}s`">
                             <div class="h-100 shadow rounded overflow-hidden" style="border: 1px solid #f0f0f0;">
-                                <!-- Item Image -->
                                 <div class="position-relative">
                                     <img v-if="item.image_url" :src="item.image_url" :alt="item.menu_name"
                                         class="img-fluid w-100" style="height: 200px; object-fit: cover;"
@@ -246,79 +262,113 @@
                                         style="height: 200px;">
                                         <i class="fa fa-utensils fa-3x text-muted"></i>
                                     </div>
-                                    <!-- Veg / Non-veg indicator -->
-                                    <div class="position-absolute" style="top: 8px; left: 8px;">
-                                            <span v-if="item.is_veg"
-                                                style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1.5px solid green;border-radius:4px;background:white;">
-                                                <span style="display:block;width:9px;height:9px;background:green;border-radius:50%;flex-shrink:0;"></span>
-                                                <span style="font-size:0.72rem;font-weight:600;color:green;line-height:1;">Veg</span>
-                                            </span>
-                                            <span v-else
-                                                style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1.5px solid #e00;border-radius:4px;background:white;">
-                                                <span style="display:block;width:9px;height:9px;background:#e00;border-radius:50%;flex-shrink:0;"></span>
-                                                <span style="font-size:0.72rem;font-weight:600;color:#e00;line-height:1;">Non-Veg</span>
-                                            </span>
+                                    <div class="position-absolute" style="top:8px;left:8px;">
+                                        <span v-if="item.is_veg"
+                                            style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1.5px solid green;border-radius:4px;background:white;">
+                                            <span style="display:block;width:9px;height:9px;background:green;border-radius:50%;flex-shrink:0;"></span>
+                                            <span style="font-size:0.72rem;font-weight:600;color:green;line-height:1;">Veg</span>
+                                        </span>
+                                        <span v-else
+                                            style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border:1.5px solid #e00;border-radius:4px;background:white;">
+                                            <span style="display:block;width:9px;height:9px;background:#e00;border-radius:50%;flex-shrink:0;"></span>
+                                            <span style="font-size:0.72rem;font-weight:600;color:#e00;line-height:1;">Non-Veg</span>
+                                        </span>
                                     </div>
-                                    <!-- Spicy badge -->
-                                    <div v-if="item.is_spicy" class="position-absolute" style="top: 8px; right: 8px;">
-                                        <span class="badge bg-danger" style="font-size: 0.7rem;">
+                                    <div v-if="item.is_spicy" class="position-absolute" style="top:8px;right:8px;">
+                                        <span class="badge bg-danger" style="font-size:0.7rem;">
                                             <i class="fa fa-fire me-1"></i>Spicy
                                         </span>
                                     </div>
                                 </div>
-
-                                <!-- Item Details -->
                                 <div class="p-3">
-                                    <div class="d-flex align-items-center gap-2 mb-2">
-
-                                        <h6 class="mb-0 fw-bold">{{ item.menu_name }}</h6>
-                                    </div>
-                                    <p v-if="item.description" class="text-muted small mb-2" style="line-height: 1.4;">
-                                        {{ item.description }}</p>
+                                    <h6 class="mb-2 fw-bold">{{ item.menu_name }}</h6>
+                                    <p v-if="item.description" class="text-muted small mb-2" style="line-height:1.4;">{{ item.description }}</p>
                                     <div class="d-flex gap-2 flex-wrap mb-2">
-                                        <span v-if="item.preparation_time" class="badge bg-light text-dark border"
-                                            style="font-size: 0.72rem;">
+                                        <span v-if="item.preparation_time" class="badge bg-light text-dark border" style="font-size:0.72rem;">
                                             <i class="fa fa-clock me-1"></i>{{ item.preparation_time }} min
                                         </span>
-                                        <span v-if="item.selling_mode" class="badge bg-light text-dark border"
-                                            style="font-size: 0.72rem;">
-                                            {{ item.selling_mode }}
-                                        </span>
+                                        <span v-if="item.selling_mode" class="badge bg-light text-dark border" style="font-size:0.72rem;">{{ item.selling_mode }}</span>
                                     </div>
-                                    <!-- Price Tiers (filtered) -->
-                                    <div v-if="getFilteredPrices(item).length > 0"
-                                        style="border-top: 1px solid #f0f0f0; padding-top: 8px;">
-                                        <!-- Order Type + Menu Time context -->
+                                    <div v-if="getFilteredPrices(item).length > 0" style="border-top:1px solid #f0f0f0;padding-top:8px;">
                                         <div class="d-flex gap-1 flex-wrap mb-2">
-                                            <span
-                                                style="font-size: 0.68rem; background: #175d9e; color: #fff; border-radius: 4px; padding: 2px 7px;">
-                                                {{ selectedPriceType
-                                                ? priceTypes.find(p => p.price_type_id ===
-                                                selectedPriceType)?.price_type_name
-                                                : (getFilteredPrices(item)[0]?.price_type_name || 'All Order Types') }}
+                                            <span style="font-size:0.68rem;background:#175d9e;color:#fff;border-radius:4px;padding:2px 7px;">
+                                                {{ selectedPriceType ? priceTypes.find(p => p.price_type_id === selectedPriceType)?.price_type_name : (getFilteredPrices(item)[0]?.price_type_name || 'All Order Types') }}
                                             </span>
-                                            <span
-                                                style="font-size: 0.68rem; background: #555; color: #fff; border-radius: 4px; padding: 2px 7px;">
-                                                {{ selectedMenuType
-                                                ? menuTypes.find(m => m.menu_type_id ===
-                                                selectedMenuType)?.menu_type_name
-                                                : (getFilteredPrices(item)[0]?.menu_type_name || 'All Times') }}
+                                            <span style="font-size:0.68rem;background:#555;color:#fff;border-radius:4px;padding:2px 7px;">
+                                                {{ selectedMenuType ? menuTypes.find(m => m.menu_type_id === selectedMenuType)?.menu_type_name : (getFilteredPrices(item)[0]?.menu_type_name || 'All Times') }}
                                             </span>
                                         </div>
                                         <div v-for="p in getFilteredPrices(item)" :key="p.tier_id"
                                             class="d-flex justify-content-between align-items-center py-1"
-                                            style="border-bottom: 1px solid #f8f8f8;">
-                                            <span style="font-size: 0.78rem; color: #666;">{{ p.tier_name }}</span>
-                                            <span style="font-size: 0.82rem; font-weight: 700; color: #175d9e;">
-                                                Rs {{ Number(p.price).toLocaleString('en-US') }}
-                                            </span>
+                                            style="border-bottom:1px solid #f8f8f8;">
+                                            <span style="font-size:0.78rem;color:#666;">{{ p.tier_name }}</span>
+                                            <span style="font-size:0.82rem;font-weight:700;color:#175d9e;">Rs {{ Number(p.price).toLocaleString('en-US') }}</span>
                                         </div>
                                     </div>
-                                    <p v-else class="text-muted small mt-1 mb-0">
-                                        <i class="fa fa-info-circle me-1"></i>
-                                        No prices for this selection
-                                    </p>
+                                    <p v-else class="text-muted small mt-1 mb-0"><i class="fa fa-info-circle me-1"></i>No prices for this selection</p>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── LIST VIEW ── -->
+                    <div v-else class="d-flex flex-column gap-2">
+                        <div v-for="item in filteredItems" :key="item.menu_item_id"
+                            class="d-flex align-items-center gap-3 rounded"
+                            style="border:1px solid #efefef;padding:10px 14px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+
+                            <!-- Thumbnail -->
+                            <div style="flex-shrink:0;width:64px;height:64px;border-radius:6px;overflow:hidden;background:#f8f9fa;">
+                                <img v-if="item.image_url" :src="item.image_url" :alt="item.menu_name"
+                                    style="width:64px;height:64px;object-fit:cover;"
+                                    onerror="this.src='img/carousel-1.jpg'">
+                                <div v-else class="d-flex align-items-center justify-content-center h-100">
+                                    <i class="fa fa-utensils text-muted"></i>
+                                </div>
+                            </div>
+
+                            <!-- Name + meta -->
+                            <div style="flex:1;min-width:0;">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span v-if="item.is_veg"
+                                        style="display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border:1.5px solid green;border-radius:4px;background:white;flex-shrink:0;">
+                                        <span style="width:8px;height:8px;background:green;border-radius:50%;display:inline-block;"></span>
+                                        <span style="font-size:0.68rem;font-weight:600;color:green;">Veg</span>
+                                    </span>
+                                    <span v-else
+                                        style="display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border:1.5px solid #e00;border-radius:4px;background:white;flex-shrink:0;">
+                                        <span style="width:8px;height:8px;background:#e00;border-radius:50%;display:inline-block;"></span>
+                                        <span style="font-size:0.68rem;font-weight:600;color:#e00;">Non-Veg</span>
+                                    </span>
+                                    <span class="fw-bold" style="font-size:0.95rem;">{{ item.menu_name }}</span>
+                                    <span v-if="item.is_spicy" class="badge bg-danger" style="font-size:0.65rem;">
+                                        <i class="fa fa-fire me-1"></i>Spicy
+                                    </span>
+                                </div>
+                                <p v-if="item.description" class="text-muted mb-0 mt-1"
+                                    style="font-size:0.78rem;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    {{ item.description }}
+                                </p>
+                            </div>
+
+                            <!-- Prices -->
+                            <div style="flex-shrink:0;text-align:right;min-width:140px;">
+                                <div class="d-flex gap-1 justify-content-end flex-wrap mb-1">
+                                    <span style="font-size:0.65rem;background:#175d9e;color:#fff;border-radius:4px;padding:1px 6px;">
+                                        {{ selectedPriceType ? priceTypes.find(p => p.price_type_id === selectedPriceType)?.price_type_name : (getFilteredPrices(item)[0]?.price_type_name || '') }}
+                                    </span>
+                                    <span style="font-size:0.65rem;background:#555;color:#fff;border-radius:4px;padding:1px 6px;">
+                                        {{ selectedMenuType ? menuTypes.find(m => m.menu_type_id === selectedMenuType)?.menu_type_name : (getFilteredPrices(item)[0]?.menu_type_name || '') }}
+                                    </span>
+                                </div>
+                                <div v-if="getFilteredPrices(item).length > 0">
+                                    <div v-for="p in getFilteredPrices(item)" :key="p.tier_id"
+                                        class="d-flex justify-content-between gap-3">
+                                        <span style="font-size:0.75rem;color:#888;">{{ p.tier_name }}</span>
+                                        <span style="font-size:0.82rem;font-weight:700;color:#175d9e;">Rs {{ Number(p.price).toLocaleString('en-US') }}</span>
+                                    </div>
+                                </div>
+                                <p v-else class="text-muted mb-0" style="font-size:0.75rem;">No prices</p>
                             </div>
                         </div>
                     </div>

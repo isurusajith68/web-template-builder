@@ -33,55 +33,19 @@
     <link href="css/style.css" rel="stylesheet">
 
     <style>
-        .menu-veg-dot {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            border: 2px solid green;
-            border-radius: 3px;
-            background: white;
-            margin-right: 6px;
-            flex-shrink: 0;
-        }
-        .menu-veg-dot span {
-            display: block;
-            width: 10px;
-            height: 10px;
-            background: green;
-            border-radius: 50%;
-        }
-        .menu-nonveg-dot {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e00;
-            border-radius: 3px;
-            background: white;
-            margin-right: 6px;
-            flex-shrink: 0;
-        }
-        .menu-nonveg-dot span {
-            display: block;
-            width: 10px;
-            height: 10px;
-            background: #e00;
-            border-radius: 50%;
-        }
         .menu-card {
-            border: 1px solid #f0f0f0;
-            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            border-radius: 10px;
             overflow: hidden;
             height: 100%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            background: #fff;
         }
         .menu-card-img {
             width: 100%;
             height: 200px;
             object-fit: cover;
+            display: block;
         }
         .menu-card-img-placeholder {
             width: 100%;
@@ -93,16 +57,19 @@
             color: #adb5bd;
             font-size: 2.5rem;
         }
-        .menu-category-section {
-            margin-bottom: 3rem;
-        }
-        .menu-category-title {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-        }
+        .menu-filter-row { margin-bottom: 0.5rem; }
+        .menu-badge-veg { display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border:1.5px solid #28a745;border-radius:4px;background-color:#fff !important; }
+        .menu-badge-veg .dot { width:9px;height:9px;background-color:#28a745 !important;border-radius:50%;display:inline-block;flex-shrink:0; }
+        .menu-badge-veg .lbl { font-size:0.72rem;font-weight:600;color:#28a745 !important; }
+        .menu-badge-nonveg { display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border:1.5px solid #dc3545;border-radius:4px;background-color:#fff !important; }
+        .menu-badge-nonveg .dot { width:9px;height:9px;background-color:#dc3545 !important;border-radius:50%;display:inline-block;flex-shrink:0; }
+        .menu-badge-nonveg .lbl { font-size:0.72rem;font-weight:600;color:#dc3545 !important; }
+        .menu-ctx-ptype { display:inline-block;font-size:0.72rem;font-weight:500;color:#fff !important;background-color:#175d9e !important;border-radius:5px;padding:3px 9px; }
+        .menu-ctx-mtype { display:inline-block;font-size:0.72rem;font-weight:500;color:#fff !important;background-color:#343a40 !important;border-radius:5px;padding:3px 9px; }
+        .menu-tier-row { display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f4f4f4; }
+        .menu-tier-name { font-size:0.8rem;color:#666; }
+        .menu-tier-price { font-size:0.88rem;font-weight:700;color:#175d9e !important; }
+        .menu-item-name { font-weight:700;font-size:1rem;color:#1a1a1a;margin-bottom:8px; }
     </style>
 </head>
 
@@ -161,7 +128,7 @@
                             data-bs-target="#navbarCollapse">
                             <span class="navbar-toggler-icon"></span>
                         </button>
-                        <div class="collapse navbar-collapse justify-content-between" id="#navbarCollapse">
+                        <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
                                 <a href="index.html" class="nav-item nav-link ms-3">Home</a>
                                 <a href="about.html" class="nav-item nav-link ms-3">About</a>
@@ -169,7 +136,7 @@
                                 <a href="specialOffers.html" class="nav-item nav-link ms-3">Special Offers</a>
                                 <a href="gallery.html" class="nav-item nav-link ms-3">Gallery</a>
                                 <a href="attraction.html" class="nav-item nav-link ms-3">Attractions</a>
-                                <a href="menu.html" class="nav-item nav-link ms-3 active">Menu</a>
+                                <a href="menu.html" class="nav-item nav-link active ms-3">Menu</a>
                                 <a href="contact.html" class="nav-item nav-link ms-3">Contact</a>
                             </div>
                             <a href="#hotelURL" class="btn btn-primary py-2 px-4 ms-3"
@@ -206,7 +173,27 @@
                     <h6 class="section-title text-center text-primary text-uppercase">Our Menu</h6>
                     <h1 class="mb-5">Explore Our <span class="text-primary text-uppercase">Menu</span></h1>
                 </div>
-                #menuHtml
+
+                <!-- Injected menu data -->
+                #menuData
+
+                <!-- Filter controls -->
+                <div id="menu-filters" style="margin-bottom: 1rem;"></div>
+
+                <!-- View toggle -->
+                <div class="d-flex justify-content-end mb-3">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" id="btn-view-grid" class="btn btn-dark" title="Grid View">
+                            <i class="bi bi-grid-3x3-gap"></i>
+                        </button>
+                        <button type="button" id="btn-view-list" class="btn btn-outline-dark" title="List View">
+                            <i class="bi bi-list-ul"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item grid -->
+                <div id="menu-grid"></div>
             </div>
         </div>
         <!-- Menu End -->
@@ -299,6 +286,237 @@
         <script>
             new WOW().init();
             document.getElementById("spinner").classList.remove("show");
+        </script>
+
+        <!-- Interactive menu script -->
+        <script>
+        (function () {
+            var d = window.MENU_DATA || { categories: [], priceTypes: [], menuTypes: [], items: [] };
+            var selectedPriceType = d.priceTypes.length > 0 ? d.priceTypes[0].price_type_id : null;
+            var selectedMenuType  = d.menuTypes.length  > 0 ? d.menuTypes[0].menu_type_id   : null;
+            var selectedCategory  = null;
+            var viewMode = 'grid';
+
+            function getFilteredPrices(item) {
+                var prices = Array.isArray(item.prices) ? item.prices : [];
+                if (selectedPriceType !== null) {
+                    var sp = prices.filter(function(p){ return Number(p.price_type_id) === selectedPriceType; });
+                    prices = sp.length > 0 ? sp : prices.filter(function(p){ return p.price_type_id === null; });
+                }
+                if (selectedMenuType !== null) {
+                    var sm = prices.filter(function(p){ return Number(p.menu_type_id) === selectedMenuType; });
+                    prices = sm.length > 0 ? sm : prices.filter(function(p){ return p.menu_type_id === null; });
+                }
+                var tierMap = {};
+                prices.forEach(function(p) {
+                    var k = Number(p.tier_id);
+                    if (!tierMap[k] || Number(p.price) < Number(tierMap[k].price)) tierMap[k] = p;
+                });
+                return Object.values(tierMap).sort(function(a,b){ return Number(a.tier_id) - Number(b.tier_id); });
+            }
+
+            function vegBadge(isVeg) {
+                if (isVeg) {
+                    return '<span class="menu-badge-veg"><span class="dot"></span><span class="lbl">Veg</span></span>';
+                }
+                return '<span class="menu-badge-nonveg"><span class="dot"></span><span class="lbl">Non-Veg</span></span>';
+            }
+
+            function renderCard(item) {
+                var prices = getFilteredPrices(item);
+                var ptName = selectedPriceType
+                    ? (d.priceTypes.find(function(p){ return p.price_type_id === selectedPriceType; }) || {}).price_type_name || ''
+                    : (prices[0] ? prices[0].price_type_name : 'All Order Types');
+                var mtName = selectedMenuType
+                    ? (d.menuTypes.find(function(m){ return m.menu_type_id === selectedMenuType; }) || {}).menu_type_name || ''
+                    : (prices[0] ? prices[0].menu_type_name : 'All Times');
+
+                var imgHtml = item.image_url
+                    ? '<img src="' + item.image_url + '" alt="' + item.menu_name + '" class="menu-card-img" onerror="this.src=\'img/carousel-1.jpg\'">'
+                    : '<div class="menu-card-img-placeholder"><i class="fa fa-utensils"></i></div>';
+
+                var spicyBadge = item.is_spicy
+                    ? '<div class="position-absolute" style="top:8px;right:8px;"><span class="badge bg-danger" style="font-size:0.7rem;"><i class="fa fa-fire me-1"></i>Spicy</span></div>'
+                    : '';
+
+                var pricesHtml = '';
+                if (prices.length > 0) {
+                    var rows = prices.map(function(p) {
+                        return '<div class="menu-tier-row">'
+                             + '<span class="menu-tier-name">' + p.tier_name + '</span>'
+                             + '<span class="menu-tier-price">Rs ' + Number(p.price).toLocaleString('en-US') + '</span>'
+                             + '</div>';
+                    }).join('');
+                    pricesHtml = '<div style="border-top:1px solid #f0f0f0;padding-top:8px;">'
+                        + '<div class="d-flex gap-1 flex-wrap mb-2">'
+                        + '<span class="menu-ctx-ptype">' + ptName + '</span>'
+                        + '<span class="menu-ctx-mtype">' + mtName + '</span>'
+                        + '</div>' + rows + '</div>';
+                } else {
+                    pricesHtml = '<p class="text-muted small mt-2 mb-0">Price not available</p>';
+                }
+
+                var prepTime = item.preparation_time
+                    ? '<span class="badge bg-light text-dark border" style="font-size:0.72rem;"><i class="fa fa-clock me-1"></i>' + item.preparation_time + ' min</span>'
+                    : '';
+                var sellingMode = item.selling_mode
+                    ? '<span class="badge bg-light text-dark border" style="font-size:0.72rem;">' + item.selling_mode + '</span>'
+                    : '';
+                var desc = item.description
+                    ? '<p class="text-muted small mb-2" style="line-height:1.4;">' + item.description + '</p>'
+                    : '';
+
+                return '<div class="col-lg-4 col-md-6 mb-4">'
+                    + '<div class="menu-card">'
+                    + '<div class="position-relative">'
+                    + imgHtml
+                    + '<div class="position-absolute" style="top:8px;left:8px;">' + vegBadge(item.is_veg) + '</div>'
+                    + spicyBadge
+                    + '</div>'
+                    + '<div class="p-3">'
+                    + '<p class="menu-item-name">' + item.menu_name + '</p>'
+                    + desc
+                    + (prepTime || sellingMode ? '<div class="d-flex gap-2 flex-wrap mb-2">' + prepTime + sellingMode + '</div>' : '')
+                    + pricesHtml
+                    + '</div>'
+                    + '</div>'
+                    + '</div>';
+            }
+
+            function renderListRow(item) {
+                var prices = getFilteredPrices(item);
+                var ptName = selectedPriceType
+                    ? (d.priceTypes.find(function(p){ return p.price_type_id === selectedPriceType; }) || {}).price_type_name || ''
+                    : (prices[0] ? prices[0].price_type_name : '');
+                var mtName = selectedMenuType
+                    ? (d.menuTypes.find(function(m){ return m.menu_type_id === selectedMenuType; }) || {}).menu_type_name || ''
+                    : (prices[0] ? prices[0].menu_type_name : '');
+
+                var imgHtml = item.image_url
+                    ? '<img src="' + item.image_url + '" alt="' + item.menu_name + '" style="width:64px;height:64px;object-fit:cover;" onerror="this.src=\'img/carousel-1.jpg\'">'
+                    : '<div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;color:#adb5bd;font-size:1.5rem;"><i class="fa fa-utensils"></i></div>';
+
+                var spicyBadge = item.is_spicy
+                    ? ' <span class="badge bg-danger" style="font-size:0.65rem;"><i class="fa fa-fire me-1"></i>Spicy</span>'
+                    : '';
+
+                var desc = item.description
+                    ? '<p style="font-size:0.78rem;color:#888;line-height:1.3;margin:4px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + item.description + '</p>'
+                    : '';
+
+                var priceRows = prices.map(function(p) {
+                    return '<div style="display:flex;justify-content:space-between;gap:12px;">'
+                         + '<span class="menu-tier-name">' + p.tier_name + '</span>'
+                         + '<span class="menu-tier-price">Rs ' + Number(p.price).toLocaleString('en-US') + '</span>'
+                         + '</div>';
+                }).join('');
+
+                var pricesHtml = prices.length > 0
+                    ? '<div class="d-flex gap-1 flex-wrap justify-content-end mb-1">'
+                        + (ptName ? '<span class="menu-ctx-ptype">' + ptName + '</span>' : '')
+                        + (mtName ? '<span class="menu-ctx-mtype">' + mtName + '</span>' : '')
+                        + '</div>' + priceRows
+                    : '<p style="font-size:0.75rem;color:#888;margin:0;">No prices</p>';
+
+                return '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid #efefef;border-radius:8px;margin-bottom:8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.05);">'
+                    + '<div style="flex-shrink:0;width:64px;height:64px;border-radius:6px;overflow:hidden;background:#f8f9fa;">' + imgHtml + '</div>'
+                    + '<div style="flex:1;min-width:0;">'
+                    + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+                    + vegBadge(item.is_veg)
+                    + '<span style="font-weight:700;font-size:0.95rem;">' + item.menu_name + '</span>'
+                    + spicyBadge
+                    + '</div>'
+                    + desc
+                    + '</div>'
+                    + '<div style="flex-shrink:0;text-align:right;min-width:140px;">' + pricesHtml + '</div>'
+                    + '</div>';
+            }
+
+            function renderGrid() {
+                var items = selectedCategory === null
+                    ? d.items
+                    : d.items.filter(function(i){
+                        return String(i.menu_category_id) === String(selectedCategory) ||
+                               String(i.menu_subcategory_id) === String(selectedCategory);
+                      });
+
+                var grid = document.getElementById('menu-grid');
+                if (items.length === 0) {
+                    grid.innerHTML = '<p class="text-center text-muted py-5">No items available for the selected filters.</p>';
+                    return;
+                }
+                if (viewMode === 'list') {
+                    grid.innerHTML = '<div>' + items.map(renderListRow).join('') + '</div>';
+                } else {
+                    grid.innerHTML = '<div class="row">' + items.map(renderCard).join('') + '</div>';
+                }
+            }
+
+            function updateViewButtons() {
+                document.getElementById('btn-view-grid').className = 'btn btn-sm ' + (viewMode === 'grid' ? 'btn-dark' : 'btn-outline-dark');
+                document.getElementById('btn-view-list').className = 'btn btn-sm ' + (viewMode === 'list' ? 'btn-dark' : 'btn-outline-dark');
+            }
+
+            function renderFilters() {
+                var html = '';
+
+                if (d.priceTypes.length > 0) {
+                    html += '<div class="menu-filter-row"><small class="text-muted text-uppercase fw-bold me-2" style="font-size:0.7rem;letter-spacing:0.05em;">Order Type:</small><span class="d-inline-flex flex-wrap gap-2">';
+                    d.priceTypes.forEach(function(pt) {
+                        var active = selectedPriceType === pt.price_type_id;
+                        html += '<button class="btn btn-sm ' + (active ? 'btn-dark' : 'btn-outline-dark') + '" data-type="price" data-id="' + pt.price_type_id + '">' + pt.price_type_name + '</button>';
+                    });
+                    html += '</span></div>';
+                }
+
+                if (d.menuTypes.length > 0) {
+                    html += '<div class="menu-filter-row"><small class="text-muted text-uppercase fw-bold me-2" style="font-size:0.7rem;letter-spacing:0.05em;">Menu Time:</small><span class="d-inline-flex flex-wrap gap-2">';
+                    d.menuTypes.forEach(function(mt) {
+                        var active = selectedMenuType === mt.menu_type_id;
+                        html += '<button class="btn btn-sm ' + (active ? 'btn-dark' : 'btn-outline-dark') + '" data-type="menu" data-id="' + mt.menu_type_id + '">' + mt.menu_type_name + '</button>';
+                    });
+                    html += '</span></div>';
+                }
+
+                if (d.categories.length > 0) {
+                    html += '<div class="menu-filter-row mb-4"><small class="text-muted text-uppercase fw-bold me-2" style="font-size:0.7rem;letter-spacing:0.05em;">Category:</small><span class="d-inline-flex flex-wrap gap-2">';
+                    html += '<button class="btn btn-sm ' + (selectedCategory === null ? 'btn-primary' : 'btn-outline-primary') + '" data-type="cat" data-id="">All</button>';
+                    d.categories.forEach(function(cat) {
+                        var active = String(selectedCategory) === String(cat.fb_category_id);
+                        html += '<button class="btn btn-sm ' + (active ? 'btn-primary' : 'btn-outline-primary') + '" data-type="cat" data-id="' + cat.fb_category_id + '">' + cat.fb_category_name + '</button>';
+                    });
+                    html += '</span></div>';
+                }
+
+                document.getElementById('menu-filters').innerHTML = html;
+            }
+
+            document.getElementById('menu-filters').addEventListener('click', function(e) {
+                var btn = e.target.closest('button[data-type]');
+                if (!btn) return;
+                var type = btn.dataset.type;
+                var id   = btn.dataset.id;
+                if (type === 'price') { selectedPriceType = Number(id); }
+                else if (type === 'menu') { selectedMenuType = Number(id); }
+                else if (type === 'cat') { selectedCategory = id === '' ? null : id; }
+                renderFilters();
+                renderGrid();
+            });
+
+            document.getElementById('btn-view-grid').addEventListener('click', function() {
+                viewMode = 'grid';
+                updateViewButtons();
+                renderGrid();
+            });
+            document.getElementById('btn-view-list').addEventListener('click', function() {
+                viewMode = 'list';
+                updateViewButtons();
+                renderGrid();
+            });
+
+            renderFilters();
+            renderGrid();
+        })();
         </script>
     </div>
 </body>
